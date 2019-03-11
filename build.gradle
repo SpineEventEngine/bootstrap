@@ -31,6 +31,12 @@ buildscript { final scriptHandler ->
     forceConfiguration(scriptHandler)
 }
 
+ext {
+    credentialsPropertyFile = 'credentials.properties'
+    publishPlugin = "$rootDir/config/gradle/publish.gradle"
+    projectsToPublish = ["plugin"]
+}
+
 subprojects {
     project.ext {
         sourcesRootDir = "$projectDir/src"
@@ -141,4 +147,9 @@ subprojects {
             downloadSources = true
         }
     }
+
+    apply from: deps.scripts.pmd
 }
+
+apply from: deps.scripts.jacoco
+apply from: deps.scripts.publish
