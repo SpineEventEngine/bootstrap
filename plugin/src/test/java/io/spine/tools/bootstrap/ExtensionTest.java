@@ -85,13 +85,14 @@ class ExtensionTest {
         }
 
         @Test
-        @DisplayName("not apply `java` plugin to a Java library")
+        @DisplayName("not apply `java` if already present")
         void notApplyJavaIfJavaLib() {
             project.getPlugins().apply(JAVA_LIBRARY_PLUGIN_ID);
 
-            extension.java();
+            assertApplied(JAVA_PLUGIN_ID);
+            assertApplied(JAVA_LIBRARY_PLUGIN_ID);
 
-            assertNotApplied(JAVA_PLUGIN_ID);
+            extension.java();
         }
 
         @Test

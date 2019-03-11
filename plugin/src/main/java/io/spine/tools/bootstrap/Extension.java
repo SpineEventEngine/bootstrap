@@ -67,7 +67,7 @@ public final class Extension {
     }
 
     public void java() {
-        applyFirstIfNonePresent(JavaPlugin.class, JavaLibraryPlugin.class);
+        applyPlugin(JavaLibraryPlugin.class);
         applyPlugin(ModelCompilerPlugin.class);
 
         if (java == null) {
@@ -95,22 +95,6 @@ public final class Extension {
         if (javaScript == null) {
             javaScript = new JavaScriptExtension(project);
         }
-    }
-
-    @SafeVarargs
-    private final void
-    applyFirstIfNonePresent(Class<? extends Plugin<? extends Project>> pluginClass,
-                            Class<? extends Plugin<? extends Project>>... alternatives) {
-        PluginContainer pluginContainer = project.getPlugins();
-        for (Class<? extends Plugin<? extends Project>> cls : alternatives) {
-            if (pluginContainer.hasPlugin(cls)) {
-                log.debug("Skipping plugin {}. {} is already applied.",
-                          pluginClass.getCanonicalName(),
-                          cls.getCanonicalName());
-                return;
-            }
-        }
-        applyPlugin(pluginClass);
     }
 
     private void applyPlugin(Class<? extends Plugin<? extends Project>> pluginClass) {
