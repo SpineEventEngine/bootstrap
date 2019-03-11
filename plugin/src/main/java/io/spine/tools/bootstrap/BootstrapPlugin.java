@@ -23,6 +23,37 @@ package io.spine.tools.bootstrap;
 import io.spine.tools.gradle.SpinePlugin;
 import org.gradle.api.Project;
 
+/**
+ * Spine Bootstrap plugin entrance point.
+ *
+ * <p>This plugin configures the project in order to make it possible to develop Spine-based
+ * applications. Many configurations are implicit. For a more fine-grain configuration, use
+ * {@code spine-model-compiler} plugin, {@code spine-proto-js-plugin},
+ * {@code java}/{@code java-library} plugin, and {@code com.google.protobuf} plugin directly.
+ *
+ * <p>A typical usage of the bootstrap plugin is as follows:
+ * <pre>
+ *     {@code
+ *     // build.gradle
+ *
+ *     plugins {
+ *         id 'io.spine.bootstrap'
+ *     }
+ *
+ *     spine {
+ *         java {
+ *             grpc = true
+ *         }
+ *         javaScript()
+ *     }
+ *     }
+ * </pre>
+ *
+ * <p>The example above configures the project to generate both Java and JS code from Protobuf.
+ * Also, {@code java}, {@code com.google.protobuf}, {@code io.spine.tools.spine-model.compiler},
+ * and {@code io.spine.tools.spine-proto-js-plugin} Gradle plugins are added to the project
+ * automatically.
+ */
 public final class BootstrapPlugin extends SpinePlugin {
 
     @Override
