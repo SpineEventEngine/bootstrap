@@ -21,6 +21,8 @@
 dependencies {
     implementation gradleApi()
     implementation "io.spine.tools:spine-plugin-base:$spineVersion"
+    implementation "io.spine.tools:spine-model-compiler:$spineVersion"
+    implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
 
     testImplementation gradleTestKit()
 }
