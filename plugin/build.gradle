@@ -18,11 +18,21 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+plugins {
+    id 'java-gradle-plugin'
+}
+
 dependencies {
-    implementation gradleApi()
     implementation "io.spine.tools:spine-plugin-base:$spineVersion"
     implementation "io.spine.tools:spine-model-compiler:$spineVersion"
     implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
+}
 
-    testImplementation gradleTestKit()
+gradlePlugin {
+    plugins {
+        simplePlugin {
+            id = 'io.spine.bootstrap'
+            implementationClass = 'io.spine.tools.bootstrap.BootstrapPlugin'
+        }
+    }
 }
