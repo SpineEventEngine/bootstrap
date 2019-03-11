@@ -20,28 +20,28 @@
 
 package io.spine.tools.bootstrap;
 
-public abstract class SubExtension {
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import org.gradle.api.Project;
 
-    private final ProtobufGenerator.BuiltIn codeGenJob;
+abstract class SubExtension extends BaseExtension {
+
     private final ProtobufGenerator protobufGenerator;
+    private final ProtobufGenerator.BuiltIn codeGenJob;
 
-    private boolean generateProtobuf;
-
-    SubExtension(ProtobufGenerator generator, ProtobufGenerator.BuiltIn job) {
+    SubExtension(Project project, ProtobufGenerator protobufGenerator, ProtobufGenerator.BuiltIn job) {
+        super(project);
+        this.protobufGenerator = protobufGenerator;
         this.codeGenJob = job;
-        this.protobufGenerator = generator;
     }
 
-    public boolean setGenerateProtobuf() {
-        return generateProtobuf;
+    @OverridingMethodsMustInvokeSuper
+    void enableGeneration() {
+        applyProtobufPlugin();
+        protobufGenerator.enable(codeGenJob);
     }
 
-    public void setGenerateProtobuf(boolean generateProtobuf) {
-        this.generateProtobuf = generateProtobuf;
-        if (generateProtobuf) {
-            protobufGenerator.enable(codeGenJob);
-        } else {
-            protobufGenerator.disable(codeGenJob);
-        }
+    @OverridingMethodsMustInvokeSuper
+    void disableGeneration() {
+        protobufGenerator.disable(codeGenJob);
     }
 }

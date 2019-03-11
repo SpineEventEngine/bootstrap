@@ -27,7 +27,7 @@ public final class BootstrapPlugin extends SpinePlugin {
 
     @Override
     public void apply(Project project) {
-        Extension extension = new Extension(project);
+        Extension extension = Extension.createFor(project);
         project.getExtensions()
                .add(Extension.NAME, extension);
     }

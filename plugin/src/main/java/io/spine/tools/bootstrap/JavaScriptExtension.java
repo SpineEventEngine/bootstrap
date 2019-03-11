@@ -20,11 +20,22 @@
 
 package io.spine.tools.bootstrap;
 
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.js.gradle.ProtoJsPlugin;
+import org.gradle.api.Project;
+
 import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.js;
 
 public final class JavaScriptExtension extends SubExtension {
 
-    JavaScriptExtension(ProtobufGenerator generator) {
-        super(generator, js);
+    JavaScriptExtension(Project project, ProtobufGenerator generator) {
+        super(project, generator, js);
+    }
+
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    void enableGeneration() {
+        super.enableGeneration();
+        applyPlugin(ProtoJsPlugin.class);
     }
 }

@@ -20,14 +20,18 @@
 
 package io.spine.tools.bootstrap;
 
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
+import org.gradle.api.Project;
+
 import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.java;
 
 public final class JavaExtension extends SubExtension {
 
     private boolean generateGrpc = false;
 
-    JavaExtension(ProtobufGenerator generator) {
-        super(generator, java);
+    JavaExtension(Project project, ProtobufGenerator generator) {
+        super(project, generator, java);
     }
 
     public boolean getGenerateGrpc() {
@@ -36,5 +40,12 @@ public final class JavaExtension extends SubExtension {
 
     public void setGenerateGrpc(boolean generateGrpc) {
         this.generateGrpc = generateGrpc;
+    }
+
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    void enableGeneration() {
+        super.enableGeneration();
+        applyPlugin(ModelCompilerPlugin.class);
     }
 }

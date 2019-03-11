@@ -79,7 +79,8 @@ final class ProtobufGenerator {
 
     static class PlugIn extends StringTypeValue implements GenerationJob {
 
-        static PlugIn gRPC = new PlugIn("grpc");
+        static final PlugIn gRPC = new PlugIn("grpc");
+        static final PlugIn spineProtoc = new PlugIn("spineProtoc");
 
         private static final long serialVersionUID = 0L;
 

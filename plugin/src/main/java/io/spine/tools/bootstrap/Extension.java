@@ -20,39 +20,36 @@
 
 package io.spine.tools.bootstrap;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.protobuf.gradle.ProtobufPlugin;
 import groovy.lang.Closure;
 import io.spine.js.gradle.ProtoJsPlugin;
-import io.spine.logging.Logging;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
-import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.gradle.api.Action;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.PluginContainer;
-import org.gradle.api.plugins.PluginManager;
-import org.slf4j.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.gradle.util.ConfigureUtil.configure;
 
-public final class Extension {
+public final class Extension extends BaseExtension {
 
     static final String NAME = "spine";
 
-    private static final Logger log = Logging.get(Extension.class);
+    private final JavaExtension java;
+    private final JavaScriptExtension javaScript;
 
-    private final Project project;
-    private final ProtobufGenerator protobufGenerator;
+    private Extension(Project project, ProtobufGenerator generator) {
+        super(project);
+        this.java = new JavaExtension(project, generator);
+        this.javaScript = new JavaScriptExtension(project, generator);
+    }
 
-    private @MonotonicNonNull JavaExtension java;
-    private @MonotonicNonNull JavaScriptExtension javaScript;
+    static Extension createFor(Project project) {
+        checkNotNull(project);
 
-    Extension(Project project) {
-        this.project = project;
-        this.protobufGenerator = new ProtobufGenerator(this.project);
+        ProtobufGenerator generator = new ProtobufGenerator(project);
+        Extension extension = new Extension(project, generator);
+        extension.disableJavaGeneration();
+
+        return extension;
     }
 
     public void java(Closure configuration) {
@@ -68,52 +65,16 @@ public final class Extension {
     }
 
     public void java() {
-        applyProtobufPlugin();
         applyPlugin(ModelCompilerPlugin.class);
-
-        if (java == null) {
-            java = new JavaExtension(protobufGenerator);
-        }
-    }
-
-    public void javaScript(Closure configuration) {
-        checkNotNull(configuration);
-        javaScript();
-        configure(configuration, javaScript);
-    }
-
-    public void javaScript(Action<JavaScriptExtension> configuration) {
-        checkNotNull(configuration);
-        javaScript();
-        configuration.execute(javaScript);
+        java.enableGeneration();
     }
 
     public void javaScript() {
-        applyProtobufPlugin();
         applyPlugin(ProtoJsPlugin.class);
-
-        if (javaScript == null) {
-            javaScript = new JavaScriptExtension(protobufGenerator);
-        }
+        javaScript.enableGeneration();
     }
 
-    private void applyProtobufPlugin() {
-        applyPlugin(JavaPlugin.class);
-        applyPlugin(ProtobufPlugin.class);
-    }
-
-    private void applyPlugin(Class<? extends Plugin<? extends Project>> pluginClass) {
-        PluginContainer pluginContainer = project.getPlugins();
-        if (!pluginContainer.hasPlugin(pluginClass)) {
-            PluginManager pluginManager = project.getPluginManager();
-            pluginManager.apply(pluginClass);
-        } else {
-            log.debug("Plugin {} is already applied.", pluginClass.getCanonicalName());
-        }
-    }
-
-    @VisibleForTesting
-    Project project() {
-        return project;
+    private void disableJavaGeneration() {
+        java.disableGeneration();
     }
 }

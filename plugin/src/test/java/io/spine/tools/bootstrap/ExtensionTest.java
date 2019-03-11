@@ -60,7 +60,7 @@ class ExtensionTest {
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
-        extension = new Extension(project);
+        extension = Extension.createFor(project);
     }
 
     @Nested
