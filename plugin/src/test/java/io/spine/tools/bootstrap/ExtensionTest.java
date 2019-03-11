@@ -66,7 +66,7 @@ class ExtensionTest {
         @Test
         @DisplayName("apply Model Compiler plugin to a Java project")
         void applyModelCompiler() {
-            extension.javaProject();
+            extension.java();
 
             assertApplied(MODEL_COMPILER_ID);
             assertNotApplied(PROTO_JS_PLUGIN_ID);
@@ -75,7 +75,7 @@ class ExtensionTest {
         @Test
         @DisplayName("apply `java` plugin to a Java project")
         void applyJava() {
-            extension.javaProject();
+            extension.java();
 
             assertApplied(JAVA_PLUGIN_ID);
         }
@@ -85,7 +85,7 @@ class ExtensionTest {
         void notApplyJavaIfJavaLib() {
             project.getPlugins().apply(JAVA_LIBRARY_PLUGIN_ID);
 
-            extension.javaProject();
+            extension.java();
 
             assertNotApplied(JAVA_PLUGIN_ID);
         }
@@ -93,7 +93,7 @@ class ExtensionTest {
         @Test
         @DisplayName("apply Proto JS plugin to a JS project")
         void applyProtoJs() {
-            extension.jsProject();
+            extension.javaScript();
 
             assertApplied(PROTO_JS_PLUGIN_ID);
             assertNotApplied(MODEL_COMPILER_ID);
@@ -103,8 +103,8 @@ class ExtensionTest {
         @Test
         @DisplayName("apply both Model Compiler and Proto JS plugin to a complex project")
         void combine() {
-            extension.jsProject();
-            extension.javaProject();
+            extension.javaScript();
+            extension.java();
 
             assertApplied(JAVA_PLUGIN_ID);
             assertApplied(PROTO_JS_PLUGIN_ID);

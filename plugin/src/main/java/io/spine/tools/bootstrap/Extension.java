@@ -21,9 +21,12 @@
 package io.spine.tools.bootstrap;
 
 import com.google.common.annotations.VisibleForTesting;
+import groovy.lang.Closure;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.logging.Logging;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaLibraryPlugin;
@@ -31,6 +34,9 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.PluginManager;
 import org.slf4j.Logger;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.gradle.util.ConfigureUtil.configure;
 
 public final class Extension {
 
@@ -40,17 +46,53 @@ public final class Extension {
 
     private final Project project;
 
+    private @MonotonicNonNull JavaExtension java;
+    private @MonotonicNonNull JavaScriptExtension javaScript;
+
     Extension(Project project) {
         this.project = project;
     }
 
-    public void javaProject() {
-        applyFirstIfNonePresent(JavaPlugin.class, JavaLibraryPlugin.class);
-        applyPlugin(ModelCompilerPlugin.class);
+    public void java(Closure<JavaExtension> configuration) {
+        checkNotNull(configuration);
+        java();
+        configure(configuration, java);
     }
 
-    public void jsProject() {
+    public void java(Action<JavaExtension> configuration) {
+        checkNotNull(configuration);
+        java();
+        configuration.execute(java);
+    }
+
+    public void java() {
+        applyFirstIfNonePresent(JavaPlugin.class, JavaLibraryPlugin.class);
+        applyPlugin(ModelCompilerPlugin.class);
+
+        if (java == null) {
+            java = new JavaExtension(project);
+        }
+    }
+
+    public void javaScript(Closure<JavaScriptExtension> configuration) {
+        checkNotNull(configuration);
+        java();
+        configure(configuration, javaScript);
+    }
+
+    public void javaScript(Action<JavaScriptExtension> configuration) {
+        checkNotNull(configuration);
+        java();
+        configuration.execute(javaScript);
+    }
+
+
+    public void javaScript() {
         applyPlugin(ProtoJsPlugin.class);
+
+        if (javaScript == null) {
+            javaScript = new JavaScriptExtension(project);
+        }
     }
 
     @SafeVarargs
