@@ -53,7 +53,7 @@ public final class Extension {
         this.project = project;
     }
 
-    public void java(Closure<JavaExtension> configuration) {
+    public void java(Closure configuration) {
         checkNotNull(configuration);
         java();
         configure(configuration, java);
@@ -74,7 +74,7 @@ public final class Extension {
         }
     }
 
-    public void javaScript(Closure<JavaScriptExtension> configuration) {
+    public void javaScript(Closure configuration) {
         checkNotNull(configuration);
         java();
         configure(configuration, javaScript);
