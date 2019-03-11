@@ -26,7 +26,17 @@ public final class JavaExtension {
 
     private final Project project;
 
+    private boolean grpc = false;
+
     JavaExtension(Project project) {
         this.project = project;
+    }
+
+    public boolean getGrpc() {
+        return grpc;
+    }
+
+    public void setGrpc(boolean grpc) {
+        this.grpc = grpc;
     }
 }
