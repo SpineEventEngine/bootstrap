@@ -19,3 +19,5 @@
  */
 
 rootProject.name = 'bootstrap'
+
+include ':plugin'
