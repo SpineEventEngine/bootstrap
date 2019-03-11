@@ -21,8 +21,6 @@
 package io.spine.tools.bootstrap;
 
 import groovy.lang.Closure;
-import io.spine.js.gradle.ProtoJsPlugin;
-import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 
@@ -65,12 +63,10 @@ public final class Extension extends BaseExtension {
     }
 
     public void java() {
-        applyPlugin(ModelCompilerPlugin.class);
         java.enableGeneration();
     }
 
     public void javaScript() {
-        applyPlugin(ProtoJsPlugin.class);
         javaScript.enableGeneration();
     }
 
