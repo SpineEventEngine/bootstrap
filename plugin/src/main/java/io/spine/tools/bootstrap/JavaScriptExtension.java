@@ -20,13 +20,8 @@
 
 package io.spine.tools.bootstrap;
 
-import org.gradle.api.Project;
-
 public final class JavaScriptExtension {
 
-    private final Project project;
-
-    JavaScriptExtension(Project project) {
-        this.project = project;
+    JavaScriptExtension() {
     }
 }

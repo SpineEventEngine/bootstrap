@@ -20,16 +20,11 @@
 
 package io.spine.tools.bootstrap;
 
-import org.gradle.api.Project;
-
 public final class JavaExtension {
-
-    private final Project project;
 
     private boolean grpc = false;
 
-    JavaExtension(Project project) {
-        this.project = project;
+    JavaExtension() {
     }
 
     public boolean getGrpc() {

@@ -31,7 +31,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaLibraryPlugin;
-import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.PluginManager;
 import org.slf4j.Logger;
@@ -71,7 +70,7 @@ public final class Extension {
         applyPlugin(ModelCompilerPlugin.class);
 
         if (java == null) {
-            java = new JavaExtension(project);
+            java = new JavaExtension();
         }
     }
 
@@ -93,7 +92,7 @@ public final class Extension {
         applyPlugin(ProtoJsPlugin.class);
 
         if (javaScript == null) {
-            javaScript = new JavaScriptExtension(project);
+            javaScript = new JavaScriptExtension();
         }
     }
 
