@@ -36,7 +36,6 @@ abstract class SubExtension extends BaseExtension {
 
     @OverridingMethodsMustInvokeSuper
     void enableGeneration() {
-        applyProtobufPlugin();
         protobufGenerator.enable(codeGenJob);
     }
 

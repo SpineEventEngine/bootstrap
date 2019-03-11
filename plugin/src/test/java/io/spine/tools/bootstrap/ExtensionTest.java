@@ -61,6 +61,7 @@ class ExtensionTest {
                 .withProjectDir(projectDir.toFile())
                 .build();
         extension = Extension.createFor(project);
+        extension.applyProtobufPlugin();
     }
 
     @Nested

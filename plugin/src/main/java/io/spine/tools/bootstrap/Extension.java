@@ -40,37 +40,71 @@ public final class Extension extends BaseExtension {
         this.javaScript = new JavaScriptExtension(project, generator);
     }
 
+    /**
+     * Creates a new instance of {@code Extension} for the given project.
+     */
     static Extension createFor(Project project) {
         checkNotNull(project);
 
         ProtobufGenerator generator = new ProtobufGenerator(project);
         Extension extension = new Extension(project, generator);
-        extension.disableJavaGeneration();
-
         return extension;
     }
 
+    /**
+     * Marks this project as a Java project and configures the Java code generation.
+     *
+     * @param configuration
+     *         Groovy style configuration
+     * @see #java()
+     */
     public void java(Closure configuration) {
         checkNotNull(configuration);
         java();
         configure(configuration, java);
     }
 
+    /**
+     * Marks this project as a Java project and configures the Java code generation.
+     *
+     * @param configuration
+     *         Java/Kotlin style configuration
+     * @see #java()
+     */
     public void java(Action<JavaExtension> configuration) {
         checkNotNull(configuration);
         java();
         configuration.execute(java);
     }
 
+    /**
+     * Marks this project as a Java project and configures the Java code generation.
+     *
+     * <p>Enables the Java code generation from Protobuf. If the {@code spine-model-compiler} plugin
+     * is not applied to this project, applies it immediately.
+     */
     public void java() {
         java.enableGeneration();
     }
 
+    /**
+     * Marks this project as a JavaScript project and configures the JavaScript code generation.
+     *
+     * <p>Enables the JS code generation from Protobuf. If the {@code spine-proto-js-plugin} is
+     * not applied to this project, applies it immediately.
+     */
     public void javaScript() {
         javaScript.enableGeneration();
     }
 
-    private void disableJavaGeneration() {
+    /**
+     * Disables the Java code generation.
+     *
+     * <p>By default, Protobuf Gradle plugin enables the Java codegen. However, it is not required
+     * in some cases. Thus, disable the Java codegen before the configuration start and re-enable it
+     * if required.
+     */
+    void disableJavaGeneration() {
         java.disableGeneration();
     }
 }

@@ -62,5 +62,7 @@ public final class BootstrapPlugin extends SpinePlugin {
         Extension extension = Extension.createFor(project);
         project.getExtensions()
                .add(Extension.NAME, extension);
+        extension.applyProtobufPlugin();
+        extension.disableJavaGeneration();
     }
 }
