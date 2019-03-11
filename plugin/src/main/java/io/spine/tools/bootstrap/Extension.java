@@ -21,6 +21,7 @@
 package io.spine.tools.bootstrap;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.protobuf.gradle.ProtobufPlugin;
 import groovy.lang.Closure;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.logging.Logging;
@@ -29,8 +30,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.BasePlugin;
-import org.gradle.api.plugins.JavaLibraryPlugin;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.PluginManager;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public final class Extension {
     }
 
     public void java() {
-        applyPlugin(JavaLibraryPlugin.class);
+        applyProtobufPlugin();
         applyPlugin(ModelCompilerPlugin.class);
 
         if (java == null) {
@@ -86,14 +86,18 @@ public final class Extension {
         configuration.execute(javaScript);
     }
 
-
     public void javaScript() {
-        applyPlugin(BasePlugin.class);
+        applyProtobufPlugin();
         applyPlugin(ProtoJsPlugin.class);
 
         if (javaScript == null) {
             javaScript = new JavaScriptExtension();
         }
+    }
+
+    private void applyProtobufPlugin() {
+        applyPlugin(JavaPlugin.class);
+        applyPlugin(ProtobufPlugin.class);
     }
 
     private void applyPlugin(Class<? extends Plugin<? extends Project>> pluginClass) {
