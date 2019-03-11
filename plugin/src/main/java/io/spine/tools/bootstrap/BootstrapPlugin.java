@@ -50,6 +50,7 @@ import org.gradle.api.Project;
  * </pre>
  *
  * <p>The example above configures the project to generate both Java and JS code from Protobuf.
+ * Also, gRPC stubs and implementation bases are generated for the Protobuf services in Java.
  * Also, {@code java}, {@code com.google.protobuf}, {@code io.spine.tools.spine-model.compiler},
  * and {@code io.spine.tools.spine-proto-js-plugin} Gradle plugins are added to the project
  * automatically.
