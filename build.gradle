@@ -18,7 +18,127 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+buildscript { final scriptHandler ->
+
+    apply from: 'version.gradle'
+    apply from: "$rootDir/config/gradle/dependencies.gradle"
+
+    defaultRepositories(scriptHandler)
+    dependencies {
+        classpath deps.build.gradlePlugins.errorProne
+        classpath "io.spine.tools:spine-model-compiler:$spineVersion"
+    }
+    forceConfiguration(scriptHandler)
+}
+
 subprojects {
+    project.ext {
+        sourcesRootDir = "$projectDir/src"
+        generatedRootDir = "$projectDir/generated"
+
+        generatedJavaDir = "$generatedRootDir/main/java"
+        generatedTestJavaDir = "$generatedRootDir/test/java"
+
+        generatedGrpcDir = "$generatedRootDir/main/grpc"
+        generatedTestGrpcDir = "$generatedRootDir/test/grpc"
+
+        generatedSpineDir = "$generatedRootDir/main/spine"
+        generatedTestSpineDir = "$generatedRootDir/test/spine"
+
+        testArtifactsScript = "${rootDir}/scripts/test-artifacts.gradle"
+        filterInternalJavadocsScript = "${rootDir}/config/gradle/filter-internal-javadoc.gradle"
+        updateDocsPlugin = "$rootDir/scripts/update-gh-pages.gradle"
+    }
 
     apply plugin: 'java'
+    apply plugin: 'com.google.protobuf'
+    apply plugin: 'io.spine.tools.spine-model-compiler'
+
+    apply plugin: 'maven'
+    apply plugin: 'jacoco'
+    apply plugin: 'idea'
+    apply plugin: 'project-report'
+
+    apply plugin: 'net.ltgt.errorprone'
+    apply plugin: 'pmd'
+
+    group = 'io.spine.tools'
+    version = spineVersion
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    defaultRepositories(project)
+
+    dependencies {
+        errorprone deps.build.errorProneCore
+        errorproneJavac deps.build.errorProneJavac
+
+        implementation deps.build.guava
+
+        implementation deps.build.checkerAnnotations
+        implementation deps.build.errorProneAnnotations
+
+        //Use jdk14 bindings for test purposes only.
+        testImplementation deps.test.slf4j
+        testImplementation deps.test.guavaTestlib
+        testImplementation deps.test.junit5Api
+        testImplementation deps.test.junit5Runner
+        testImplementation deps.test.truth
+    }
+
+    forceConfiguration(project)
+
+    sourceSets {
+        main {
+            proto.srcDirs "$sourcesRootDir/main/proto"
+            java.srcDirs generatedJavaDir, "$sourcesRootDir/main/java", generatedSpineDir
+            resources.srcDirs "$generatedRootDir/main/resources"
+        }
+        test {
+            proto.srcDirs "$sourcesRootDir/test/proto"
+            java.srcDirs generatedTestJavaDir, "$sourcesRootDir/test/java", generatedTestSpineDir
+            resources.srcDirs "$generatedRootDir/test/resources"
+        }
+    }
+
+    test {
+        useJUnitPlatform {
+            includeEngines 'junit-jupiter'
+        }
+    }
+
+    apply from: deps.scripts.testOutput
+    apply from: deps.scripts.javadocOptions
+
+    task sourceJar(type: Jar) {
+        from sourceSets.main.allJava
+        archiveClassifier.set("sources")
+    }
+
+    task testOutputJar(type: Jar) {
+        from sourceSets.test.output
+        archiveClassifier.set("test")
+    }
+
+    task javadocJar(type: Jar, dependsOn: 'javadoc') {
+        from ("$projectDir/build/docs/javadoc")
+        archiveClassifier.set("javadoc")
+    }
+
+    idea {
+        module {
+            generatedSourceDirs += file(generatedJavaDir)
+            generatedSourceDirs += file(generatedGrpcDir)
+            generatedSourceDirs += file(generatedSpineDir)
+            generatedSourceDirs += file(generatedTestJavaDir)
+            generatedSourceDirs += file(generatedTestGrpcDir)
+            generatedSourceDirs += file(generatedTestSpineDir)
+
+            testSourceDirs += file(generatedTestJavaDir)
+
+            downloadJavadoc = true
+            downloadSources = true
+        }
+    }
 }
