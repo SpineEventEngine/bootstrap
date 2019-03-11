@@ -20,12 +20,15 @@
 
 package io.spine.tools.bootstrap;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.gradle.GenerateProtoTask;
 import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
 import com.google.protobuf.gradle.ProtobufConvention;
+import groovy.lang.Closure;
 import io.spine.value.StringTypeValue;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.PluginManager;
 
 import java.util.function.Consumer;
 
@@ -33,6 +36,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
 
 final class ProtobufGenerator {
+
+    @VisibleForTesting
+    static final String PROTOBUF_GRADLE_PLUGIN = "com.google.protobuf";
 
     private final Project project;
 
@@ -42,34 +48,44 @@ final class ProtobufGenerator {
 
     void enable(BuiltIn builtIn) {
         String name = builtIn.name();
-        configureTasks(task -> task.getBuiltins().maybeCreate(name));
+        withProtobufPlugin(
+                () -> configureTasks(task -> task.getBuiltins().maybeCreate(name))
+        );
     }
 
     void disable(BuiltIn builtIn) {
-        String name = builtIn.name();
-        configureTasks(task -> task.getBuiltins()
-                                   .removeIf(
-                                           taskBuiltin -> name.equals(taskBuiltin.getName())
-                                   )
+        withProtobufPlugin(
+                () -> configureTasks(task -> deleteBuiltIn(task, builtIn))
         );
+    }
+
+    private static void deleteBuiltIn(GenerateProtoTask task, BuiltIn builtIn) {
+        String name = builtIn.name();
+        task.getBuiltins()
+            .removeIf(taskBuiltin -> name.equals(taskBuiltin.getName()));
     }
 
     private void configureTasks(Consumer<GenerateProtoTask> config) {
-        configure(protobuf -> protobuf.generateProtoTasks(
-                closure(
-                        (GenerateProtoTaskCollection tasks) ->
-                                tasks.all()
-                                     .forEach(
-                                             config
-                                     )
-                ))
-        );
+        Closure forEachTask = closure((GenerateProtoTaskCollection tasks) ->
+                                              tasks.all()
+                                                   .forEach(config));
+        protobufConfigurator().generateProtoTasks(forEachTask);
     }
 
-    private void configure(Consumer<ProtobufConfigurator> config) {
-        project.getConvention()
-               .getPlugin(ProtobufConvention.class)
-               .protobuf(closure(config::accept));
+    private ProtobufConfigurator protobufConfigurator() {
+        ProtobufConfigurator protobuf = project.getConvention()
+                                               .getPlugin(ProtobufConvention.class)
+                                               .getProtobuf();
+        return protobuf;
+    }
+
+    private void withProtobufPlugin(Runnable action) {
+        PluginManager pluginManager = project.getPluginManager();
+        if (pluginManager.hasPlugin(PROTOBUF_GRADLE_PLUGIN)) {
+            action.run();
+        } else {
+            pluginManager.withPlugin(PROTOBUF_GRADLE_PLUGIN, plugin -> action.run());
+        }
     }
 
     interface GenerationJob {
@@ -80,7 +96,6 @@ final class ProtobufGenerator {
     static class PlugIn extends StringTypeValue implements GenerationJob {
 
         static final PlugIn gRPC = new PlugIn("grpc");
-        static final PlugIn spineProtoc = new PlugIn("spineProtoc");
 
         private static final long serialVersionUID = 0L;
 

@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
+import static io.spine.tools.bootstrap.ProtobufGenerator.PROTOBUF_GRADLE_PLUGIN;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,7 +47,6 @@ class ExtensionTest {
 
     private static final String MODEL_COMPILER_ID = "io.spine.tools.spine-model-compiler";
     private static final String PROTO_JS_PLUGIN_ID = "io.spine.tools.proto-js-plugin";
-    private static final String BASE_PLUGIN_ID = "base";
     private static final String JAVA_PLUGIN_ID = "java";
     private static final String JAVA_LIBRARY_PLUGIN_ID = "java-library";
 
@@ -85,6 +85,14 @@ class ExtensionTest {
         }
 
         @Test
+        @DisplayName("apply `com.google.protobuf` plugin to a Java project")
+        void applyProtoForJava() {
+            extension.java();
+
+            assertApplied(PROTOBUF_GRADLE_PLUGIN);
+        }
+
+        @Test
         @DisplayName("not apply `java` if already present")
         void notApplyJavaIfJavaLib() {
             project.getPlugins().apply(JAVA_LIBRARY_PLUGIN_ID);
@@ -105,12 +113,11 @@ class ExtensionTest {
         }
 
         @Test
-        @DisplayName("apply `base` plugin to a JS project")
-        void applyBaseForJs() {
+        @DisplayName("apply `com.google.protobuf` plugin to a JS project")
+        void applyProtoForJs() {
             extension.javaScript();
 
-            assertApplied(BASE_PLUGIN_ID);
-            assertNotApplied(JAVA_PLUGIN_ID);
+            assertApplied(PROTOBUF_GRADLE_PLUGIN);
         }
 
         @Test
