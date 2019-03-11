@@ -46,6 +46,7 @@ class ExtensionTest {
 
     private static final String MODEL_COMPILER_ID = "io.spine.tools.spine-model-compiler";
     private static final String PROTO_JS_PLUGIN_ID = "io.spine.tools.proto-js-plugin";
+    private static final String BASE_PLUGIN_ID = "base";
     private static final String JAVA_PLUGIN_ID = "java";
     private static final String JAVA_LIBRARY_PLUGIN_ID = "java-library";
 
@@ -100,6 +101,14 @@ class ExtensionTest {
 
             assertApplied(PROTO_JS_PLUGIN_ID);
             assertNotApplied(MODEL_COMPILER_ID);
+        }
+
+        @Test
+        @DisplayName("apply `base` plugin to a JS project")
+        void applyBaseForJs() {
+            extension.javaScript();
+
+            assertApplied(BASE_PLUGIN_ID);
             assertNotApplied(JAVA_PLUGIN_ID);
         }
 

@@ -29,6 +29,7 @@ import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
@@ -76,18 +77,19 @@ public final class Extension {
 
     public void javaScript(Closure configuration) {
         checkNotNull(configuration);
-        java();
+        javaScript();
         configure(configuration, javaScript);
     }
 
     public void javaScript(Action<JavaScriptExtension> configuration) {
         checkNotNull(configuration);
-        java();
+        javaScript();
         configuration.execute(javaScript);
     }
 
 
     public void javaScript() {
+        applyPlugin(BasePlugin.class);
         applyPlugin(ProtoJsPlugin.class);
 
         if (javaScript == null) {
