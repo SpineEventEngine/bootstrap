@@ -18,9 +18,15 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-dependencies {
-    implementation gradleApi()
-    implementation "io.spine.tools:spine-plugin-base:$spineVersion"
+package io.spine.tools.bootstrap;
 
-    testImplementation gradleTestKit()
+import io.spine.tools.gradle.SpinePlugin;
+import org.gradle.api.Project;
+
+public final class BootstrapPlugin extends SpinePlugin {
+
+    @Override
+    public void apply(Project project) {
+        // Temp no-op.
+    }
 }

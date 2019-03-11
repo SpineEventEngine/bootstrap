@@ -79,11 +79,12 @@ subprojects {
     dependencies {
         errorprone deps.build.errorProneCore
         errorproneJavac deps.build.errorProneJavac
-
-        implementation deps.build.guava
-
         implementation deps.build.checkerAnnotations
         implementation deps.build.errorProneAnnotations
+
+        implementation deps.build.guava
+        
+        implementation "io.spine:spine-base:$spineVersion"
 
         //Use jdk14 bindings for test purposes only.
         testImplementation deps.test.slf4j

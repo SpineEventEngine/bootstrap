@@ -18,9 +18,16 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-dependencies {
-    implementation gradleApi()
-    implementation "io.spine.tools:spine-plugin-base:$spineVersion"
+/**
+ * This package and its subpackages contain the Spine bootstrap Gradle plugin.
+ *
+ * <p>See {@link io.spine.tools.bootstrap.BootstrapPlugin} for the plugin entrance point.
+ */
 
-    testImplementation gradleTestKit()
-}
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.tools.bootstrap;
+
+import com.google.errorprone.annotations.CheckReturnValue;
+
+import javax.annotation.ParametersAreNonnullByDefault;
