@@ -45,12 +45,14 @@ public final class Extension {
     private static final Logger log = Logging.get(Extension.class);
 
     private final Project project;
+    private final ProtobufGenerator protobufGenerator;
 
     private @MonotonicNonNull JavaExtension java;
     private @MonotonicNonNull JavaScriptExtension javaScript;
 
     Extension(Project project) {
         this.project = project;
+        this.protobufGenerator = new ProtobufGenerator(this.project);
     }
 
     public void java(Closure configuration) {
@@ -70,7 +72,7 @@ public final class Extension {
         applyPlugin(ModelCompilerPlugin.class);
 
         if (java == null) {
-            java = new JavaExtension();
+            java = new JavaExtension(protobufGenerator);
         }
     }
 
@@ -91,7 +93,7 @@ public final class Extension {
         applyPlugin(ProtoJsPlugin.class);
 
         if (javaScript == null) {
-            javaScript = new JavaScriptExtension();
+            javaScript = new JavaScriptExtension(protobufGenerator);
         }
     }
 

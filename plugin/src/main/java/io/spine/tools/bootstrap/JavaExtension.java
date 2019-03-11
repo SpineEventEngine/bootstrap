@@ -20,18 +20,21 @@
 
 package io.spine.tools.bootstrap;
 
-public final class JavaExtension {
+import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.java;
 
-    private boolean grpc = false;
+public final class JavaExtension extends SubExtension {
 
-    JavaExtension() {
+    private boolean generateGrpc = false;
+
+    JavaExtension(ProtobufGenerator generator) {
+        super(generator, java);
     }
 
-    public boolean getGrpc() {
-        return grpc;
+    public boolean getGenerateGrpc() {
+        return generateGrpc;
     }
 
-    public void setGrpc(boolean grpc) {
-        this.grpc = grpc;
+    public void setGenerateGrpc(boolean generateGrpc) {
+        this.generateGrpc = generateGrpc;
     }
 }

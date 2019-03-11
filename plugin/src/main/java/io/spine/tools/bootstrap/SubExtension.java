@@ -20,11 +20,28 @@
 
 package io.spine.tools.bootstrap;
 
-import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.js;
+public abstract class SubExtension {
 
-public final class JavaScriptExtension extends SubExtension {
+    private final ProtobufGenerator.BuiltIn codeGenJob;
+    private final ProtobufGenerator protobufGenerator;
 
-    JavaScriptExtension(ProtobufGenerator generator) {
-        super(generator, js);
+    private boolean generateProtobuf;
+
+    SubExtension(ProtobufGenerator generator, ProtobufGenerator.BuiltIn job) {
+        this.codeGenJob = job;
+        this.protobufGenerator = generator;
+    }
+
+    public boolean setGenerateProtobuf() {
+        return generateProtobuf;
+    }
+
+    public void setGenerateProtobuf(boolean generateProtobuf) {
+        this.generateProtobuf = generateProtobuf;
+        if (generateProtobuf) {
+            protobufGenerator.enable(codeGenJob);
+        } else {
+            protobufGenerator.disable(codeGenJob);
+        }
     }
 }
