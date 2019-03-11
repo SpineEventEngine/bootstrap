@@ -31,7 +31,7 @@ dependencies {
 
 gradlePlugin {
     plugins {
-        simplePlugin {
+        spineBootstrapPlugin {
             id = 'io.spine.bootstrap'
             implementationClass = 'io.spine.tools.bootstrap.BootstrapPlugin'
         }
