@@ -92,6 +92,7 @@ subprojects {
         testImplementation deps.test.junit5Api
         testImplementation deps.test.junit5Runner
         testImplementation deps.test.truth
+        testImplementation deps.test.junitPioneer
     }
 
     forceConfiguration(project)

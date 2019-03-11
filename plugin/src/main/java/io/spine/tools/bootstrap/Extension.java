@@ -20,6 +20,7 @@
 
 package io.spine.tools.bootstrap;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import org.gradle.api.Plugin;
@@ -57,5 +58,10 @@ public final class Extension {
             PluginManager pluginManager = project.getPluginManager();
             pluginManager.apply(pluginClass);
         }
+    }
+
+    @VisibleForTesting
+    Project project() {
+        return project;
     }
 }
