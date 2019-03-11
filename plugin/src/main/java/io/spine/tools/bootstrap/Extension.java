@@ -22,21 +22,21 @@ package io.spine.tools.bootstrap;
 
 import com.google.common.annotations.VisibleForTesting;
 import io.spine.js.gradle.ProtoJsPlugin;
+import io.spine.logging.Logging;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaLibraryPlugin;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.PluginManager;
+import org.slf4j.Logger;
 
 public final class Extension {
 
     static final String NAME = "spine";
 
-    private static final Class<? extends Plugin<Project>> SPINE_JAVA_PLUGIN =
-            ModelCompilerPlugin.class;
-
-    private static final Class<? extends Plugin<Project>> SPINE_JS_PLUGIN =
-            ProtoJsPlugin.class;
+    private static final Logger log = Logging.get(Extension.class);
 
     private final Project project;
 
@@ -45,18 +45,37 @@ public final class Extension {
     }
 
     public void javaProject() {
-        applyPlugin(SPINE_JAVA_PLUGIN);
+        applyFirstIfNonePresent(JavaPlugin.class, JavaLibraryPlugin.class);
+        applyPlugin(ModelCompilerPlugin.class);
     }
 
     public void jsProject() {
-        applyPlugin(SPINE_JS_PLUGIN);
+        applyPlugin(ProtoJsPlugin.class);
     }
 
-    private void applyPlugin(Class<? extends Plugin<Project>> pluginClass) {
+    @SafeVarargs
+    private final void
+    applyFirstIfNonePresent(Class<? extends Plugin<? extends Project>> pluginClass,
+                            Class<? extends Plugin<? extends Project>>... alternatives) {
+        PluginContainer pluginContainer = project.getPlugins();
+        for (Class<? extends Plugin<? extends Project>> cls : alternatives) {
+            if (pluginContainer.hasPlugin(cls)) {
+                log.debug("Skipping plugin {}. {} is already applied.",
+                          pluginClass.getCanonicalName(),
+                          cls.getCanonicalName());
+                return;
+            }
+        }
+        applyPlugin(pluginClass);
+    }
+
+    private void applyPlugin(Class<? extends Plugin<? extends Project>> pluginClass) {
         PluginContainer pluginContainer = project.getPlugins();
         if (!pluginContainer.hasPlugin(pluginClass)) {
             PluginManager pluginManager = project.getPluginManager();
             pluginManager.apply(pluginClass);
+        } else {
+            log.debug("Plugin {} is already applied.", pluginClass.getCanonicalName());
         }
     }
 
