@@ -27,6 +27,12 @@ import org.gradle.api.Project;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.gradle.util.ConfigureUtil.configure;
 
+/**
+ * The {@code spine} Gradle DSL extension.
+ *
+ * <p>Configures the project as a {@linkplain #java() Java} or/and a {@linkplain #javaScript()
+ * JavaScript} project based on Spine.
+ */
 public final class Extension extends BaseExtension {
 
     static final String NAME = "spine";
