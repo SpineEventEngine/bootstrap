@@ -113,8 +113,19 @@ subprojects {
     test {
         useJUnitPlatform {
             includeEngines 'junit-jupiter'
+
+            excludeTags 'functional'
         }
     }
+
+    task functionalTest(type: Test) {
+        useJUnitPlatform {
+            includeTags 'functional' // See io.spine.tools.bootstrap.func.Functional
+        }
+        mustRunAfter test
+    }
+
+    check.dependsOn functionalTest
 
     apply from: deps.scripts.testOutput
     apply from: deps.scripts.javadocOptions
