@@ -25,16 +25,35 @@ import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 
+/**
+ * A target of Gradle plugin application.
+ *
+ * <p>Typically, represented by a Gradle {@link org.gradle.api.Project}.
+ */
 public interface PluginTarget {
 
+    /**
+     * Applies the given plugin.
+     */
     void apply(GradlePlugin plugin);
 
+    /**
+     * Checks if the given plugin is already applied.
+     */
     boolean isApplied(GradlePlugin plugin);
 
+    /**
+     * Checks if the given plugin is not applied yet.
+     */
     default boolean isNotApplied(GradlePlugin plugin) {
         return !isApplied(plugin);
     }
 
+    /**
+     * Applies the {@link ProtobufPlugin} and the {@link JavaPlugin}.
+     *
+     * <p>The Protobuf plugin requires the Java plugin. Thus, the Java plugin is applied first.
+     */
     default void applyProtobufPlugin() {
         GradlePlugin javaPlugin = GradlePlugin.implementedIn(JavaPlugin.class);
         apply(javaPlugin);
@@ -42,11 +61,17 @@ public interface PluginTarget {
         apply(protoPlugin);
     }
 
+    /**
+     * Applies the {@link ModelCompilerPlugin}.
+     */
     default void applyModelCompiler() {
         GradlePlugin plugin = GradlePlugin.implementedIn(ModelCompilerPlugin.class);
         apply(plugin);
     }
 
+    /**
+     * Applies the {@link ProtoJsPlugin}.
+     */
     default void applyProtoJsPlugin() {
         GradlePlugin plugin = GradlePlugin.implementedIn(ProtoJsPlugin.class);
         apply(plugin);

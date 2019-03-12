@@ -21,22 +21,34 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.logging.Logging;
 
-abstract class SubExtension {
+/**
+ * A part of the {@link Extension spine} extension which configures certain code generation tasks.
+ *
+ * <p>One extension is responsible for one programming language to generate code in.
+ */
+abstract class CodeGenExtension implements Logging {
 
     private final ProtobufGenerator protobufGenerator;
-    private final ProtobufGenerator.BuiltIn codeGenJob;
+    private final ProtobufGenerator.ProtocBuiltIn codeGenJob;
 
-    SubExtension(ProtobufGenerator protobufGenerator, ProtobufGenerator.BuiltIn job) {
+    CodeGenExtension(ProtobufGenerator protobufGenerator, ProtobufGenerator.ProtocBuiltIn job) {
         this.protobufGenerator = protobufGenerator;
         this.codeGenJob = job;
     }
 
+    /**
+     * Enables code generation in the associated language.
+     */
     @OverridingMethodsMustInvokeSuper
     void enableGeneration() {
         protobufGenerator.enable(codeGenJob);
     }
 
+    /**
+     * Disables code generation in the associated language.
+     */
     @OverridingMethodsMustInvokeSuper
     void disableGeneration() {
         protobufGenerator.disable(codeGenJob);

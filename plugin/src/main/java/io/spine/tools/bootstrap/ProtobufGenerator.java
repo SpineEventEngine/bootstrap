@@ -26,7 +26,6 @@ import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
 import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
-import io.spine.value.StringTypeValue;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.PluginManager;
 
@@ -35,8 +34,16 @@ import java.util.function.Consumer;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
 
+/**
+ * A facade for Protobuf plugin configuration.
+ *
+ * <p>Configures the {@code protoc} built-ins and plugins to be used for code generation.
+ */
 final class ProtobufGenerator {
 
+    /**
+     * Identifier of the {@link com.google.protobuf.gradle.ProtobufPlugin}.
+     */
     @VisibleForTesting
     static final String PROTOBUF_GRADLE_PLUGIN = "com.google.protobuf";
 
@@ -46,20 +53,26 @@ final class ProtobufGenerator {
         this.project = checkNotNull(project);
     }
 
-    void enable(BuiltIn builtIn) {
+    /**
+     * Enables code generation with the given {@code protoc} built-in.
+     */
+    void enable(ProtocBuiltIn builtIn) {
         String name = builtIn.name();
         withProtobufPlugin(
                 () -> configureTasks(task -> task.getBuiltins().maybeCreate(name))
         );
     }
 
-    void disable(BuiltIn builtIn) {
+    /**
+     * Disables code generation with the given {@code protoc} built-in.
+     */
+    void disable(ProtocBuiltIn builtIn) {
         withProtobufPlugin(
                 () -> configureTasks(task -> deleteBuiltIn(task, builtIn))
         );
     }
 
-    private static void deleteBuiltIn(GenerateProtoTask task, BuiltIn builtIn) {
+    private static void deleteBuiltIn(GenerateProtoTask task, ProtocBuiltIn builtIn) {
         String name = builtIn.name();
         task.getBuiltins()
             .removeIf(taskBuiltin -> name.equals(taskBuiltin.getName()));
@@ -88,29 +101,12 @@ final class ProtobufGenerator {
         }
     }
 
-    interface GenerationJob {
-
-        String name();
-    }
-
-    static class PlugIn extends StringTypeValue implements GenerationJob {
-
-        static final PlugIn gRPC = new PlugIn("grpc");
-
-        private static final long serialVersionUID = 0L;
-
-        PlugIn(String value) {
-            super(value);
-
-        }
-
-        @Override
-        public String name() {
-            return value();
-        }
-    }
-
-    enum BuiltIn implements GenerationJob {
+    /**
+     * Protobuf compiler built-in which can be configured with the Spine plugin.
+     *
+     * <p>The names of the enum instances should be used as the names of the built-ins.
+     */
+    enum ProtocBuiltIn {
 
         java,
         js

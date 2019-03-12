@@ -23,25 +23,40 @@ package io.spine.tools.bootstrap;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.java;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.java;
 
-public final class JavaExtension extends SubExtension {
+/**
+ * An extension which configures Java code generation.
+ */
+public final class JavaExtension extends CodeGenExtension {
 
     private final PluginTarget pluginTarget;
 
-    private boolean generateGrpc = false;
+    private boolean grpc = false;
 
     JavaExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
         super(generator, java);
         this.pluginTarget = checkNotNull(pluginTarget);
     }
 
-    public boolean getGenerateGrpc() {
-        return generateGrpc;
+    /**
+     * Indicates whether the gRPC stub generation is enabled or not.
+     */
+    public boolean getGrpc() {
+        warnUnimplemented();
+        return grpc;
     }
 
-    public void setGenerateGrpc(boolean generateGrpc) {
-        this.generateGrpc = generateGrpc;
+    /**
+     * Enables or disables the gRPC stub generation.
+     */
+    public void setGrpc(boolean generateGrpc) {
+        warnUnimplemented();
+        this.grpc = generateGrpc;
+    }
+
+    private void warnUnimplemented() {
+        _warn("gRPC configuration is not yet implemented via `spine` DSL.");
     }
 
     @OverridingMethodsMustInvokeSuper

@@ -25,6 +25,12 @@ import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * An identifier of a Gradle plugin.
+ *
+ * <p>A plugin is represented by the Java class which implements it. The class must implement
+ * the {@link Plugin org.gradle.api.Plugin} interface.
+ */
 final class GradlePlugin {
 
     private final Class<? extends Plugin<? extends Project>> implementationClass;
@@ -33,20 +39,33 @@ final class GradlePlugin {
         this.implementationClass = checkNotNull(pluginClass);
     }
 
+    /**
+     * Creates a new instance with the given implementation class.
+     *
+     * @param pluginClass
+     *         the plugin implementation class
+     * @return new instance
+     */
     static GradlePlugin implementedIn(Class<? extends Plugin<? extends Project>> pluginClass) {
         return new GradlePlugin(pluginClass);
     }
 
+    /**
+     * Obtains the implementation class of this plugin.
+     */
     Class<? extends Plugin<? extends Project>> implementationClass() {
         return implementationClass;
     }
 
+    /**
+     * Obtains the fully qualified name of the implementation class.
+     */
     String className() {
         return implementationClass().getCanonicalName();
     }
 
     @Override
     public String toString() {
-        return "Gradle plugin " + implementationClass.getCanonicalName();
+        return "Gradle plugin " + className();
     }
 }

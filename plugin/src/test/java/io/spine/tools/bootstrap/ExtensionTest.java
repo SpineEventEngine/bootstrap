@@ -158,12 +158,12 @@ class ExtensionTest {
             void action() {
                 AtomicBoolean executedAction = new AtomicBoolean(false);
                 extension.java(javaExtension -> {
-                    boolean defaultValue = javaExtension.getGenerateGrpc();
+                    boolean defaultValue = javaExtension.getGrpc();
                     assertThat(defaultValue).isFalse();
 
-                    javaExtension.setGenerateGrpc(true);
+                    javaExtension.setGrpc(true);
 
-                    boolean newValue = javaExtension.getGenerateGrpc();
+                    boolean newValue = javaExtension.getGrpc();
                     assertThat(newValue).isTrue();
 
                     executedAction.set(true);
@@ -176,12 +176,12 @@ class ExtensionTest {
             void closure() {
                 AtomicBoolean executedClosure = new AtomicBoolean(false);
                 extension.java(ConsumerClosure.<JavaExtension>closure(javaExtension -> {
-                    boolean defaultValue = javaExtension.getGenerateGrpc();
+                    boolean defaultValue = javaExtension.getGrpc();
                     assertThat(defaultValue).isFalse();
 
-                    javaExtension.setGenerateGrpc(true);
+                    javaExtension.setGrpc(true);
 
-                    boolean newValue = javaExtension.getGenerateGrpc();
+                    boolean newValue = javaExtension.getGrpc();
                     assertThat(newValue).isTrue();
 
                     executedClosure.set(true);

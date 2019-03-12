@@ -27,6 +27,9 @@ import org.gradle.api.plugins.PluginManager;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * An implementation of {@link PluginTarget} based on a Gradle {@link Project}.
+ */
 final class PlugableProject implements PluginTarget, Logging {
 
     private final Project project;

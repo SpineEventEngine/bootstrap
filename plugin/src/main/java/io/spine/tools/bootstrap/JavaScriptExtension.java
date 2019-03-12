@@ -23,9 +23,12 @@ package io.spine.tools.bootstrap;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.js;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.js;
 
-public final class JavaScriptExtension extends SubExtension {
+/**
+ * An extension which configures JavaScript code generation.
+ */
+public final class JavaScriptExtension extends CodeGenExtension {
 
     private final PluginTarget pluginTarget;
 

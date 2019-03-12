@@ -34,7 +34,7 @@ import org.gradle.api.Project;
  * <p>A typical usage of the bootstrap plugin is as follows:
  * <pre>
  *     {@code
- *     // build.gradle
+ *     // -- build.gradle --
  *
  *     plugins {
  *         id 'io.spine.bootstrap'
