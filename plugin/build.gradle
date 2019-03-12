@@ -28,6 +28,9 @@ dependencies {
     implementation "io.spine.tools:spine-model-compiler:$spineVersion"
     implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
     implementation deps.build.gradlePlugins.protobuf
+    
+    testImplementation "io.spine:spine-testlib:$spineVersion"
+    testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
 }
 
 gradlePlugin {
