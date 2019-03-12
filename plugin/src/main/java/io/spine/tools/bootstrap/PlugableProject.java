@@ -35,7 +35,7 @@ final class PlugableProject implements PluginTarget, Logging {
     private final Project project;
 
     PlugableProject(Project project) {
-        this.project = project;
+        this.project = checkNotNull(project);
     }
 
     @Override
