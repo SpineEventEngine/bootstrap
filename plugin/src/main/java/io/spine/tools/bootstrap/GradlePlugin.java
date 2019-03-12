@@ -66,11 +66,6 @@ public final class GradlePlugin {
     }
 
     @Override
-    public String toString() {
-        return "Gradle plugin " + className();
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
