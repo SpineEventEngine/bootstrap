@@ -20,9 +20,14 @@
 
 package io.spine.tools.bootstrap;
 
+import com.google.protobuf.gradle.ProtobufPlugin;
+import io.spine.js.gradle.ProtoJsPlugin;
+import io.spine.tools.bootstrap.given.TestPluginRegistry;
+import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.groovy.ConsumerClosure;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +41,6 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
-import static io.spine.tools.bootstrap.ProtobufGenerator.PROTOBUF_GRADLE_PLUGIN;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -45,24 +49,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("`spine` extension should")
 class ExtensionTest {
 
-    private static final String MODEL_COMPILER_ID = "io.spine.tools.spine-model-compiler";
-    private static final String PROTO_JS_PLUGIN_ID = "io.spine.tools.proto-js-plugin";
-    private static final String JAVA_PLUGIN_ID = "java";
-    private static final String JAVA_LIBRARY_PLUGIN_ID = "java-library";
-
-    private Project project;
+    private PluginTarget pluginTarget;
     private Extension extension;
 
     @BeforeEach
     void setUp(@TempDir Path projectDir) {
-        project = ProjectBuilder
+        Project project = ProjectBuilder
                 .builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
-        PluginTarget target = new PlugableProject(project);
-        extension = Extension.newInstance(project, target);
-        target.applyProtobufPlugin();
+        pluginTarget = new TestPluginRegistry();
+        extension = Extension.newInstance(project, pluginTarget);
+        pluginTarget.applyProtobufPlugin();
     }
 
     @Nested
@@ -74,8 +73,8 @@ class ExtensionTest {
         void applyModelCompiler() {
             extension.java();
 
-            assertApplied(MODEL_COMPILER_ID);
-            assertNotApplied(PROTO_JS_PLUGIN_ID);
+            assertApplied(ModelCompilerPlugin.class);
+            assertNotApplied(ProtoJsPlugin.class);
         }
 
         @Test
@@ -83,7 +82,7 @@ class ExtensionTest {
         void applyJava() {
             extension.java();
 
-            assertApplied(JAVA_PLUGIN_ID);
+            assertApplied(JavaPlugin.class);
         }
 
         @Test
@@ -91,16 +90,15 @@ class ExtensionTest {
         void applyProtoForJava() {
             extension.java();
 
-            assertApplied(PROTOBUF_GRADLE_PLUGIN);
+            assertApplied(ProtobufPlugin.class);
         }
 
         @Test
         @DisplayName("not apply `java` if already present")
         void notApplyJavaIfJavaLib() {
-            project.getPlugins().apply(JAVA_LIBRARY_PLUGIN_ID);
+            pluginTarget.apply(GradlePlugin.implementedIn(JavaPlugin.class));
 
-            assertApplied(JAVA_PLUGIN_ID);
-            assertApplied(JAVA_LIBRARY_PLUGIN_ID);
+            assertApplied(JavaPlugin.class);
 
             extension.java();
         }
@@ -110,8 +108,8 @@ class ExtensionTest {
         void applyProtoJs() {
             extension.javaScript();
 
-            assertApplied(PROTO_JS_PLUGIN_ID);
-            assertNotApplied(MODEL_COMPILER_ID);
+            assertApplied(ProtoJsPlugin.class);
+            assertNotApplied(ModelCompilerPlugin.class);
         }
 
         @Test
@@ -119,7 +117,7 @@ class ExtensionTest {
         void applyProtoForJs() {
             extension.javaScript();
 
-            assertApplied(PROTOBUF_GRADLE_PLUGIN);
+            assertApplied(ProtobufPlugin.class);
         }
 
         @Test
@@ -128,20 +126,21 @@ class ExtensionTest {
             extension.javaScript();
             extension.java();
 
-            assertApplied(JAVA_PLUGIN_ID);
-            assertApplied(PROTO_JS_PLUGIN_ID);
-            assertApplied(MODEL_COMPILER_ID);
+            assertApplied(JavaPlugin.class);
+            assertApplied(ProtoJsPlugin.class);
+            assertApplied(ModelCompilerPlugin.class);
         }
 
-        private void assertApplied(String pluginId) {
-            PluginContainer plugins = project.getPlugins();
-            assertTrue(plugins.hasPlugin(pluginId), format("Plugin %s must be applied.", pluginId));
+        private void assertApplied(Class<? extends Plugin<? extends Project>> pluginClass) {
+            GradlePlugin plugin = GradlePlugin.implementedIn(pluginClass);
+            assertTrue(pluginTarget.isApplied(plugin),
+                       format("Plugin %s must be applied.", plugin.className()));
         }
 
-        private void assertNotApplied(String pluginId) {
-            PluginContainer plugins = project.getPlugins();
-            assertFalse(plugins.hasPlugin(pluginId),
-                        format("Plugin %s must NOT be applied.", pluginId));
+        private void assertNotApplied(Class<? extends Plugin<? extends Project>> pluginClass) {
+            GradlePlugin plugin = GradlePlugin.implementedIn(pluginClass);
+            assertFalse(pluginTarget.isApplied(plugin),
+                       format("Plugin %s must NOT be applied.", plugin.className()));
         }
     }
 

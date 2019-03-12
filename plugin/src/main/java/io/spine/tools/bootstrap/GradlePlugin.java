@@ -20,6 +20,7 @@
 
 package io.spine.tools.bootstrap;
 
+import com.google.common.base.Objects;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
@@ -31,7 +32,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>A plugin is represented by the Java class which implements it. The class must implement
  * the {@link Plugin org.gradle.api.Plugin} interface.
  */
-final class GradlePlugin {
+public final class GradlePlugin {
 
     private final Class<? extends Plugin<? extends Project>> implementationClass;
 
@@ -46,7 +47,7 @@ final class GradlePlugin {
      *         the plugin implementation class
      * @return new instance
      */
-    static GradlePlugin implementedIn(Class<? extends Plugin<? extends Project>> pluginClass) {
+    public static GradlePlugin implementedIn(Class<? extends Plugin<? extends Project>> pluginClass) {
         return new GradlePlugin(pluginClass);
     }
 
@@ -67,5 +68,22 @@ final class GradlePlugin {
     @Override
     public String toString() {
         return "Gradle plugin " + className();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof GradlePlugin)) {
+            return false;
+        }
+        GradlePlugin plugin = (GradlePlugin) o;
+        return Objects.equal(implementationClass, plugin.implementationClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(implementationClass);
     }
 }
