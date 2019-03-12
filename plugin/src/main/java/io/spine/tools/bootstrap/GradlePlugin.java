@@ -20,25 +20,33 @@
 
 package io.spine.tools.bootstrap;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.js;
 
-public final class JavaScriptExtension extends SubExtension {
+final class GradlePlugin {
 
-    private final PluginTarget pluginTarget;
+    private final Class<? extends Plugin<? extends Project>> implementationClass;
 
-    JavaScriptExtension(Project project, ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(project, generator, js);
-        this.pluginTarget = checkNotNull(pluginTarget);
+    private GradlePlugin(Class<? extends Plugin<? extends Project>> pluginClass) {
+        this.implementationClass = checkNotNull(pluginClass);
     }
 
-    @OverridingMethodsMustInvokeSuper
+    static GradlePlugin implementedIn(Class<? extends Plugin<? extends Project>> pluginClass) {
+        return new GradlePlugin(pluginClass);
+    }
+
+    Class<? extends Plugin<? extends Project>> implementationClass() {
+        return implementationClass;
+    }
+
+    String className() {
+        return implementationClass().getCanonicalName();
+    }
+
     @Override
-    void enableGeneration() {
-        super.enableGeneration();
-        pluginTarget.applyProtoJsPlugin();
+    public String toString() {
+        return "Gradle plugin " + implementationClass.getCanonicalName();
     }
 }

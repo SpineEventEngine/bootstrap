@@ -60,8 +60,9 @@ class ExtensionTest {
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
-        extension = Extension.createFor(project);
-        extension.applyProtobufPlugin();
+        PluginTarget target = new PlugableProject(project);
+        extension = Extension.newInstance(project, target);
+        target.applyProtobufPlugin();
     }
 
     @Nested

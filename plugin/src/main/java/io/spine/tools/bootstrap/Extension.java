@@ -40,20 +40,21 @@ public final class Extension extends BaseExtension {
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
 
-    private Extension(Project project, ProtobufGenerator generator) {
+    private Extension(Project project, ProtobufGenerator generator, PluginTarget pluginTarget) {
         super(project);
-        this.java = new JavaExtension(project, generator);
-        this.javaScript = new JavaScriptExtension(project, generator);
+        this.java = new JavaExtension(project, generator, pluginTarget);
+        this.javaScript = new JavaScriptExtension(project, generator, pluginTarget);
     }
 
     /**
      * Creates a new instance of {@code Extension} for the given project.
      */
-    static Extension createFor(Project project) {
+    static Extension newInstance(Project project, PluginTarget pluginTarget) {
         checkNotNull(project);
+        checkNotNull(pluginTarget);
 
         ProtobufGenerator generator = new ProtobufGenerator(project);
-        Extension extension = new Extension(project, generator);
+        Extension extension = new Extension(project, generator, pluginTarget);
         return extension;
     }
 

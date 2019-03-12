@@ -21,38 +21,14 @@
 package io.spine.tools.bootstrap;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.protobuf.gradle.ProtobufPlugin;
-import io.spine.logging.Logging;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.PluginContainer;
-import org.gradle.api.plugins.PluginManager;
-import org.slf4j.Logger;
 
 abstract class BaseExtension {
-
-    private final Logger log = Logging.get(getClass());
 
     private final Project project;
 
     BaseExtension(Project project) {
         this.project = project;
-    }
-
-    void applyProtobufPlugin() {
-        applyPlugin(JavaPlugin.class);
-        applyPlugin(ProtobufPlugin.class);
-    }
-
-    void applyPlugin(Class<? extends Plugin<? extends Project>> pluginClass) {
-        PluginContainer pluginContainer = project.getPlugins();
-        if (!pluginContainer.hasPlugin(pluginClass)) {
-            PluginManager pluginManager = project.getPluginManager();
-            pluginManager.apply(pluginClass);
-        } else {
-            log.debug("Plugin {} is already applied.", pluginClass.getCanonicalName());
-        }
     }
 
     @VisibleForTesting

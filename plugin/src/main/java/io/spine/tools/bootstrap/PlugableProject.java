@@ -20,25 +20,39 @@
 
 package io.spine.tools.bootstrap;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.logging.Logging;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.plugins.PluginManager;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.js;
 
-public final class JavaScriptExtension extends SubExtension {
+final class PlugableProject implements PluginTarget, Logging {
 
-    private final PluginTarget pluginTarget;
+    private final Project project;
 
-    JavaScriptExtension(Project project, ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(project, generator, js);
-        this.pluginTarget = checkNotNull(pluginTarget);
+    PlugableProject(Project project) {
+        this.project = project;
     }
 
-    @OverridingMethodsMustInvokeSuper
     @Override
-    void enableGeneration() {
-        super.enableGeneration();
-        pluginTarget.applyProtoJsPlugin();
+    public void apply(GradlePlugin plugin) {
+        checkNotNull(plugin);
+
+        if (isNotApplied(plugin)) {
+            PluginManager pluginManager = project.getPluginManager();
+            pluginManager.apply(plugin.implementationClass());
+        } else {
+            _debug("Plugin {} is already applied.", plugin.className());
+        }
+    }
+
+    @Override
+    public boolean isApplied(GradlePlugin plugin) {
+        checkNotNull(plugin);
+
+        PluginContainer plugins = project.getPlugins();
+        boolean result = plugins.hasPlugin(plugin.implementationClass());
+        return result;
     }
 }

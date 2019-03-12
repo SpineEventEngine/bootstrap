@@ -20,25 +20,35 @@
 
 package io.spine.tools.bootstrap;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import org.gradle.api.Project;
+import com.google.protobuf.gradle.ProtobufPlugin;
+import io.spine.js.gradle.ProtoJsPlugin;
+import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
+import org.gradle.api.plugins.JavaPlugin;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.js;
+public interface PluginTarget {
 
-public final class JavaScriptExtension extends SubExtension {
+    void apply(GradlePlugin plugin);
 
-    private final PluginTarget pluginTarget;
+    boolean isApplied(GradlePlugin plugin);
 
-    JavaScriptExtension(Project project, ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(project, generator, js);
-        this.pluginTarget = checkNotNull(pluginTarget);
+    default boolean isNotApplied(GradlePlugin plugin) {
+        return !isApplied(plugin);
     }
 
-    @OverridingMethodsMustInvokeSuper
-    @Override
-    void enableGeneration() {
-        super.enableGeneration();
-        pluginTarget.applyProtoJsPlugin();
+    default void applyProtobufPlugin() {
+        GradlePlugin javaPlugin = GradlePlugin.implementedIn(JavaPlugin.class);
+        apply(javaPlugin);
+        GradlePlugin protoPlugin = GradlePlugin.implementedIn(ProtobufPlugin.class);
+        apply(protoPlugin);
+    }
+
+    default void applyModelCompiler() {
+        GradlePlugin plugin = GradlePlugin.implementedIn(ModelCompilerPlugin.class);
+        apply(plugin);
+    }
+
+    default void applyProtoJsPlugin() {
+        GradlePlugin plugin = GradlePlugin.implementedIn(ProtoJsPlugin.class);
+        apply(plugin);
     }
 }
