@@ -21,7 +21,6 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.js;
@@ -30,8 +29,8 @@ public final class JavaScriptExtension extends SubExtension {
 
     private final PluginTarget pluginTarget;
 
-    JavaScriptExtension(Project project, ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(project, generator, js);
+    JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
+        super(generator, js);
         this.pluginTarget = checkNotNull(pluginTarget);
     }
 

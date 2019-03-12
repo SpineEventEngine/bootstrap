@@ -21,15 +21,13 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import org.gradle.api.Project;
 
-abstract class SubExtension extends BaseExtension {
+abstract class SubExtension {
 
     private final ProtobufGenerator protobufGenerator;
     private final ProtobufGenerator.BuiltIn codeGenJob;
 
-    SubExtension(Project project, ProtobufGenerator protobufGenerator, ProtobufGenerator.BuiltIn job) {
-        super(project);
+    SubExtension(ProtobufGenerator protobufGenerator, ProtobufGenerator.BuiltIn job) {
         this.protobufGenerator = protobufGenerator;
         this.codeGenJob = job;
     }

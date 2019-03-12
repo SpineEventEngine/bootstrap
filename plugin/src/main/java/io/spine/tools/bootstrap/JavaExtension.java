@@ -21,7 +21,6 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.bootstrap.ProtobufGenerator.BuiltIn.java;
@@ -32,8 +31,8 @@ public final class JavaExtension extends SubExtension {
 
     private boolean generateGrpc = false;
 
-    JavaExtension(Project project, ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(project, generator, java);
+    JavaExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
+        super(generator, java);
         this.pluginTarget = checkNotNull(pluginTarget);
     }
 

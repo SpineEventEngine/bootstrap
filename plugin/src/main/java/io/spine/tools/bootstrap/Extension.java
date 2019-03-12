@@ -33,17 +33,16 @@ import static org.gradle.util.ConfigureUtil.configure;
  * <p>Configures the project as a {@linkplain #java() Java} or/and a {@linkplain #javaScript()
  * JavaScript} project based on Spine.
  */
-public final class Extension extends BaseExtension {
+public final class Extension {
 
     static final String NAME = "spine";
 
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
 
-    private Extension(Project project, ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(project);
-        this.java = new JavaExtension(project, generator, pluginTarget);
-        this.javaScript = new JavaScriptExtension(project, generator, pluginTarget);
+    private Extension(ProtobufGenerator generator, PluginTarget pluginTarget) {
+        this.java = new JavaExtension(generator, pluginTarget);
+        this.javaScript = new JavaScriptExtension(generator, pluginTarget);
     }
 
     /**
@@ -54,7 +53,7 @@ public final class Extension extends BaseExtension {
         checkNotNull(pluginTarget);
 
         ProtobufGenerator generator = new ProtobufGenerator(project);
-        Extension extension = new Extension(project, generator, pluginTarget);
+        Extension extension = new Extension(generator, pluginTarget);
         return extension;
     }
 

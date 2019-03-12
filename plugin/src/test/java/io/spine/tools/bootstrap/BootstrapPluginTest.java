@@ -61,7 +61,5 @@ class BootstrapPluginTest {
         Subject<DefaultSubject, Object> assertExtension = assertThat(extension);
         assertExtension.isNotNull();
         assertExtension.isInstanceOf(Extension.class);
-        Extension registeredExtension = (Extension) extension;
-        assertThat(registeredExtension.project()).isSameAs(project);
     }
 }
