@@ -18,19 +18,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Declares the version of the artifacts to publish and versions of
- * project-specific general dependencies.
- *
- * This file is used in both module `build.gradle` scripts and in the integration tests,
- * as we want to manage the versions in a single source.
- * 
- * This file is copied to the root of the project ONLY if there's no file with such a name
- * already in the root directory.
- */
+plugins {
+    id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.10.1'
+}
 
-final def SPINE_VERSION = '1.0.0-SNAPSHOT'
+dependencies {
+    implementation "io.spine.tools:spine-plugin-base:$spineVersion"
+    implementation "io.spine.tools:spine-model-compiler:$spineVersion"
+    implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
+    implementation deps.build.gradlePlugins.protobuf
+}
 
-ext {
-    spineVersion = SPINE_VERSION
+gradlePlugin {
+    plugins {
+        spineBootstrapPlugin {
+            id = 'io.spine.bootstrap'
+            implementationClass = 'io.spine.tools.bootstrap.BootstrapPlugin'
+            displayName = 'Spine Bootstrap'
+            description = 'Prepares a Gradle project for development on Spine.'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://spine.io/'
+    vcsUrl = 'https://github.com/SpineEventEngine/bootstrap.git'
+    tags = ['java', 'spine', 'event-sourcing', 'bootstrap', 'quick-start']
 }

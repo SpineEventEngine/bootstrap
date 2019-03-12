@@ -18,19 +18,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package io.spine.tools.bootstrap.given;
+
+import io.spine.tools.bootstrap.GradlePlugin;
+import io.spine.tools.bootstrap.PluginTarget;
+
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
+
 /**
- * Declares the version of the artifacts to publish and versions of
- * project-specific general dependencies.
+ * A test implementation of {@link PluginTarget}.
  *
- * This file is used in both module `build.gradle` scripts and in the integration tests,
- * as we want to manage the versions in a single source.
- * 
- * This file is copied to the root of the project ONLY if there's no file with such a name
- * already in the root directory.
+ * <p>Memoizes the applied plugins and checks the m
  */
+public final class TestPluginRegistry implements PluginTarget {
 
-final def SPINE_VERSION = '1.0.0-SNAPSHOT'
+    private final Set<GradlePlugin> plugins = newHashSet();
 
-ext {
-    spineVersion = SPINE_VERSION
+    @Override
+    public void apply(GradlePlugin plugin) {
+        plugins.add(plugin);
+    }
+
+    @Override
+    public boolean isApplied(GradlePlugin plugin) {
+        return plugins.contains(plugin);
+    }
 }

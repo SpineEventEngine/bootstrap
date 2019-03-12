@@ -18,19 +18,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+package io.spine.tools.bootstrap;
+
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.js;
+
 /**
- * Declares the version of the artifacts to publish and versions of
- * project-specific general dependencies.
- *
- * This file is used in both module `build.gradle` scripts and in the integration tests,
- * as we want to manage the versions in a single source.
- * 
- * This file is copied to the root of the project ONLY if there's no file with such a name
- * already in the root directory.
+ * An extension which configures JavaScript code generation.
  */
+public final class JavaScriptExtension extends CodeGenExtension {
 
-final def SPINE_VERSION = '1.0.0-SNAPSHOT'
+    private final PluginTarget pluginTarget;
 
-ext {
-    spineVersion = SPINE_VERSION
+    JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
+        super(generator, js);
+        this.pluginTarget = checkNotNull(pluginTarget);
+    }
+
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    void enableGeneration() {
+        super.enableGeneration();
+        pluginTarget.applyProtoJsPlugin();
+    }
 }

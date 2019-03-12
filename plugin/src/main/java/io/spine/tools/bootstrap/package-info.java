@@ -19,18 +19,15 @@
  */
 
 /**
- * Declares the version of the artifacts to publish and versions of
- * project-specific general dependencies.
+ * This package and its subpackages contain the Spine bootstrap Gradle plugin.
  *
- * This file is used in both module `build.gradle` scripts and in the integration tests,
- * as we want to manage the versions in a single source.
- * 
- * This file is copied to the root of the project ONLY if there's no file with such a name
- * already in the root directory.
+ * <p>See {@link io.spine.tools.bootstrap.BootstrapPlugin} for the plugin entrance point.
  */
 
-final def SPINE_VERSION = '1.0.0-SNAPSHOT'
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.tools.bootstrap;
 
-ext {
-    spineVersion = SPINE_VERSION
-}
+import com.google.errorprone.annotations.CheckReturnValue;
+
+import javax.annotation.ParametersAreNonnullByDefault;
