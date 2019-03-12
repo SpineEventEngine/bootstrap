@@ -79,9 +79,9 @@ final class ProtobufGenerator {
     }
 
     private void configureTasks(Consumer<GenerateProtoTask> config) {
-        Closure forEachTask = closure((GenerateProtoTaskCollection tasks) ->
-                                              tasks.all()
-                                                   .forEach(config));
+        Closure forEachTask = closure(
+                (GenerateProtoTaskCollection tasks) -> tasks.all().forEach(config)
+        );
         protobufConfigurator().generateProtoTasks(forEachTask);
     }
 
