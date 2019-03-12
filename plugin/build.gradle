@@ -20,6 +20,7 @@
 
 plugins {
     id 'java-gradle-plugin'
+    id 'com.gradle.plugin-publish' version '0.10.0'
 }
 
 dependencies {
@@ -38,4 +39,10 @@ gradlePlugin {
             description = 'Prepares a Gradle project for development on Spine.'
         }
     }
+}
+
+pluginBundle {
+    website = 'https://spine.io/'
+    vcsUrl = 'https://github.com/SpineEventEngine/bootstrap.git'
+    tags = ['java', 'spine', 'event-sourcing', 'bootstrap', 'quick-start']
 }
