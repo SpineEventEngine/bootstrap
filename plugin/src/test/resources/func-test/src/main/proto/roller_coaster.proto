@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package spine.tools.bootstrap.test;
+
+import "spine/options.proto";
+
+option (type_url_prefix) = "type.spine.io";
+option java_package = "io.spine.tools.bootstrap.test";
+option java_outer_classname = "PlantProto";
+option java_multiple_files = true;
+
+message RollerCoaster {
+
+    // All the wagons, in the order of rolling.
+    repeated Wagon wagon = 1;
+
+    // The changes in the altitude. Each next measure is one meter away from the previous one.
+    repeated Altitude altitude = 2;
+}
+
+message Wagon {
+
+    uint32 seating = 1;
+}
+
+message Altitude {
+
+    uint32 value = 1;
+}

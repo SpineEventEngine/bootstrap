@@ -20,6 +20,7 @@
 
 package io.spine.tools.bootstrap.func;
 
+import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.testing.GradleProject;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,37 +30,63 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
+import java.io.File;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static io.spine.tools.gradle.TaskName.build;
+import static com.google.common.truth.Truth.assertThat;
 
 @ExtendWith(TempDirectory.class)
 @Functional
 @DisplayName("`io.spine.bootstrap` plugin should")
 class SpineBootstrapPluginTest {
 
-    private GradleProject project;
+    private GradleProject.Builder project;
+    private Path projectDir;
 
     @BeforeEach
-    void setUp(@TempDir Path dir) throws NoSuchFieldException, IllegalAccessException {
-        project = GradleProject
+    void setUp(@TempDir Path dir) {
+        this.projectDir = dir;
+        this.project = GradleProject
                 .newBuilder()
-                .setProjectName(SpineBootstrapPluginTest.class.getSimpleName())
-                .setProjectFolder(dir.toFile())
-                .build();
+                .setProjectName("func-test")
+                .setProjectFolder(projectDir.toFile());
+    }
 
+    @Test
+    @DisplayName("be applied to a project successfully")
+    void apply() throws ReflectiveOperationException {
+        GradleProject project = this.project.build();
+        addPluginClasspath(project);
+        project.executeTask(TaskName.build);
+    }
+
+    @Test
+    @DisplayName("generate no code if none requested")
+    void generateNothing() throws ReflectiveOperationException {
+        GradleProject project = this.project
+                .addProtoFile("roller_coaster.proto")
+                .build();
+        addPluginClasspath(project);
+        project.executeTask(TaskName.build);
+        Path compiledClasses = projectDir.resolve("build")
+                                         .resolve("classes")
+                                         .resolve("java")
+                                         .resolve("main");
+        if (Files.exists(compiledClasses)) {
+            File compiledClassesDirectory = compiledClasses.toFile();
+            assertThat(compiledClassesDirectory.list()).isEmpty();
+        }
+    }
+
+    private static void addPluginClasspath(GradleProject project)
+            throws ReflectiveOperationException{
         // TODO:2019-03-12:dmytro.dashenkov: Update GradleProject API to allow this config.
         Field runnerField = project.getClass()
                                    .getDeclaredField("gradleRunner");
         runnerField.setAccessible(true);
         GradleRunner runner = (GradleRunner) runnerField.get(project);
         runner.withPluginClasspath();
-    }
-
-    @Test
-    @DisplayName("be applied to a project successfully")
-    void apply() {
-        project.executeTask(build);
     }
 }
