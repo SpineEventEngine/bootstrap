@@ -61,7 +61,6 @@ class ExtensionTest {
                 .build();
         pluginTarget = new TestPluginRegistry();
         extension = Extension.newInstance(project, pluginTarget);
-        pluginTarget.applyProtobufPlugin();
     }
 
     @Nested
