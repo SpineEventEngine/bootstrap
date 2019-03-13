@@ -6,7 +6,7 @@ import "spine/options.proto";
 
 option (type_url_prefix) = "type.spine.io";
 option java_package = "io.spine.tools.bootstrap.test";
-option java_outer_classname = "PlantProto";
+option java_outer_classname = "LunaParkProto";
 option java_multiple_files = true;
 
 message RollerCoaster {
