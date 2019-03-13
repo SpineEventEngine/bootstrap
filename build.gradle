@@ -26,7 +26,6 @@ buildscript { final scriptHandler ->
     defaultRepositories(scriptHandler)
     dependencies {
         classpath deps.build.gradlePlugins.errorProne
-        classpath "io.spine.tools:spine-model-compiler:$spineVersion"
     }
     forceConfiguration(scriptHandler)
 }
@@ -39,7 +38,6 @@ ext {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'com.google.protobuf'
 
     apply plugin: 'maven'
     apply plugin: 'jacoco'
