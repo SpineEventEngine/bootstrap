@@ -38,32 +38,12 @@ ext {
 }
 
 subprojects {
-    project.ext {
-        sourcesRootDir = "$projectDir/src"
-        generatedRootDir = "$projectDir/generated"
-
-        generatedJavaDir = "$generatedRootDir/main/java"
-        generatedTestJavaDir = "$generatedRootDir/test/java"
-
-        generatedGrpcDir = "$generatedRootDir/main/grpc"
-        generatedTestGrpcDir = "$generatedRootDir/test/grpc"
-
-        generatedSpineDir = "$generatedRootDir/main/spine"
-        generatedTestSpineDir = "$generatedRootDir/test/spine"
-
-        testArtifactsScript = "${rootDir}/scripts/test-artifacts.gradle"
-        filterInternalJavadocsScript = "${rootDir}/config/gradle/filter-internal-javadoc.gradle"
-        updateDocsPlugin = "$rootDir/scripts/update-gh-pages.gradle"
-    }
-
     apply plugin: 'java'
     apply plugin: 'com.google.protobuf'
-    apply plugin: 'io.spine.tools.spine-model-compiler'
 
     apply plugin: 'maven'
     apply plugin: 'jacoco'
     apply plugin: 'idea'
-    apply plugin: 'project-report'
 
     apply plugin: 'net.ltgt.errorprone'
     apply plugin: 'pmd'
@@ -83,7 +63,7 @@ subprojects {
         implementation deps.build.errorProneAnnotations
 
         implementation deps.build.guava
-        
+
         implementation "io.spine:spine-base:$spineVersion"
 
         //Use jdk14 bindings for test purposes only.
@@ -96,19 +76,6 @@ subprojects {
     }
 
     forceConfiguration(project)
-
-    sourceSets {
-        main {
-            proto.srcDirs "$sourcesRootDir/main/proto"
-            java.srcDirs generatedJavaDir, "$sourcesRootDir/main/java", generatedSpineDir
-            resources.srcDirs "$generatedRootDir/main/resources"
-        }
-        test {
-            proto.srcDirs "$sourcesRootDir/test/proto"
-            java.srcDirs generatedTestJavaDir, "$sourcesRootDir/test/java", generatedTestSpineDir
-            resources.srcDirs "$generatedRootDir/test/resources"
-        }
-    }
 
     test {
         useJUnitPlatform {
@@ -141,21 +108,12 @@ subprojects {
     }
 
     task javadocJar(type: Jar, dependsOn: 'javadoc') {
-        from ("$projectDir/build/docs/javadoc")
+        from "$projectDir/build/docs/javadoc"
         archiveClassifier.set("javadoc")
     }
 
     idea {
         module {
-            generatedSourceDirs += file(generatedJavaDir)
-            generatedSourceDirs += file(generatedGrpcDir)
-            generatedSourceDirs += file(generatedSpineDir)
-            generatedSourceDirs += file(generatedTestJavaDir)
-            generatedSourceDirs += file(generatedTestGrpcDir)
-            generatedSourceDirs += file(generatedTestSpineDir)
-
-            testSourceDirs += file(generatedTestJavaDir)
-
             downloadJavadoc = true
             downloadSources = true
         }
