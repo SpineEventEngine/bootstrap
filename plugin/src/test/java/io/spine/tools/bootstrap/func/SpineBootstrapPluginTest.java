@@ -51,24 +51,23 @@ class SpineBootstrapPluginTest {
         this.project = GradleProject
                 .newBuilder()
                 .setProjectName("func-test")
-                .setProjectFolder(projectDir.toFile());
+                .setProjectFolder(projectDir.toFile())
+                .withPluginClasspath();
     }
 
     @Test
     @DisplayName("be applied to a project successfully")
-    void apply() throws ReflectiveOperationException {
+    void apply() {
         GradleProject project = this.project.build();
-        addPluginClasspath(project);
         project.executeTask(TaskName.build);
     }
 
     @Test
     @DisplayName("generate no code if none requested")
-    void generateNothing() throws ReflectiveOperationException {
+    void generateNothing() {
         GradleProject project = this.project
                 .addProtoFile("roller_coaster.proto")
                 .build();
-        addPluginClasspath(project);
         project.executeTask(TaskName.build);
         Path compiledClasses = projectDir.resolve("build")
                                          .resolve("classes")
@@ -78,15 +77,5 @@ class SpineBootstrapPluginTest {
             File compiledClassesDirectory = compiledClasses.toFile();
             assertThat(compiledClassesDirectory.list()).isEmpty();
         }
-    }
-
-    private static void addPluginClasspath(GradleProject project)
-            throws ReflectiveOperationException{
-        // TODO:2019-03-12:dmytro.dashenkov: Update GradleProject API to allow this config.
-        Field runnerField = project.getClass()
-                                   .getDeclaredField("gradleRunner");
-        runnerField.setAccessible(true);
-        GradleRunner runner = (GradleRunner) runnerField.get(project);
-        runner.withPluginClasspath();
     }
 }
