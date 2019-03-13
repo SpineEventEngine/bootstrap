@@ -90,6 +90,7 @@ public final class Extension {
      * is not applied to this project, applies it immediately.
      */
     public void java() {
+
         java.enableGeneration();
     }
 

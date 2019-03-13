@@ -30,17 +30,14 @@ import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.js;
  */
 public final class JavaScriptExtension extends CodeGenExtension {
 
-    private final PluginTarget pluginTarget;
-
     JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(generator, js);
-        this.pluginTarget = checkNotNull(pluginTarget);
+        super(generator, js, pluginTarget);
     }
 
     @OverridingMethodsMustInvokeSuper
     @Override
     void enableGeneration() {
         super.enableGeneration();
-        pluginTarget.applyProtoJsPlugin();
+        pluginTarget().applyProtoJsPlugin();
     }
 }
