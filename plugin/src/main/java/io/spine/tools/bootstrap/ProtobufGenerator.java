@@ -20,12 +20,14 @@
 
 package io.spine.tools.bootstrap;
 
+import com.google.protobuf.gradle.ExecutableLocator;
 import com.google.protobuf.gradle.GenerateProtoTask;
 import com.google.protobuf.gradle.GenerateProtoTask.PluginOptions;
 import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
 import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
+import io.spine.tools.gradle.Artifact;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
@@ -72,6 +74,20 @@ final class ProtobufGenerator {
         withProtobufPlugin(
                 () -> configureTasks(task -> deleteBuiltIn(task, builtIn))
         );
+    }
+
+    /**
+     * Specifies the Protobuf compiler to use to generate code.
+     *
+     * @param protoc
+     *         Protobuf compiler artifact spec
+     */
+    void useCompiler(Artifact protoc) {
+        checkNotNull(protoc);
+        String artifactSpec = protoc.notation();
+        withProtobufPlugin(() -> protobufConfigurator().protoc(closure(
+                (ExecutableLocator locator) -> locator.setArtifact(artifactSpec))
+        ));
     }
 
     private static void deleteBuiltIn(GenerateProtoTask task, ProtocBuiltIn builtIn) {

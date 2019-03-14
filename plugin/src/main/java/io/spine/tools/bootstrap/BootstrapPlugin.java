@@ -20,6 +20,7 @@
 
 package io.spine.tools.bootstrap;
 
+import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.SpinePlugin;
 import org.gradle.api.Project;
 
@@ -57,6 +58,14 @@ import org.gradle.api.Project;
  */
 public final class BootstrapPlugin extends SpinePlugin {
 
+    // TODO:2019-03-14:dmytro.dashenkov: Remove hardcoded Protoc version.
+    private static final Artifact PROTOC_ARTIFACT = Artifact
+            .newBuilder()
+            .setGroup("com.google.protobuf")
+            .setName("protoc")
+            .setVersion("3.6.1")
+            .build();
+
     @Override
     public void apply(Project project) {
         PluginTarget plugableProject = new PlugableProject(project);
@@ -64,5 +73,11 @@ public final class BootstrapPlugin extends SpinePlugin {
         project.getExtensions()
                .add(Extension.NAME, extension);
         extension.disableJavaGeneration();
+        configureProtocArtifact(project);
+    }
+
+    private static void configureProtocArtifact(Project project) {
+        ProtobufGenerator generator = new ProtobufGenerator(project);
+        generator.useCompiler(PROTOC_ARTIFACT);
     }
 }
