@@ -41,7 +41,14 @@ project.pluginManager.withPlugin('java') {
     project.dependencies {
         compile "io.spine:spine-base:$spineVersion"
     }
+    
+    project.sourceSets.main.java.srcDirs("$projectDir/generated/main/java",
+                                         "$projectDir/generated/main/spine") 
 }
 
+// This script file is created at a test runtime by the `GradleProject`.
+//
+// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
+// performs such a configuration in `config.gradle`. 
+//
 apply from: 'config.gradle'
-

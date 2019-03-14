@@ -33,10 +33,10 @@ import org.junitpioneer.jupiter.TempDirectory.TempDir;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.TaskName.build;
-import static io.spine.tools.gradle.TaskName.generateProto;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(TempDirectory.class)
@@ -89,29 +89,26 @@ class SpineBootstrapPluginTest {
         GradleProject project = this.project.build();
         project.executeTask(build);
 
-        Path compiledJavaClasses = compiledJavaClasses();
-        File compiledClassesDir = compiledJavaClasses.toFile();
-        assertTrue(compiledClassesDir.exists());
-        assertTrue(compiledClassesDir.isDirectory());
-        @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> dirContents = ImmutableSet.copyOf(compiledClassesDir.list());
-        IterableSubject assertCompiledClassesDir = assertThat(dirContents);
-        assertCompiledClassesDir.isNotEmpty();
-        assertCompiledClassesDir.containsExactly("io");
-
-        Path compiledClassesPackage = compiledJavaClasses.resolve("io")
-                                                         .resolve("spine")
-                                                         .resolve("tools")
-                                                         .resolve("bootstrap")
-                                                         .resolve("test");
-        @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledClassesPackage.toFile()
-                                                                                         .list());
+        Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
         assertPackageContents.containsAllOf("LunaParkProto.class",
                                             "RollerCoaster.class",
                                             "Wagon.class",
                                             "Altitude.class");
+    }
+
+    @Test
+    @DisplayName("apply 'spine-model-compiler' plugin")
+    void applyModelCompiler() {
+        configureJavaGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+
+        Collection<String> packageContents = generatedClassFileNames();
+        IterableSubject assertPackageContents = assertThat(packageContents);
+        assertPackageContents.containsAllOf("RollerCoasterVBuilder.class",
+                                            "WagonVBuilder.class",
+                                            "AltitudeVBuilder.class");
     }
 
     @SuppressWarnings("CheckReturnValue")
@@ -130,5 +127,31 @@ class SpineBootstrapPluginTest {
                                          .resolve("java")
                                          .resolve("main");
         return compiledClasses;
+    }
+
+    private static Path resolveClassesInPackage(Path compiledJavaClasses) {
+        return compiledJavaClasses.resolve("io")
+                                  .resolve("spine")
+                                  .resolve("tools")
+                                  .resolve("bootstrap")
+                                  .resolve("test");
+    }
+
+    private Collection<String> generatedClassFileNames() {
+        Path compiledJavaClasses = compiledJavaClasses();
+        File compiledClassesDir = compiledJavaClasses.toFile();
+        assertTrue(compiledClassesDir.exists());
+        assertTrue(compiledClassesDir.isDirectory());
+        @SuppressWarnings("ConstantConditions")
+        ImmutableSet<String> dirContents = ImmutableSet.copyOf(compiledClassesDir.list());
+        IterableSubject assertCompiledClassesDir = assertThat(dirContents);
+        assertCompiledClassesDir.isNotEmpty();
+        assertCompiledClassesDir.containsExactly("io");
+
+        Path compiledClassesPackage = resolveClassesInPackage(compiledJavaClasses);
+        @SuppressWarnings("ConstantConditions")
+        ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledClassesPackage.toFile()
+                                                                                         .list());
+        return packageContents;
     }
 }
