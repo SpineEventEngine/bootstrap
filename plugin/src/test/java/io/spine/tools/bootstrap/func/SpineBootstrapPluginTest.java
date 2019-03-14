@@ -23,6 +23,7 @@ package io.spine.tools.bootstrap.func;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import io.spine.tools.gradle.testing.GradleProject;
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +38,9 @@ import java.util.Collection;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.TaskName.build;
+import static io.spine.tools.gradle.TaskName.generateJsonParsers;
+import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(TempDirectory.class)
@@ -101,13 +105,36 @@ class SpineBootstrapPluginTest {
     void applyModelCompiler() {
         configureJavaGeneration();
         GradleProject project = this.project.build();
-        project.executeTask(build);
+        BuildResult result = project.executeTask(build);
+
+        assertThat(result.task(generateValidatingBuilders.path()).getOutcome()).isEqualTo(SUCCESS);
 
         Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
         assertPackageContents.containsAllOf("RollerCoasterVBuilder.class",
                                             "WagonVBuilder.class",
                                             "AltitudeVBuilder.class");
+    }
+
+    @Test
+    @DisplayName("generate JavaScript if requested")
+    void generateJs() {
+        configureJsGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+
+        Collection<String> jsFileNames = generatedJsFileNames();
+        assertThat(jsFileNames).containsExactly("roller_coaster_pb.js");
+    }
+
+    @Test
+    @DisplayName("apply 'spine-proto-js-plugin'")
+    void applyJsPlugin() {
+        configureJsGeneration();
+        GradleProject project = this.project.build();
+        BuildResult result = project.executeTask(build);
+
+        assertThat(result.task(generateJsonParsers.path()).getOutcome()).isEqualTo(SUCCESS);
     }
 
     @SuppressWarnings("CheckReturnValue")
@@ -118,6 +145,32 @@ class SpineBootstrapPluginTest {
     @SuppressWarnings("CheckReturnValue")
     private void configureJavaGeneration() {
         project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.of("spine.java()"));
+    }
+
+    @SuppressWarnings("CheckReturnValue")
+    private void configureJsGeneration() {
+        project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.of(
+                "spine.javaScript()",
+                "compileJava.enabled = false"
+        ));
+    }
+
+    private Collection<String> generatedClassFileNames() {
+        Path compiledJavaClasses = compiledJavaClasses();
+        File compiledClassesDir = compiledJavaClasses.toFile();
+        assertTrue(compiledClassesDir.exists());
+        assertTrue(compiledClassesDir.isDirectory());
+        @SuppressWarnings("ConstantConditions")
+        ImmutableSet<String> dirContents = ImmutableSet.copyOf(compiledClassesDir.list());
+        IterableSubject assertCompiledClassesDir = assertThat(dirContents);
+        assertCompiledClassesDir.isNotEmpty();
+        assertCompiledClassesDir.containsExactly("io");
+
+        Path compiledClassesPackage = resolveClassesInPackage(compiledJavaClasses);
+        @SuppressWarnings("ConstantConditions")
+        ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledClassesPackage.toFile()
+                                                                                         .list());
+        return packageContents;
     }
 
     private Path compiledJavaClasses() {
@@ -136,21 +189,18 @@ class SpineBootstrapPluginTest {
                                   .resolve("test");
     }
 
-    private Collection<String> generatedClassFileNames() {
-        Path compiledJavaClasses = compiledJavaClasses();
-        File compiledClassesDir = compiledJavaClasses.toFile();
-        assertTrue(compiledClassesDir.exists());
-        assertTrue(compiledClassesDir.isDirectory());
+    private Collection<String> generatedJsFileNames() {
+        Path compiledJsFiles = projectDir.resolve("build")
+                                         .resolve("generated")
+                                         .resolve("source")
+                                         .resolve("proto")
+                                         .resolve("main")
+                                         .resolve("js");
+        File compiledJsDir = compiledJsFiles.toFile();
+        assertTrue(compiledJsDir.exists());
+        assertTrue(compiledJsDir.isDirectory());
         @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> dirContents = ImmutableSet.copyOf(compiledClassesDir.list());
-        IterableSubject assertCompiledClassesDir = assertThat(dirContents);
-        assertCompiledClassesDir.isNotEmpty();
-        assertCompiledClassesDir.containsExactly("io");
-
-        Path compiledClassesPackage = resolveClassesInPackage(compiledJavaClasses);
-        @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledClassesPackage.toFile()
-                                                                                         .list());
+        ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledJsDir.list());
         return packageContents;
     }
 }
