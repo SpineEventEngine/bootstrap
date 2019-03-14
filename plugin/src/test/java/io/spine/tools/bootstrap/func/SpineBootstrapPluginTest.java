@@ -123,6 +123,7 @@ class SpineBootstrapPluginTest {
         configureJsGeneration();
         GradleProject project = this.project.build();
         BuildResult buildResult = project.executeAndFail(build);
+        System.err.println(buildResult.getOutput());
         fail(buildResult.getOutput());
 
         Collection<String> jsFileNames = generatedJsFileNames();
