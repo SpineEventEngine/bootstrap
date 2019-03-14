@@ -20,7 +20,8 @@
 
 package io.spine.tools.bootstrap.func;
 
-import io.spine.tools.gradle.TaskName;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.truth.IterableSubject;
 import io.spine.tools.gradle.testing.GradleProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,13 +35,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static com.google.common.truth.Truth.assertThat;
+import static io.spine.tools.gradle.TaskName.build;
+import static io.spine.tools.gradle.TaskName.generateProto;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(TempDirectory.class)
 @Functional
 @DisplayName("`io.spine.bootstrap` plugin should")
 class SpineBootstrapPluginTest {
 
-    private GradleProject project;
+    private static final String ADDITIONAL_CONFIG_SCRIPT = "config.gradle";
+
+    private GradleProject.Builder project;
     private Path projectDir;
 
     @BeforeEach
@@ -52,24 +58,70 @@ class SpineBootstrapPluginTest {
                 .setProjectFolder(projectDir.toFile())
                 .withPluginClasspath()
                 .addProtoFile("roller_coaster.proto")
-                .build();
+                .enableDebug();
     }
 
     @Test
     @DisplayName("be applied to a project successfully")
     void apply() {
-        project.executeTask(TaskName.build);
+        noAdditionalConfig();
+        project.build()
+               .executeTask(build);
     }
 
     @Test
     @DisplayName("generate no code if none requested")
     void generateNothing() {
-        project.executeTask(TaskName.build);
+        noAdditionalConfig();
+        project.build()
+               .executeTask(build);
         Path compiledClasses = compiledJavaClasses();
         if (Files.exists(compiledClasses)) {
             File compiledClassesDirectory = compiledClasses.toFile();
             assertThat(compiledClassesDirectory.list()).isEmpty();
         }
+    }
+
+    @Test
+    @DisplayName("generate Java if requested")
+    void generateJava() {
+        configureJavaGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+
+        Path compiledJavaClasses = compiledJavaClasses();
+        File compiledClassesDir = compiledJavaClasses.toFile();
+        assertTrue(compiledClassesDir.exists());
+        assertTrue(compiledClassesDir.isDirectory());
+        @SuppressWarnings("ConstantConditions")
+        ImmutableSet<String> dirContents = ImmutableSet.copyOf(compiledClassesDir.list());
+        IterableSubject assertCompiledClassesDir = assertThat(dirContents);
+        assertCompiledClassesDir.isNotEmpty();
+        assertCompiledClassesDir.containsExactly("io");
+
+        Path compiledClassesPackage = compiledJavaClasses.resolve("io")
+                                                         .resolve("spine")
+                                                         .resolve("tools")
+                                                         .resolve("bootstrap")
+                                                         .resolve("test");
+        @SuppressWarnings("ConstantConditions")
+        ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledClassesPackage.toFile()
+                                                                                         .list());
+        IterableSubject assertPackageContents = assertThat(packageContents);
+        assertPackageContents.containsAllOf("LunaParkProto.class",
+                                            "RollerCoaster.class",
+                                            "Wagon.class",
+                                            "Altitude.class");
+    }
+
+    @SuppressWarnings("CheckReturnValue")
+    private void noAdditionalConfig() {
+        project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.of());
+    }
+
+    @SuppressWarnings("CheckReturnValue")
+    private void configureJavaGeneration() {
+        project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.of("spine.java()"));
     }
 
     private Path compiledJavaClasses() {

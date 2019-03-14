@@ -23,6 +23,10 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.10.1'
 }
 
+def spineProtocPluginDependency = null
+
+configurations { fetch }
+
 dependencies {
     implementation "io.spine.tools:spine-plugin-base:$spineVersion"
     implementation "io.spine.tools:spine-model-compiler:$spineVersion"
@@ -31,6 +35,25 @@ dependencies {
     
     testImplementation "io.spine:spine-testlib:$spineVersion"
     testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
+    
+    spineProtocPluginDependency = fetch("io.spine.tools:spine-protoc-plugin:${spineVersion}@jar")
+}
+
+final File spineArtifactDir = file("$projectDir/.spine")
+
+afterEvaluate {
+    final File executableJar = configurations.fetch
+                                             .fileCollection(spineProtocPluginDependency)
+                                             .getSingleFile()
+    spineArtifactDir.mkdirs()
+    copy {
+        from executableJar
+        into spineArtifactDir
+    }
+}
+
+clean {
+    delete += spineArtifactDir
 }
 
 gradlePlugin {
