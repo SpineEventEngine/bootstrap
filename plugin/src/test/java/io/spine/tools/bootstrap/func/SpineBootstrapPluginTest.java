@@ -42,6 +42,7 @@ import static io.spine.tools.gradle.TaskName.generateJsonParsers;
 import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(TempDirectory.class)
 @Functional
@@ -121,7 +122,8 @@ class SpineBootstrapPluginTest {
     void generateJs() {
         configureJsGeneration();
         GradleProject project = this.project.build();
-        project.executeTask(build);
+        BuildResult buildResult = project.executeAndFail(build);
+        fail(buildResult.getOutput());
 
         Collection<String> jsFileNames = generatedJsFileNames();
         assertThat(jsFileNames).containsExactly("roller_coaster_pb.js");
