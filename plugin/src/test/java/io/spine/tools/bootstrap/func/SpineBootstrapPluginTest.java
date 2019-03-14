@@ -122,9 +122,7 @@ class SpineBootstrapPluginTest {
     void generateJs() {
         configureJsGeneration();
         GradleProject project = this.project.build();
-        BuildResult buildResult = project.executeAndFail(build);
-        System.err.println(buildResult.getOutput());
-        fail(buildResult.getOutput());
+        project.executeTask(build);
 
         Collection<String> jsFileNames = generatedJsFileNames();
         assertThat(jsFileNames).containsExactly("roller_coaster_pb.js");
