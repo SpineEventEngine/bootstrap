@@ -35,21 +35,28 @@ dependencies {
     
     testImplementation "io.spine:spine-testlib:$spineVersion"
     testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
-    
+
     spineProtocPluginDependency = fetch("io.spine.tools:spine-protoc-plugin:${spineVersion}@jar")
 }
 
 final File spineArtifactDir = file("$projectDir/.spine")
 
-afterEvaluate {
-    final File executableJar = configurations.fetch
-                                             .fileCollection(spineProtocPluginDependency)
-                                             .getSingleFile()
-    spineArtifactDir.mkdirs()
-    copy {
-        from executableJar
-        into spineArtifactDir
+task downloadProtocPlugin {
+    description = 'Downloads the Spine Protoc plugin for functional tests.'
+    
+    doLast {
+        final File executableJar = configurations.fetch
+                .fileCollection(spineProtocPluginDependency)
+                .getSingleFile()
+        spineArtifactDir.mkdirs()
+        copy {
+            from executableJar
+            into spineArtifactDir
+        }
     }
+
+    mustRunAfter clean
+    functionalTest.dependsOn it
 }
 
 clean {
