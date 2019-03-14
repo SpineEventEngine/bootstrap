@@ -20,12 +20,14 @@
 
 package io.spine.tools.bootstrap;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.protobuf.gradle.GenerateProtoTask;
+import com.google.protobuf.gradle.GenerateProtoTask.PluginOptions;
 import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
 import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
+import org.checkerframework.checker.nullness.qual.Nullable;
+import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.PluginManager;
 
@@ -44,8 +46,7 @@ final class ProtobufGenerator {
     /**
      * Identifier of the {@link com.google.protobuf.gradle.ProtobufPlugin}.
      */
-    @VisibleForTesting
-    static final String PROTOBUF_GRADLE_PLUGIN = "com.google.protobuf";
+    private static final String PROTOBUF_GRADLE_PLUGIN = "com.google.protobuf";
 
     private final Project project;
 
@@ -57,9 +58,10 @@ final class ProtobufGenerator {
      * Enables code generation with the given {@code protoc} built-in.
      */
     void enable(ProtocBuiltIn builtIn) {
-        String name = builtIn.name();
         withProtobufPlugin(
-                () -> configureTasks(task -> task.getBuiltins().maybeCreate(name))
+                () -> configureTasks(
+                        task -> builtIn.createIn(task.getBuiltins())
+                )
         );
     }
 
@@ -73,9 +75,7 @@ final class ProtobufGenerator {
     }
 
     private static void deleteBuiltIn(GenerateProtoTask task, ProtocBuiltIn builtIn) {
-        String name = builtIn.name();
-        task.getBuiltins()
-            .removeIf(taskBuiltin -> name.equals(taskBuiltin.getName()));
+        builtIn.removeFrom(task.getBuiltins());
     }
 
     private void configureTasks(Consumer<GenerateProtoTask> config) {
@@ -107,9 +107,43 @@ final class ProtobufGenerator {
      *
      * <p>The names of the enum instances should be used as the names of the built-ins.
      */
-    enum ProtocBuiltIn {
+    static final class ProtocBuiltIn {
 
-        java,
-        js
+        private final Name name;
+        private final @Nullable String option;
+
+        static ProtocBuiltIn called(Name name) {
+            checkNotNull(name);
+            return new ProtocBuiltIn(name, null);
+        }
+
+        static ProtocBuiltIn withOption(Name name, String option) {
+            checkNotNull(name);
+            checkNotNull(option);
+            return new ProtocBuiltIn(name, option);
+        }
+
+        private ProtocBuiltIn(Name name, @Nullable String option) {
+            this.name = name;
+            this.option = option;
+        }
+
+        private void createIn(NamedDomainObjectContainer<PluginOptions> builtIns) {
+            checkNotNull(builtIns);
+            PluginOptions options = builtIns.maybeCreate(name.name());
+            if (option != null) {
+                options.option(option);
+            }
+        }
+
+        private void removeFrom(NamedDomainObjectContainer<PluginOptions> builtIns) {
+            String name = this.name.name();
+            builtIns.removeIf(taskBuiltIn -> name.equals(taskBuiltIn.getName()));
+        }
+
+        enum Name {
+            java,
+            js
+        }
     }
 }

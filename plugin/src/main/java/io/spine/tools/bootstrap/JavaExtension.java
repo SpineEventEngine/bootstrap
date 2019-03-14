@@ -21,8 +21,9 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
 
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.java;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.java;
 
 /**
  * An extension which configures Java code generation.
@@ -32,7 +33,7 @@ public final class JavaExtension extends CodeGenExtension {
     private boolean grpc = false;
 
     JavaExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(generator, java, pluginTarget);
+        super(generator, ProtocBuiltIn.called(java), pluginTarget);
     }
 
     /**

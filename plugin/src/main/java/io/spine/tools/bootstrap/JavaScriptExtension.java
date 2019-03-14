@@ -21,16 +21,19 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
 
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.js;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.js;
 
 /**
  * An extension which configures JavaScript code generation.
  */
 public final class JavaScriptExtension extends CodeGenExtension {
 
+    private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
+
     JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(generator, js, pluginTarget);
+        super(generator, ProtocBuiltIn.withOption(js, IMPORT_STYLE_OPTION), pluginTarget);
     }
 
     @OverridingMethodsMustInvokeSuper
