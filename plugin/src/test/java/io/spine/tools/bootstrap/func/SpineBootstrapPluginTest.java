@@ -57,8 +57,7 @@ class SpineBootstrapPluginTest {
                 .setProjectName("func-test")
                 .setProjectFolder(projectDir.toFile())
                 .withPluginClasspath()
-                .addProtoFile("roller_coaster.proto")
-                .enableDebug();
+                .addProtoFile("roller_coaster.proto");
     }
 
     @Test
