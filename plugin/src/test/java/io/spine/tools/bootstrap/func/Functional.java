@@ -18,28 +18,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.bootstrap;
+package io.spine.tools.bootstrap.func;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
+import org.junit.jupiter.api.Tag;
 
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.js;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
 
 /**
- * An extension which configures JavaScript code generation.
+ * Marks a functional test suite.
+ *
+ * <p>Functional tests are generally slow and may be executed independently from unit tests.
  */
-public final class JavaScriptExtension extends CodeGenExtension {
-
-    private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
-
-    JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(generator, ProtocBuiltIn.withOption(js, IMPORT_STYLE_OPTION), pluginTarget);
-    }
-
-    @OverridingMethodsMustInvokeSuper
-    @Override
-    void enableGeneration() {
-        super.enableGeneration();
-        pluginTarget().applyProtoJsPlugin();
-    }
+@Target(TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Tag("functional")
+public @interface Functional {
 }

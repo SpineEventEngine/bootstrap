@@ -23,15 +23,54 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.10.1'
 }
 
+Dependency spineProtocPluginDependency = null
+
+/*
+ * Creates a configuration named `fetch`.
+ *
+ * The configuration is used in order to download artifacts. The artifacts are NOT added into
+ * the application classpath.
+ */
+configurations { fetch }
+
 dependencies {
     implementation "io.spine.tools:spine-plugin-base:$spineVersion"
     implementation "io.spine.tools:spine-model-compiler:$spineVersion"
     implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
     implementation deps.build.gradlePlugins.protobuf
+    
+    testImplementation "io.spine:spine-testlib:$spineVersion"
+    testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
+
+    spineProtocPluginDependency = fetch("io.spine.tools:spine-protoc-plugin:${spineVersion}@jar")
+}
+
+final File spineArtifactDir = file("$projectDir/.spine")
+
+project.task("downloadProtocPlugin") {
+    description = 'Downloads the Spine Protoc plugin for functional tests.'
+    
+    doLast {
+        final File executableJar = configurations.fetch
+                .fileCollection(spineProtocPluginDependency)
+                .getSingleFile()
+        spineArtifactDir.mkdirs()
+        copy {
+            from executableJar
+            into spineArtifactDir
+        }
+    }
+
+    mustRunAfter clean
+    functionalTest.dependsOn it
+}
+
+clean {
+    delete += spineArtifactDir
 }
 
 gradlePlugin {
-    plugins {
+    it.plugins {
         spineBootstrapPlugin {
             id = 'io.spine.bootstrap'
             implementationClass = 'io.spine.tools.bootstrap.BootstrapPlugin'

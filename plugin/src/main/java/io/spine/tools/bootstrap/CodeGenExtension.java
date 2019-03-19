@@ -32,10 +32,14 @@ abstract class CodeGenExtension implements Logging {
 
     private final ProtobufGenerator protobufGenerator;
     private final ProtobufGenerator.ProtocBuiltIn codeGenJob;
+    private final PluginTarget pluginTarget;
 
-    CodeGenExtension(ProtobufGenerator protobufGenerator, ProtobufGenerator.ProtocBuiltIn job) {
+    CodeGenExtension(ProtobufGenerator protobufGenerator,
+                     ProtobufGenerator.ProtocBuiltIn job,
+                     PluginTarget pluginTarget) {
         this.protobufGenerator = protobufGenerator;
         this.codeGenJob = job;
+        this.pluginTarget = pluginTarget;
     }
 
     /**
@@ -43,6 +47,7 @@ abstract class CodeGenExtension implements Logging {
      */
     @OverridingMethodsMustInvokeSuper
     void enableGeneration() {
+        pluginTarget.applyProtobufPlugin();
         protobufGenerator.enable(codeGenJob);
     }
 
@@ -52,5 +57,9 @@ abstract class CodeGenExtension implements Logging {
     @OverridingMethodsMustInvokeSuper
     void disableGeneration() {
         protobufGenerator.disable(codeGenJob);
+    }
+
+    protected final PluginTarget pluginTarget() {
+        return pluginTarget;
     }
 }

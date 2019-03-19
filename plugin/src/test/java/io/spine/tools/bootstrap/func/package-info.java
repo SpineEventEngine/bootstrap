@@ -18,28 +18,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.bootstrap;
-
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
-
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.js;
-
 /**
- * An extension which configures JavaScript code generation.
+ * This package contains functional tests for the bootstrap plugin.
  */
-public final class JavaScriptExtension extends CodeGenExtension {
 
-    private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.tools.bootstrap.func;
 
-    JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(generator, ProtocBuiltIn.withOption(js, IMPORT_STYLE_OPTION), pluginTarget);
-    }
+import com.google.errorprone.annotations.CheckReturnValue;
 
-    @OverridingMethodsMustInvokeSuper
-    @Override
-    void enableGeneration() {
-        super.enableGeneration();
-        pluginTarget().applyProtoJsPlugin();
-    }
-}
+import javax.annotation.ParametersAreNonnullByDefault;

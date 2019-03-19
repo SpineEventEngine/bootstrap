@@ -21,22 +21,19 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.java;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.java;
 
 /**
  * An extension which configures Java code generation.
  */
 public final class JavaExtension extends CodeGenExtension {
 
-    private final PluginTarget pluginTarget;
-
     private boolean grpc = false;
 
     JavaExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(generator, java);
-        this.pluginTarget = checkNotNull(pluginTarget);
+        super(generator, ProtocBuiltIn.called(java), pluginTarget);
     }
 
     /**
@@ -63,6 +60,6 @@ public final class JavaExtension extends CodeGenExtension {
     @Override
     void enableGeneration() {
         super.enableGeneration();
-        pluginTarget.applyModelCompiler();
+        pluginTarget().applyModelCompiler();
     }
 }

@@ -21,7 +21,9 @@
 package io.spine.tools.bootstrap;
 
 import com.google.common.testing.NullPointerTester;
+import com.google.common.truth.Truth;
 import io.spine.logging.Logging;
+import io.spine.testing.logging.LogEventSubject;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -39,7 +41,7 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
-import static com.google.common.truth.Truth.assertThat;
+import static io.spine.testing.logging.LogTruth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.slf4j.event.Level.DEBUG;
@@ -100,10 +102,11 @@ class PlugableProjectTest {
 
         assertThat(log).hasSize(1);
         SubstituteLoggingEvent loggingEvent = log.poll();
-        assertThat(loggingEvent).isNotNull();
-        assertThat(loggingEvent.getLevel()).isEqualTo(DEBUG);
+        LogEventSubject assertLoggingEvent = assertThat(loggingEvent);
+        assertLoggingEvent.isNotNull();
+        assertLoggingEvent.hasLevelThat().isEqualTo(DEBUG);
         Object[] argumentArray = loggingEvent.getArgumentArray();
-        assertThat(argumentArray).hasLength(1);
-        assertThat((String) argumentArray[0]).isEqualTo(plugin.className());
+        assertLoggingEvent.hasArgumentsThat().hasLength(1);
+        Truth.assertThat((String) argumentArray[0]).isEqualTo(plugin.className());
     }
 }

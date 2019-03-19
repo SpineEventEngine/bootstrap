@@ -18,28 +18,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.bootstrap;
+buildscript { final scriptHandler ->
+    apply from: 'test-env.gradle'
+    apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+    apply from: "$enclosingRootDir/version.gradle"
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
-
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.js;
-
-/**
- * An extension which configures JavaScript code generation.
- */
-public final class JavaScriptExtension extends CodeGenExtension {
-
-    private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
-
-    JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
-        super(generator, ProtocBuiltIn.withOption(js, IMPORT_STYLE_OPTION), pluginTarget);
-    }
-
-    @OverridingMethodsMustInvokeSuper
-    @Override
-    void enableGeneration() {
-        super.enableGeneration();
-        pluginTarget().applyProtoJsPlugin();
-    }
+    defaultRepositories(scriptHandler)
 }
+
+plugins {
+    id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
+}
+
+apply from: 'test-env.gradle'
+apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+apply from: "$enclosingRootDir/version.gradle"
+
+defaultRepositories(project)
+
+project.pluginManager.withPlugin('java') {
+
+    project.dependencies {
+        compile "io.spine:spine-base:$spineVersion"
+    }
+    
+    project.sourceSets.main.java.srcDirs("$projectDir/generated/main/java",
+                                         "$projectDir/generated/main/spine") 
+}
+
+// This script file is created at a test runtime by the `GradleProject`.
+//
+// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
+// performs such a configuration in `config.gradle`. 
+//
+apply from: 'config.gradle'
