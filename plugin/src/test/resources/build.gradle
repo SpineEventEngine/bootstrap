@@ -29,8 +29,6 @@ plugins {
     id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
 }
 
-apply from: 'test-env.gradle'
-
 defaultRepositories(project)
 
 // This script file is created at a test runtime by the `GradleProject`.
