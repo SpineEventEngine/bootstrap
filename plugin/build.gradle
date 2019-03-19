@@ -23,7 +23,7 @@ plugins {
     id 'com.gradle.plugin-publish' version '0.10.1'
 }
 
-def spineProtocPluginDependency = null
+Dependency spineProtocPluginDependency = null
 
 /*
  * Creates a configuration named `fetch`.
@@ -47,7 +47,7 @@ dependencies {
 
 final File spineArtifactDir = file("$projectDir/.spine")
 
-task downloadProtocPlugin {
+project.task("downloadProtocPlugin") {
     description = 'Downloads the Spine Protoc plugin for functional tests.'
     
     doLast {
