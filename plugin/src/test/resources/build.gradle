@@ -31,8 +31,6 @@ plugins {
 }
 
 apply from: 'test-env.gradle'
-apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
-apply from: "$enclosingRootDir/version.gradle"
 
 defaultRepositories(project)
 
