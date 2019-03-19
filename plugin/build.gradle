@@ -25,6 +25,12 @@ plugins {
 
 def spineProtocPluginDependency = null
 
+/*
+ * Creates a configuration named `fetch`.
+ *
+ * The configuration is used in order to download artifacts. The artifacts are NOT added into
+ * the application classpath.
+ */
 configurations { fetch }
 
 dependencies {
