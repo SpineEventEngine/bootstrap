@@ -21,10 +21,10 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
 import org.gradle.api.Project;
 
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.js;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.Name.js;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.withOption;
 
 /**
  * An extension which configures JavaScript code generation.
@@ -34,7 +34,7 @@ public final class JavaScriptExtension extends CodeGenExtension {
     private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
 
     JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget, DependencyTarget dependencyTarget, Project project) {
-        super(generator, ProtocBuiltIn.withOption(js, IMPORT_STYLE_OPTION), pluginTarget, dependencyTarget, project);
+        super(generator, withOption(js, IMPORT_STYLE_OPTION), pluginTarget, dependencyTarget, project);
     }
 
     @OverridingMethodsMustInvokeSuper

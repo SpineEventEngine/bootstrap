@@ -21,12 +21,13 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
 import org.gradle.api.Project;
 
 import java.io.File;
 
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.java;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.Name.grpc;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.Name.java;
+import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.called;
 import static io.spine.tools.bootstrap.SpineModule.client;
 import static io.spine.tools.bootstrap.SpineModule.server;
 
@@ -35,17 +36,19 @@ import static io.spine.tools.bootstrap.SpineModule.server;
  */
 public final class JavaExtension extends CodeGenExtension {
 
+    private static final String GENERATED = "generated";
+
     private final Project project;
     private final CodeLayout codeLayout;
 
-    private boolean grpc = false;
+    private boolean generateGrpc = false;
 
     JavaExtension(Project project,
                   ProtobufGenerator generator,
                   PluginTarget pluginTarget,
                   CodeLayout codeLayout,
                   DependencyTarget dependencyTarget) {
-        super(generator, ProtocBuiltIn.called(java), pluginTarget, dependencyTarget, project);
+        super(generator, called(java), pluginTarget, dependencyTarget, project);
         this.project = project;
         this.codeLayout = codeLayout;
     }
@@ -54,16 +57,19 @@ public final class JavaExtension extends CodeGenExtension {
      * Indicates whether the gRPC stub generation is enabled or not.
      */
     public boolean getGrpc() {
-        warnUnimplemented();
-        return grpc;
+        return generateGrpc;
     }
 
     /**
      * Enables or disables the gRPC stub generation.
      */
     public void setGrpc(boolean generateGrpc) {
-        warnUnimplemented();
-        this.grpc = generateGrpc;
+        this.generateGrpc = generateGrpc;
+        if (generateGrpc) {
+            protobufGenerator().enablePlugin(called(grpc));
+        } else {
+            protobufGenerator().disablePlugin(called(grpc));
+        }
     }
 
     public void client() {
@@ -78,10 +84,6 @@ public final class JavaExtension extends CodeGenExtension {
         dependencyTarget().compile(module.withVersion(spineVersion()));
     }
 
-    private void warnUnimplemented() {
-        _warn("gRPC configuration is not yet implemented via `spine` DSL.");
-    }
-
     @OverridingMethodsMustInvokeSuper
     @Override
     void enableGeneration() {
@@ -92,8 +94,7 @@ public final class JavaExtension extends CodeGenExtension {
 
     private void addSourceSets() {
         File projectDir = project.getProjectDir();
-        File generatedDir = new File(projectDir, "generated");
+        File generatedDir = new File(projectDir, GENERATED);
         codeLayout.javaSourcesRoot(generatedDir.toPath());
     }
-
 }

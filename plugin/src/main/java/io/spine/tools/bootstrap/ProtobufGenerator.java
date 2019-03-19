@@ -33,6 +33,7 @@ import org.gradle.api.Project;
 import org.gradle.api.plugins.PluginManager;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
@@ -58,21 +59,49 @@ final class ProtobufGenerator {
     /**
      * Enables code generation with the given {@code protoc} built-in.
      */
-    void enable(ProtocBuiltIn builtIn) {
-        withProtobufPlugin(
-                () -> configureTasks(
-                        task -> builtIn.createIn(task.getBuiltins())
-                )
-        );
+    void enableBuiltIn(ProtocPlugin builtIn) {
+        enableIn(builtIn, GenerateProtoTask::getBuiltins);
+    }
+
+    /**
+     * Enables code generation with the given {@code protoc} built-in.
+     */
+    void enablePlugin(ProtocPlugin builtIn) {
+        enableIn(builtIn, GenerateProtoTask::getPlugins);
+    }
+
+    private void
+    enableIn(ProtocPlugin plugin,
+             Function<GenerateProtoTask, NamedDomainObjectContainer<PluginOptions>>
+                     containerFactory) {
+        withProtobufPlugin(() -> configureTasks(task -> {
+            NamedDomainObjectContainer<PluginOptions> plugins = containerFactory.apply(task);
+            plugin.createIn(plugins);
+        }));
     }
 
     /**
      * Disables code generation with the given {@code protoc} built-in.
      */
-    void disable(ProtocBuiltIn builtIn) {
-        withProtobufPlugin(
-                () -> configureTasks(task -> deleteBuiltIn(task, builtIn))
-        );
+    void disableBuiltIn(ProtocPlugin builtIn) {
+        disableIn(builtIn, GenerateProtoTask::getBuiltins);
+    }
+
+    /**
+     * Disables code generation with the given {@code protoc} built-in.
+     */
+    void disablePlugin(ProtocPlugin builtIn) {
+        disableIn(builtIn, GenerateProtoTask::getPlugins);
+    }
+
+    private void
+    disableIn(ProtocPlugin plugin,
+              Function<GenerateProtoTask, NamedDomainObjectContainer<PluginOptions>>
+                      containerFactory) {
+        withProtobufPlugin(() -> configureTasks(task -> {
+            NamedDomainObjectContainer<PluginOptions> plugins = containerFactory.apply(task);
+            plugin.removeFrom(plugins);
+        }));
     }
 
     /**
@@ -86,10 +115,6 @@ final class ProtobufGenerator {
         withProtobufPlugin(() -> protobufConfigurator().protoc(closure(
                 (ExecutableLocator locator) -> locator.setArtifact(artifactSpec))
         ));
-    }
-
-    private static void deleteBuiltIn(GenerateProtoTask task, ProtocBuiltIn builtIn) {
-        builtIn.removeFrom(task.getBuiltins());
     }
 
     private void configureTasks(Consumer<GenerateProtoTask> config) {
@@ -121,43 +146,44 @@ final class ProtobufGenerator {
      *
      * <p>The names of the enum instances should be used as the names of the built-ins.
      */
-    static final class ProtocBuiltIn {
+    static final class ProtocPlugin {
 
         private final Name name;
         private final @Nullable String option;
 
-        static ProtocBuiltIn called(Name name) {
+        static ProtocPlugin called(Name name) {
             checkNotNull(name);
-            return new ProtocBuiltIn(name, null);
+            return new ProtocPlugin(name, null);
         }
 
-        static ProtocBuiltIn withOption(Name name, String option) {
+        static ProtocPlugin withOption(Name name, String option) {
             checkNotNull(name);
             checkNotNull(option);
-            return new ProtocBuiltIn(name, option);
+            return new ProtocPlugin(name, option);
         }
 
-        private ProtocBuiltIn(Name name, @Nullable String option) {
+        private ProtocPlugin(Name name, @Nullable String option) {
             this.name = name;
             this.option = option;
         }
 
-        private void createIn(NamedDomainObjectContainer<PluginOptions> builtIns) {
-            checkNotNull(builtIns);
-            PluginOptions options = builtIns.maybeCreate(name.name());
+        private void createIn(NamedDomainObjectContainer<PluginOptions> plugins) {
+            checkNotNull(plugins);
+            PluginOptions options = plugins.maybeCreate(name.name());
             if (option != null) {
                 options.option(option);
             }
         }
 
-        private void removeFrom(NamedDomainObjectContainer<PluginOptions> builtIns) {
+        private void removeFrom(NamedDomainObjectContainer<PluginOptions> plugins) {
             String name = this.name.name();
-            builtIns.removeIf(taskBuiltIn -> name.equals(taskBuiltIn.getName()));
+            plugins.removeIf(taskBuiltIn -> name.equals(taskBuiltIn.getName()));
         }
 
         enum Name {
             java,
-            js
+            js,
+            grpc
         }
     }
 }
