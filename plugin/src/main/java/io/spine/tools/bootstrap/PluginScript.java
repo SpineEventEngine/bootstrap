@@ -46,7 +46,7 @@ final class PluginScript implements Plugin<Project> {
 
     @Override
     public void apply(Project target) {
-        target.apply(config -> config.from(resourceName.url()));
+        target.apply(config -> config.from(resourceName.inClasspath()));
     }
 
     enum Name {
@@ -56,7 +56,7 @@ final class PluginScript implements Plugin<Project> {
 
         private static final String SCRIPT_EXTENSION = ".gradle";
 
-        private URL url() {
+        private URL inClasspath() {
             String resourceName = name() + SCRIPT_EXTENSION;
             URL resource = PluginScript.class.getClassLoader()
                                              .getResource(resourceName);
