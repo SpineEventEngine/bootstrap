@@ -20,6 +20,7 @@
 
 package io.spine.tools.bootstrap;
 
+import io.spine.tools.bootstrap.protobuf.ProtobufGenerator;
 import io.spine.tools.gradle.SpinePlugin;
 import org.gradle.api.Project;
 

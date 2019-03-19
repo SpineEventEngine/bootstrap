@@ -21,6 +21,7 @@
 package io.spine.tools.bootstrap;
 
 import groovy.lang.Closure;
+import io.spine.tools.bootstrap.protobuf.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 

@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.bootstrap;
+package io.spine.tools.bootstrap.protobuf;
 
 import com.google.protobuf.gradle.ExecutableLocator;
 import com.google.protobuf.gradle.GenerateProtoTask;
@@ -42,7 +42,7 @@ import static io.spine.tools.groovy.ConsumerClosure.closure;
  *
  * <p>Configures the {@code protoc} built-ins and plugins to be used for code generation.
  */
-final class ProtobufGenerator {
+public final class ProtobufGenerator {
 
     /**
      * Identifier of the {@link com.google.protobuf.gradle.ProtobufPlugin}.
@@ -51,21 +51,21 @@ final class ProtobufGenerator {
 
     private final Project project;
 
-    ProtobufGenerator(Project project) {
+    public ProtobufGenerator(Project project) {
         this.project = checkNotNull(project);
     }
 
     /**
      * Enables code generation with the given {@code protoc} built-in.
      */
-    void enableBuiltIn(ProtocPlugin builtIn) {
+    public void enableBuiltIn(ProtocPlugin builtIn) {
         enableIn(builtIn, GenerateProtoTask::getBuiltins);
     }
 
     /**
      * Enables code generation with the given {@code protoc} built-in.
      */
-    void enablePlugin(ProtocPlugin builtIn) {
+    public void enablePlugin(ProtocPlugin builtIn) {
         enableIn(builtIn, GenerateProtoTask::getPlugins);
     }
 
@@ -79,14 +79,14 @@ final class ProtobufGenerator {
     /**
      * Disables code generation with the given {@code protoc} built-in.
      */
-    void disableBuiltIn(ProtocPlugin builtIn) {
+    public void disableBuiltIn(ProtocPlugin builtIn) {
         disableIn(builtIn, GenerateProtoTask::getBuiltins);
     }
 
     /**
      * Disables code generation with the given {@code protoc} built-in.
      */
-    void disablePlugin(ProtocPlugin builtIn) {
+    public void disablePlugin(ProtocPlugin builtIn) {
         disableIn(builtIn, GenerateProtoTask::getPlugins);
     }
 
@@ -103,7 +103,7 @@ final class ProtobufGenerator {
      * @param artifactSpec
      *         Protobuf compiler artifact spec
      */
-    void useCompiler(String artifactSpec) {
+    public void useCompiler(String artifactSpec) {
         checkNotNull(artifactSpec);
         withProtobufPlugin(() -> protobufConfigurator().protoc(closure(
                 (ExecutableLocator locator) -> locator.setArtifact(artifactSpec))

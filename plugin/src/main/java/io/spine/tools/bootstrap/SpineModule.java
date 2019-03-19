@@ -24,7 +24,9 @@ import io.spine.tools.gradle.Artifact;
 
 enum SpineModule {
 
-    base, client, server;
+    base,
+    client,
+    server;
 
     private static final String SPINE_PREFIX = "spine-";
 

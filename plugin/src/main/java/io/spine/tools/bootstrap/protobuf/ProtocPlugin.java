@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.bootstrap;
+package io.spine.tools.bootstrap.protobuf;
 
 import com.google.protobuf.gradle.GenerateProtoTask;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -31,17 +31,17 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * <p>The names of the enum instances should be used as the names of the built-ins.
  */
-final class ProtocPlugin {
+public final class ProtocPlugin {
 
     private final Name name;
     private final @Nullable String option;
 
-    static ProtocPlugin called(Name name) {
+    public static ProtocPlugin called(Name name) {
         checkNotNull(name);
         return new ProtocPlugin(name, null);
     }
 
-    static ProtocPlugin withOption(Name name, String option) {
+    public static ProtocPlugin withOption(Name name, String option) {
         checkNotNull(name);
         checkNotNull(option);
         return new ProtocPlugin(name, option);
@@ -65,7 +65,7 @@ final class ProtocPlugin {
         plugins.removeIf(taskBuiltIn -> name.equals(taskBuiltIn.getName()));
     }
 
-    enum Name {
+    public enum Name {
         java,
         js,
         grpc

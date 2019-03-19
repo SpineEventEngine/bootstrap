@@ -22,6 +22,8 @@ package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
+import io.spine.tools.bootstrap.protobuf.ProtobufGenerator;
+import io.spine.tools.bootstrap.protobuf.ProtocPlugin;
 import org.gradle.api.Project;
 
 import static io.spine.tools.bootstrap.SpineModule.base;

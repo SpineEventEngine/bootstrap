@@ -21,13 +21,14 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import io.spine.tools.bootstrap.protobuf.ProtobufGenerator;
 import org.gradle.api.Project;
 
 import java.io.File;
 
-import static io.spine.tools.bootstrap.ProtocPlugin.Name.grpc;
-import static io.spine.tools.bootstrap.ProtocPlugin.Name.java;
-import static io.spine.tools.bootstrap.ProtocPlugin.called;
+import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.Name.grpc;
+import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.Name.java;
+import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.called;
 import static io.spine.tools.bootstrap.SpineModule.client;
 import static io.spine.tools.bootstrap.SpineModule.server;
 

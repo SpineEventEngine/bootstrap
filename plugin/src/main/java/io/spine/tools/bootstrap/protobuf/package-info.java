@@ -18,30 +18,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.bootstrap;
-
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.tools.bootstrap.protobuf.ProtobufGenerator;
-import org.gradle.api.Project;
-
-import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.Name.js;
-import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.withOption;
-
 /**
- * An extension which configures JavaScript code generation.
+ * This package contains components configuring the Protobuf Gradle plugin.
  */
-public final class JavaScriptExtension extends CodeGenExtension {
 
-    private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.tools.bootstrap.protobuf;
 
-    JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget, DependencyTarget dependencyTarget, Project project) {
-        super(generator, withOption(js, IMPORT_STYLE_OPTION), pluginTarget, dependencyTarget, project);
-    }
+import com.google.errorprone.annotations.CheckReturnValue;
 
-    @OverridingMethodsMustInvokeSuper
-    @Override
-    void enableGeneration() {
-        super.enableGeneration();
-        pluginTarget().applyProtoJsPlugin();
-    }
-}
+import javax.annotation.ParametersAreNonnullByDefault;
