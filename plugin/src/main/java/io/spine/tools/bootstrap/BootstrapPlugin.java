@@ -68,12 +68,22 @@ public final class BootstrapPlugin extends SpinePlugin {
 
     @Override
     public void apply(Project project) {
+        applyScriptPlugins(project);
+        applyExtension(project);
+        configureProtocArtifact(project);
+    }
+
+    private static void applyExtension(Project project) {
         PluginTarget plugableProject = new PlugableProject(project);
         Extension extension = Extension.newInstance(project, plugableProject);
         project.getExtensions()
                .add(Extension.NAME, extension);
         extension.disableJavaGeneration();
-        configureProtocArtifact(project);
+    }
+
+    private static void applyScriptPlugins(Project project) {
+        PluginScript.all()
+                    .forEach(plugin -> plugin.apply(project));
     }
 
     private static void configureProtocArtifact(Project project) {
