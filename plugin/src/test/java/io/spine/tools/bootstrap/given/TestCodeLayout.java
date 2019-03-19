@@ -33,7 +33,7 @@ public final class TestCodeLayout implements CodeLayout {
     private final Set<Path> javaSourceDirs = newHashSet();
 
     @Override
-    public void javaSourcesRoot(Path rootDirectory) {
+    public void markJavaSourcesRoot(Path rootDirectory) {
         javaSourceDirs.add(rootDirectory);
     }
 

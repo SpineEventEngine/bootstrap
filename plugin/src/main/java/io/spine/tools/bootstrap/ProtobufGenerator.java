@@ -27,7 +27,6 @@ import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
 import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.PluginManager;
@@ -70,12 +69,9 @@ final class ProtobufGenerator {
         enableIn(builtIn, GenerateProtoTask::getPlugins);
     }
 
-    private void
-    enableIn(ProtocPlugin plugin,
-             Function<GenerateProtoTask, NamedDomainObjectContainer<PluginOptions>>
-                     containerFactory) {
+    private void enableIn(ProtocPlugin plugin, ContainerSelector selector) {
         withProtobufPlugin(() -> configureTasks(task -> {
-            NamedDomainObjectContainer<PluginOptions> plugins = containerFactory.apply(task);
+            NamedDomainObjectContainer<PluginOptions> plugins = selector.apply(task);
             plugin.createIn(plugins);
         }));
     }
@@ -94,12 +90,9 @@ final class ProtobufGenerator {
         disableIn(builtIn, GenerateProtoTask::getPlugins);
     }
 
-    private void
-    disableIn(ProtocPlugin plugin,
-              Function<GenerateProtoTask, NamedDomainObjectContainer<PluginOptions>>
-                      containerFactory) {
+    private void disableIn(ProtocPlugin plugin, ContainerSelector selector) {
         withProtobufPlugin(() -> configureTasks(task -> {
-            NamedDomainObjectContainer<PluginOptions> plugins = containerFactory.apply(task);
+            NamedDomainObjectContainer<PluginOptions> plugins = selector.apply(task);
             plugin.removeFrom(plugins);
         }));
     }
@@ -141,49 +134,7 @@ final class ProtobufGenerator {
         }
     }
 
-    /**
-     * Protobuf compiler built-in which can be configured with the Spine plugin.
-     *
-     * <p>The names of the enum instances should be used as the names of the built-ins.
-     */
-    static final class ProtocPlugin {
-
-        private final Name name;
-        private final @Nullable String option;
-
-        static ProtocPlugin called(Name name) {
-            checkNotNull(name);
-            return new ProtocPlugin(name, null);
-        }
-
-        static ProtocPlugin withOption(Name name, String option) {
-            checkNotNull(name);
-            checkNotNull(option);
-            return new ProtocPlugin(name, option);
-        }
-
-        private ProtocPlugin(Name name, @Nullable String option) {
-            this.name = name;
-            this.option = option;
-        }
-
-        private void createIn(NamedDomainObjectContainer<PluginOptions> plugins) {
-            checkNotNull(plugins);
-            PluginOptions options = plugins.maybeCreate(name.name());
-            if (option != null) {
-                options.option(option);
-            }
-        }
-
-        private void removeFrom(NamedDomainObjectContainer<PluginOptions> plugins) {
-            String name = this.name.name();
-            plugins.removeIf(taskBuiltIn -> name.equals(taskBuiltIn.getName()));
-        }
-
-        enum Name {
-            java,
-            js,
-            grpc
-        }
+    private interface ContainerSelector
+            extends Function<GenerateProtoTask, NamedDomainObjectContainer<PluginOptions>> {
     }
 }

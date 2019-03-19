@@ -25,9 +25,9 @@ import org.gradle.api.Project;
 
 import java.io.File;
 
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.Name.grpc;
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.Name.java;
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.called;
+import static io.spine.tools.bootstrap.ProtocPlugin.Name.grpc;
+import static io.spine.tools.bootstrap.ProtocPlugin.Name.java;
+import static io.spine.tools.bootstrap.ProtocPlugin.called;
 import static io.spine.tools.bootstrap.SpineModule.client;
 import static io.spine.tools.bootstrap.SpineModule.server;
 
@@ -95,6 +95,6 @@ public final class JavaExtension extends CodeGenExtension {
     private void addSourceSets() {
         File projectDir = project.getProjectDir();
         File generatedDir = new File(projectDir, GENERATED);
-        codeLayout.javaSourcesRoot(generatedDir.toPath());
+        codeLayout.markJavaSourcesRoot(generatedDir.toPath());
     }
 }

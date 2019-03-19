@@ -23,8 +23,8 @@ package io.spine.tools.bootstrap;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import org.gradle.api.Project;
 
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.Name.js;
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocPlugin.withOption;
+import static io.spine.tools.bootstrap.ProtocPlugin.Name.js;
+import static io.spine.tools.bootstrap.ProtocPlugin.withOption;
 
 /**
  * An extension which configures JavaScript code generation.

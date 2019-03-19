@@ -24,5 +24,5 @@ import java.nio.file.Path;
 
 public interface CodeLayout {
 
-    void javaSourcesRoot(Path rootDirectory);
+    void markJavaSourcesRoot(Path rootDirectory);
 }

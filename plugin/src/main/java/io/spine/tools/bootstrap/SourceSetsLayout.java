@@ -42,7 +42,7 @@ final class SourceSetsLayout implements CodeLayout {
     }
 
     @Override
-    public void javaSourcesRoot(Path rootDirectory) {
+    public void markJavaSourcesRoot(Path rootDirectory) {
         checkNotNull(rootDirectory);
 
         SourceSetContainer sourceSets = sourceSets();
