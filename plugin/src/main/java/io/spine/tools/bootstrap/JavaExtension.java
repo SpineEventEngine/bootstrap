@@ -22,13 +22,13 @@ package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
-import io.spine.tools.gradle.Artifact;
 import org.gradle.api.Project;
 
 import java.io.File;
 
 import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.java;
-import static org.gradle.api.plugins.JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME;
+import static io.spine.tools.bootstrap.SpineModule.client;
+import static io.spine.tools.bootstrap.SpineModule.server;
 
 /**
  * An extension which configures Java code generation.
@@ -36,9 +36,7 @@ import static org.gradle.api.plugins.JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAM
 public final class JavaExtension extends CodeGenExtension {
 
     private final Project project;
-    private final String spineVersion;
     private final CodeLayout codeLayout;
-    private final DependencyTarget dependencyTarget;
 
     private boolean grpc = false;
 
@@ -47,13 +45,9 @@ public final class JavaExtension extends CodeGenExtension {
                   PluginTarget pluginTarget,
                   CodeLayout codeLayout,
                   DependencyTarget dependencyTarget) {
-        super(generator, ProtocBuiltIn.called(java), pluginTarget);
+        super(generator, ProtocBuiltIn.called(java), pluginTarget, dependencyTarget, project);
         this.project = project;
         this.codeLayout = codeLayout;
-        this.dependencyTarget = dependencyTarget;
-        this.spineVersion = Ext.of(project)
-                               .versions()
-                               .spine();
     }
 
     /**
@@ -73,11 +67,15 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     public void client() {
-        addSpineDependency(SpineModule.client);
+        dependOn(client);
     }
 
     public void server() {
-        addSpineDependency(SpineModule.server);
+        dependOn(server);
+    }
+
+    private void dependOn(SpineModule module) {
+        dependencyTarget().compile(module.withVersion(spineVersion()));
     }
 
     private void warnUnimplemented() {
@@ -90,7 +88,6 @@ public final class JavaExtension extends CodeGenExtension {
         super.enableGeneration();
         pluginTarget().applyModelCompiler();
         addSourceSets();
-        addSpineDependency(SpineModule.base);
     }
 
     private void addSourceSets() {
@@ -99,24 +96,4 @@ public final class JavaExtension extends CodeGenExtension {
         codeLayout.javaSourcesRoot(generatedDir.toPath());
     }
 
-    private void addSpineDependency(SpineModule spineModule) {
-        Artifact artifact = Artifact
-                .newBuilder()
-                .setGroup("io.spine")
-                .setName(spineModule.notation())
-                .setVersion(spineVersion)
-                .build();
-        dependencyTarget.dependOn(artifact);
-    }
-
-    private enum SpineModule {
-
-        base, client, server;
-
-        private static final String SPINE_PREFIX = "spine-";
-
-        private String notation() {
-            return SPINE_PREFIX + name();
-        }
-    }
 }

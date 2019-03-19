@@ -24,23 +24,22 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.gradle.api.plugins.JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME;
 
-final class ImplementationDependencyTarget implements DependencyTarget {
+final class ProjectDependencyTarget implements DependencyTarget {
 
     private final DependencyHandler dependencies;
 
-    private ImplementationDependencyTarget(DependencyHandler dependencies) {
+    private ProjectDependencyTarget(DependencyHandler dependencies) {
         this.dependencies = dependencies;
     }
 
-    static ImplementationDependencyTarget from(Project project) {
+    static ProjectDependencyTarget from(Project project) {
         checkNotNull(project);
-        return new ImplementationDependencyTarget(project.getDependencies());
+        return new ProjectDependencyTarget(project.getDependencies());
     }
 
     @Override
-    public void dependOn(String notation) {
-        dependencies.add(IMPLEMENTATION_CONFIGURATION_NAME, notation);
+    public void depend(String configurationName, String notation) {
+        dependencies.add(configurationName, notation);
     }
 }

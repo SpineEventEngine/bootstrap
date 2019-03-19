@@ -20,27 +20,25 @@
 
 package io.spine.tools.bootstrap;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
-import org.gradle.api.Project;
+import io.spine.tools.gradle.Artifact;
 
-import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.js;
+enum SpineModule {
 
-/**
- * An extension which configures JavaScript code generation.
- */
-public final class JavaScriptExtension extends CodeGenExtension {
+    base, client, server;
 
-    private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
+    private static final String SPINE_PREFIX = "spine-";
 
-    JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget, DependencyTarget dependencyTarget, Project project) {
-        super(generator, ProtocBuiltIn.withOption(js, IMPORT_STYLE_OPTION), pluginTarget, dependencyTarget, project);
+    private String notation() {
+        return SPINE_PREFIX + name();
     }
 
-    @OverridingMethodsMustInvokeSuper
-    @Override
-    void enableGeneration() {
-        super.enableGeneration();
-        pluginTarget().applyProtoJsPlugin();
+    Artifact withVersion(String version) {
+        Artifact artifact = Artifact
+                .newBuilder()
+                .setGroup("io.spine")
+                .setName(notation())
+                .setVersion(version)
+                .build();
+        return artifact;
     }
 }

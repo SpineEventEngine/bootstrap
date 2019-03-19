@@ -67,7 +67,7 @@ public final class BootstrapPlugin extends SpinePlugin {
     private static void applyExtension(Project project) {
         PluginTarget plugableProject = new PlugableProject(project);
         CodeLayout layout = SourceSetsLayout.of(project);
-        ImplementationDependencyTarget dependencyTarget = ImplementationDependencyTarget.from(project);
+        ProjectDependencyTarget dependencyTarget = ProjectDependencyTarget.from(project);
         Extension extension = Extension.newInstance(project, plugableProject, layout, dependencyTarget);
         project.getExtensions()
                .add(Extension.NAME, extension);

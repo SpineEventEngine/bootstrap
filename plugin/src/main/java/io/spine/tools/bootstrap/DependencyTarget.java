@@ -22,11 +22,21 @@ package io.spine.tools.bootstrap;
 
 import io.spine.tools.gradle.Artifact;
 
+import static org.gradle.api.plugins.JavaPlugin.COMPILE_CONFIGURATION_NAME;
+
 public interface DependencyTarget {
 
-    default void dependOn(Artifact artifact) {
-
+    default void compile(Artifact artifact) {
+        compile(artifact.notation());
     }
 
-    void dependOn(String notation);
+    default void compile(String notation) {
+        @SuppressWarnings("deprecation")
+        // Required in order to add Protobuf dependencies.
+        // See issue https://github.com/google/protobuf-gradle-plugin/issues/242.
+        String configurationName = COMPILE_CONFIGURATION_NAME;
+        depend(configurationName, notation);
+    }
+
+    void depend(String configurationName, String notation);
 }

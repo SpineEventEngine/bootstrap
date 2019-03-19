@@ -22,6 +22,9 @@ package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
+import org.gradle.api.Project;
+
+import static io.spine.tools.bootstrap.SpineModule.base;
 
 /**
  * A part of the {@link Extension spine} extension which configures certain code generation tasks.
@@ -33,13 +36,21 @@ abstract class CodeGenExtension implements Logging {
     private final ProtobufGenerator protobufGenerator;
     private final ProtobufGenerator.ProtocBuiltIn codeGenJob;
     private final PluginTarget pluginTarget;
+    private final DependencyTarget dependencyTarget;
+    private final String spineVersion;
 
     CodeGenExtension(ProtobufGenerator protobufGenerator,
                      ProtobufGenerator.ProtocBuiltIn job,
-                     PluginTarget pluginTarget) {
+                     PluginTarget pluginTarget,
+                     DependencyTarget dependencyTarget,
+                     Project project) {
         this.protobufGenerator = protobufGenerator;
         this.codeGenJob = job;
         this.pluginTarget = pluginTarget;
+        this.dependencyTarget = dependencyTarget;
+        this.spineVersion = Ext.of(project)
+                               .versions()
+                               .spine();
     }
 
     /**
@@ -49,6 +60,7 @@ abstract class CodeGenExtension implements Logging {
     void enableGeneration() {
         pluginTarget.applyProtobufPlugin();
         protobufGenerator.enable(codeGenJob);
+        dependencyTarget.compile(base.withVersion(spineVersion));
     }
 
     /**
@@ -59,7 +71,15 @@ abstract class CodeGenExtension implements Logging {
         protobufGenerator.disable(codeGenJob);
     }
 
-    protected final PluginTarget pluginTarget() {
+    final PluginTarget pluginTarget() {
         return pluginTarget;
+    }
+
+    final DependencyTarget dependencyTarget() {
+        return dependencyTarget;
+    }
+
+    final String spineVersion() {
+        return spineVersion;
     }
 }

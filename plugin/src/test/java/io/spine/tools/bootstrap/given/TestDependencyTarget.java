@@ -22,16 +22,10 @@ package io.spine.tools.bootstrap.given;
 
 import io.spine.tools.bootstrap.DependencyTarget;
 
-import java.util.Set;
-
-import static com.google.common.collect.Sets.newHashSet;
-
 public final class TestDependencyTarget implements DependencyTarget {
 
-    private final Set<String> dependencies = newHashSet();
-
     @Override
-    public void dependOn(String notation) {
-        dependencies.add(notation);
+    public void depend(String configuration, String notation) {
+        // NoOp for tests.
     }
 }

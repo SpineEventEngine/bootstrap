@@ -54,7 +54,7 @@ public final class Extension {
 
         ProtobufGenerator generator = new ProtobufGenerator(project);
         Extension extension = new Extension(new JavaExtension(project, generator, pluginTarget, layout, dependencyTarget),
-                                            new JavaScriptExtension(generator, pluginTarget));
+                                            new JavaScriptExtension(generator, pluginTarget, dependencyTarget, project));
         return extension;
     }
 
