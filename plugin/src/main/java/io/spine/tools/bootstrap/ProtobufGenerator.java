@@ -27,7 +27,6 @@ import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
 import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
-import io.spine.tools.gradle.Artifact;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
@@ -79,12 +78,11 @@ final class ProtobufGenerator {
     /**
      * Specifies the Protobuf compiler to use to generate code.
      *
-     * @param protoc
+     * @param artifactSpec
      *         Protobuf compiler artifact spec
      */
-    void useCompiler(Artifact protoc) {
-        checkNotNull(protoc);
-        String artifactSpec = protoc.notation();
+    void useCompiler(String artifactSpec) {
+        checkNotNull(artifactSpec);
         withProtobufPlugin(() -> protobufConfigurator().protoc(closure(
                 (ExecutableLocator locator) -> locator.setArtifact(artifactSpec))
         ));
