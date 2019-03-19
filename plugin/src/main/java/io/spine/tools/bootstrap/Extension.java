@@ -20,6 +20,7 @@
 
 package io.spine.tools.bootstrap;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
 import io.spine.tools.bootstrap.protobuf.ProtobufGenerator;
 import org.gradle.api.Action;
@@ -91,8 +92,10 @@ public final class Extension {
      * <p>Enables the Java code generation from Protobuf. If the {@code spine-model-compiler} plugin
      * is not applied to this project, applies it immediately.
      */
-    public void java() {
+    @CanIgnoreReturnValue
+    public JavaExtension java() {
         java.enableGeneration();
+        return java;
     }
 
     /**
@@ -101,8 +104,10 @@ public final class Extension {
      * <p>Enables the JS code generation from Protobuf. If the {@code spine-proto-js-plugin} is
      * not applied to this project, applies it immediately.
      */
-    public void javaScript() {
+    @CanIgnoreReturnValue
+    public JavaScriptExtension javaScript() {
         javaScript.enableGeneration();
+        return javaScript;
     }
 
     /**

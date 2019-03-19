@@ -20,6 +20,8 @@
 
 package io.spine.tools.bootstrap;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.bootstrap.given.TestCodeLayout;
@@ -44,6 +46,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.bootstrap.given.ExtensionTextEnv.addExt;
+import static io.spine.tools.bootstrap.given.ExtensionTextEnv.spineVersion;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -54,6 +57,9 @@ class ExtensionTest {
 
     private PluginTarget pluginTarget;
     private Extension extension;
+    private TestCodeLayout codeLayout;
+    private TestDependencyTarget dependencyTarget;
+    private Path projectDir;
 
     @BeforeEach
     void setUp(@TempDir Path projectDir) {
@@ -62,9 +68,12 @@ class ExtensionTest {
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
+        this.projectDir = project.getProjectDir().toPath();
         addExt(project);
         pluginTarget = new TestPluginRegistry();
-        extension = Extension.newInstance(project, pluginTarget, new TestCodeLayout(), new TestDependencyTarget());
+        dependencyTarget = new TestDependencyTarget();
+        codeLayout = new TestCodeLayout();
+        extension = Extension.newInstance(project, pluginTarget, codeLayout, dependencyTarget);
     }
 
     @Nested
@@ -132,6 +141,43 @@ class ExtensionTest {
             assertApplied(JavaPlugin.class);
             assertApplied(ProtoJsPlugin.class);
             assertApplied(ModelCompilerPlugin.class);
+        }
+
+        @Test
+        @DisplayName("add server dependencies if required")
+        void server() {
+            extension.java().server();
+
+            assertApplied(JavaPlugin.class);
+            assertThat(dependencyTarget.dependencies()).contains(serverDependency());
+        }
+
+        @Test
+        @DisplayName("add client dependencies if required")
+        void client() {
+            extension.java().client();
+
+            IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
+            assertDependencies.contains(clientDependency());
+            assertDependencies.doesNotContain(serverDependency());
+        }
+
+        @Test
+        @DisplayName("declare `generated` directory a source root")
+        void declareGeneratedDirectory() {
+            extension.java();
+
+            assertApplied(JavaPlugin.class);
+            ImmutableSet<Path> declaredPaths = codeLayout.javaSourceDirs();
+            assertThat(declaredPaths).contains(projectDir.resolve("generated"));
+        }
+
+        private String serverDependency() {
+            return "io.spine:spine-server:" + spineVersion;
+        }
+
+        private String clientDependency() {
+            return "io.spine:spine-client:" + spineVersion;
         }
 
         private void assertApplied(Class<? extends Plugin<? extends Project>> pluginClass) {

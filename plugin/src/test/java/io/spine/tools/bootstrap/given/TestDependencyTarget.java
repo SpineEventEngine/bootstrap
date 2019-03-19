@@ -20,12 +20,23 @@
 
 package io.spine.tools.bootstrap.given;
 
+import com.google.common.collect.ImmutableSet;
 import io.spine.tools.bootstrap.DependencyTarget;
+
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
 
 public final class TestDependencyTarget implements DependencyTarget {
 
+    private final Set<String> dependencies = newHashSet();
+
     @Override
     public void depend(String configuration, String notation) {
-        // NoOp for tests.
+        dependencies.add(notation);
+    }
+
+    public ImmutableSet<String> dependencies() {
+        return ImmutableSet.copyOf(dependencies);
     }
 }

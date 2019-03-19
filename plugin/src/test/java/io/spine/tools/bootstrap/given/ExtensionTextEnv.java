@@ -28,7 +28,7 @@ import java.util.Map;
 
 public final class ExtensionTextEnv {
 
-    private static final String spineVersion = "42.3.14-AVOCADO";
+    public static final String spineVersion = "42.3.14-AVOCADO";
     private static final Map<String, ?> deps = ImmutableMap.of(
             "versions", ImmutableMap.of(
                     "grpc", "1.18",
