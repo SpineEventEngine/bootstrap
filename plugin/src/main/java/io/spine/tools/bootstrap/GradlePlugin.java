@@ -47,7 +47,8 @@ public final class GradlePlugin {
      *         the plugin implementation class
      * @return new instance
      */
-    public static GradlePlugin implementedIn(Class<? extends Plugin<? extends Project>> pluginClass) {
+    public static GradlePlugin
+    implementedIn(Class<? extends Plugin<? extends Project>> pluginClass) {
         return new GradlePlugin(pluginClass);
     }
 
