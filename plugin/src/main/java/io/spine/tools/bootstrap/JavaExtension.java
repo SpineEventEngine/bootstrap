@@ -22,18 +22,38 @@ package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn;
+import io.spine.tools.gradle.Artifact;
+import org.gradle.api.Project;
+
+import java.io.File;
 
 import static io.spine.tools.bootstrap.ProtobufGenerator.ProtocBuiltIn.Name.java;
+import static org.gradle.api.plugins.JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME;
 
 /**
  * An extension which configures Java code generation.
  */
 public final class JavaExtension extends CodeGenExtension {
 
+    private final Project project;
+    private final String spineVersion;
+    private final CodeLayout codeLayout;
+    private final DependencyTarget dependencyTarget;
+
     private boolean grpc = false;
 
-    JavaExtension(ProtobufGenerator generator, PluginTarget pluginTarget) {
+    JavaExtension(Project project,
+                  ProtobufGenerator generator,
+                  PluginTarget pluginTarget,
+                  CodeLayout codeLayout,
+                  DependencyTarget dependencyTarget) {
         super(generator, ProtocBuiltIn.called(java), pluginTarget);
+        this.project = project;
+        this.codeLayout = codeLayout;
+        this.dependencyTarget = dependencyTarget;
+        this.spineVersion = Ext.of(project)
+                               .versions()
+                               .spine();
     }
 
     /**
@@ -52,6 +72,14 @@ public final class JavaExtension extends CodeGenExtension {
         this.grpc = generateGrpc;
     }
 
+    public void client() {
+        addSpineDependency(SpineModule.client);
+    }
+
+    public void server() {
+        addSpineDependency(SpineModule.server);
+    }
+
     private void warnUnimplemented() {
         _warn("gRPC configuration is not yet implemented via `spine` DSL.");
     }
@@ -61,5 +89,34 @@ public final class JavaExtension extends CodeGenExtension {
     void enableGeneration() {
         super.enableGeneration();
         pluginTarget().applyModelCompiler();
+        addSourceSets();
+        addSpineDependency(SpineModule.base);
+    }
+
+    private void addSourceSets() {
+        File projectDir = project.getProjectDir();
+        File generatedDir = new File(projectDir, "generated");
+        codeLayout.javaSourcesRoot(generatedDir.toPath());
+    }
+
+    private void addSpineDependency(SpineModule spineModule) {
+        Artifact artifact = Artifact
+                .newBuilder()
+                .setGroup("io.spine")
+                .setName(spineModule.notation())
+                .setVersion(spineVersion)
+                .build();
+        dependencyTarget.dependOn(artifact);
+    }
+
+    private enum SpineModule {
+
+        base, client, server;
+
+        private static final String SPINE_PREFIX = "spine-";
+
+        private String notation() {
+            return SPINE_PREFIX + name();
+        }
     }
 }

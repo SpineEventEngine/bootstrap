@@ -18,24 +18,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-buildscript { final scriptHandler ->
-    apply from: 'test-env.gradle'
-    apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+package io.spine.tools.bootstrap;
 
-    defaultRepositories(scriptHandler)
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.dsl.DependencyHandler;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.gradle.api.plugins.JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME;
+
+final class ImplementationDependencyTarget implements DependencyTarget {
+
+    private final DependencyHandler dependencies;
+
+    private ImplementationDependencyTarget(DependencyHandler dependencies) {
+        this.dependencies = dependencies;
+    }
+
+    static ImplementationDependencyTarget from(Project project) {
+        checkNotNull(project);
+        return new ImplementationDependencyTarget(project.getDependencies());
+    }
+
+    @Override
+    public void dependOn(String notation) {
+        dependencies.add(IMPLEMENTATION_CONFIGURATION_NAME, notation);
+    }
 }
-
-plugins {
-    id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
-}
-
-apply from: 'test-env.gradle'
-
-defaultRepositories(project)
-
-// This script file is created at a test runtime by the `GradleProject`.
-//
-// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
-// performs such a configuration in `config.gradle`. 
-//
-apply from: 'config.gradle'

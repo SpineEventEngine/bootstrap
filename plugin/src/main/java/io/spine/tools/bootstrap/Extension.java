@@ -40,20 +40,21 @@ public final class Extension {
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
 
-    private Extension(ProtobufGenerator generator, PluginTarget pluginTarget) {
-        this.java = new JavaExtension(generator, pluginTarget);
-        this.javaScript = new JavaScriptExtension(generator, pluginTarget);
+    private Extension(JavaExtension java, JavaScriptExtension javaScript) {
+        this.java = java;
+        this.javaScript = javaScript;
     }
 
     /**
      * Creates a new instance of {@code Extension} for the given project.
      */
-    static Extension newInstance(Project project, PluginTarget pluginTarget) {
+    static Extension newInstance(Project project, PluginTarget pluginTarget, CodeLayout layout, DependencyTarget dependencyTarget) {
         checkNotNull(project);
         checkNotNull(pluginTarget);
 
         ProtobufGenerator generator = new ProtobufGenerator(project);
-        Extension extension = new Extension(generator, pluginTarget);
+        Extension extension = new Extension(new JavaExtension(project, generator, pluginTarget, layout, dependencyTarget),
+                                            new JavaScriptExtension(generator, pluginTarget));
         return extension;
     }
 

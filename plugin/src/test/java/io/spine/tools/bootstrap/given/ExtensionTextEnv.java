@@ -18,24 +18,37 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-buildscript { final scriptHandler ->
-    apply from: 'test-env.gradle'
-    apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+package io.spine.tools.bootstrap.given;
 
-    defaultRepositories(scriptHandler)
+import com.google.common.collect.ImmutableMap;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.ExtraPropertiesExtension;
+
+import java.util.Map;
+
+public final class ExtensionTextEnv {
+
+    private static final String spineVersion = "42.3.14-AVOCADO";
+    private static final Map<String, ?> deps = ImmutableMap.of(
+            "versions", ImmutableMap.of(
+                    "grpc", "1.18",
+                    "protobuf", "3.6.1"
+            ),
+            "build", ImmutableMap.of(
+                    "protoc", "com.google.protobuf:protoc:3.6.1"
+            )
+    );
+
+    /**
+     * Prevents the utility class instantiation.
+     */
+    private ExtensionTextEnv() {
+    }
+
+    public static void addExt(Project project) {
+        ExtraPropertiesExtension ext = project.getExtensions()
+                                              .getExtraProperties();
+        ext.set("spineVersion", spineVersion);
+        ext.set("deps", deps);
+    }
 }
-
-plugins {
-    id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
-}
-
-apply from: 'test-env.gradle'
-
-defaultRepositories(project)
-
-// This script file is created at a test runtime by the `GradleProject`.
-//
-// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
-// performs such a configuration in `config.gradle`. 
-//
-apply from: 'config.gradle'

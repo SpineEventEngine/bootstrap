@@ -22,6 +22,8 @@ package io.spine.tools.bootstrap;
 
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
+import io.spine.tools.bootstrap.given.TestCodeLayout;
+import io.spine.tools.bootstrap.given.TestDependencyTarget;
 import io.spine.tools.bootstrap.given.TestPluginRegistry;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.groovy.ConsumerClosure;
@@ -41,6 +43,7 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
+import static io.spine.tools.bootstrap.given.ExtensionTextEnv.addExt;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -59,8 +62,9 @@ class ExtensionTest {
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
+        addExt(project);
         pluginTarget = new TestPluginRegistry();
-        extension = Extension.newInstance(project, pluginTarget);
+        extension = Extension.newInstance(project, pluginTarget, new TestCodeLayout(), new TestDependencyTarget());
     }
 
     @Nested
