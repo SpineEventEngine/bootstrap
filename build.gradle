@@ -124,3 +124,8 @@ subprojects {
 
 apply from: deps.scripts.jacoco
 apply from: deps.scripts.publish
+
+rootProject.afterEvaluate {
+    final Project pluginProject = project(':plugin')
+    pluginProject.publish.dependsOn(pluginProject.publishPlugins)
+}
