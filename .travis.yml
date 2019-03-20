@@ -3,6 +3,9 @@ language: java
 before_install:
   - chmod +x gradlew
 
+install:
+  - openssl aes-256-cbc -K $encrypted_484d6a99d515_key -iv $encrypted_484d6a99d515_iv -in credentials.tar.enc -out credentials.tar -d
+
 script:
   - ./gradlew check --stacktrace
 
