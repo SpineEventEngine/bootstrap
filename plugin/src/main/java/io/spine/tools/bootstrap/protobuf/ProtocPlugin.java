@@ -65,6 +65,9 @@ public final class ProtocPlugin {
         plugins.removeIf(taskBuiltIn -> name.equals(taskBuiltIn.getName()));
     }
 
+    /**
+     * The enumeration of known protoc built-ins and plugins.
+     */
     public enum Name {
         java,
         js,
