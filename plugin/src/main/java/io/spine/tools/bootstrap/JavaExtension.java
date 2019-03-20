@@ -20,7 +20,6 @@
 
 package io.spine.tools.bootstrap;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import org.gradle.api.Project;
 
 import java.io.File;
@@ -70,10 +69,20 @@ public final class JavaExtension extends CodeGenExtension {
         }
     }
 
+    /**
+     * Marks this project as a Java client of the system.
+     *
+     * <p>Adds the {@code io.spine:spine-client} dependency to the project.
+     */
     public void client() {
         dependOn(client);
     }
 
+    /**
+     * Marks this project as a part of a Java server.
+     *
+     * <p>Adds the {@code io.spine:spine-server} dependency to the project.
+     */
     public void server() {
         dependOn(server);
     }
@@ -82,7 +91,6 @@ public final class JavaExtension extends CodeGenExtension {
         dependencyTarget().compile(module.withVersion(spineVersion()));
     }
 
-    @OverridingMethodsMustInvokeSuper
     @Override
     void enableGeneration() {
         super.enableGeneration();
@@ -93,7 +101,7 @@ public final class JavaExtension extends CodeGenExtension {
     private void addSourceSets() {
         File projectDir = project.getProjectDir();
         File generatedDir = new File(projectDir, GENERATED);
-        codeLayout.markJavaSourcesRoot(generatedDir.toPath());
+        codeLayout.markCodeGenRoot(generatedDir.toPath());
     }
 
     private void addGrpcDependencies() {

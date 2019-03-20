@@ -22,7 +22,24 @@ package io.spine.tools.bootstrap;
 
 import java.nio.file.Path;
 
+/**
+ * A description of the project code layout on the file system.
+ *
+ * <p>Typically represented by the project {@link org.gradle.api.tasks.SourceSetContainer}.
+ */
 public interface CodeLayout {
 
-    void markJavaSourcesRoot(Path rootDirectory);
+    /**
+     * Marks the given directory as a generated code root dir.
+     *
+     * <p>The directory should have a sub-directory for each source set present in the project.
+     * Each sub-directory should have {@code java}, {@code spine}, and {@code grpc} directories,
+     * which contain Java sources.
+     *
+     * <p>If one of the described directories is missing, it is ignored.
+     *
+     * @param rootDirectory
+     *         the directory to mark
+     */
+    void markCodeGenRoot(Path rootDirectory);
 }

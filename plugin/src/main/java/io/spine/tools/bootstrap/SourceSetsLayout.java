@@ -28,6 +28,12 @@ import java.nio.file.Path;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * A {@link CodeLayout} implementation based on source sets.
+ *
+ * <p>{@code SourceSetsLayout} does not try to resolve any files or find the current project
+ * source sets unless {@link #markCodeGenRoot(Path)} is called.
+ */
 final class SourceSetsLayout implements CodeLayout {
 
     private final Project project;
@@ -36,13 +42,16 @@ final class SourceSetsLayout implements CodeLayout {
         this.project = project;
     }
 
+    /**
+     * Creates a new instance of {@code SourceSetsLayout} for the given project.
+     */
     static SourceSetsLayout of(Project project) {
         checkNotNull(project);
         return new SourceSetsLayout(project);
     }
 
     @Override
-    public void markJavaSourcesRoot(Path rootDirectory) {
+    public void markCodeGenRoot(Path rootDirectory) {
         checkNotNull(rootDirectory);
 
         SourceSetContainer sourceSets = sourceSets();
@@ -51,7 +60,8 @@ final class SourceSetsLayout implements CodeLayout {
             sourceSet.getJava()
                      .srcDirs(
                              scopeDir.resolve("java").toFile(),
-                             scopeDir.resolve("spine").toFile()
+                             scopeDir.resolve("spine").toFile(),
+                             scopeDir.resolve("grpc").toFile()
                      );
         });
     }

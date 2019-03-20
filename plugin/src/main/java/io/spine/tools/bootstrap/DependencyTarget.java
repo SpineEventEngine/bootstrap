@@ -25,12 +25,32 @@ import io.spine.tools.gradle.Artifact;
 import static org.gradle.api.plugins.JavaPlugin.COMPILE_CONFIGURATION_NAME;
 import static org.gradle.api.plugins.JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME;
 
+/**
+ * A container of dependencies of a certain project.
+ *
+ * <p>Typically, represented by a {@link org.gradle.api.artifacts.dsl.DependencyHandler} of
+ * the project.
+ */
 public interface DependencyTarget {
 
+    /**
+     * Adds a new dependency within the {@code compile} configuration.
+     *
+     * @see #compile(String)
+     */
     default void compile(Artifact artifact) {
         compile(artifact.notation());
     }
 
+    /**
+     * Adds a new dependency within the {@code compile} configuration.
+     *
+     * <p>Though {@code compile} configuration is deprecated in Gradle, it is still used in order to
+     * define Protobuf dependencies without re-generating the Java/JS sources from the upstream
+     * Protobuf definitions.
+     *
+     * @see #depend(String, String)
+     */
     default void compile(String notation) {
         @SuppressWarnings("deprecation")
         // Required in order to add Protobuf dependencies.
@@ -39,9 +59,22 @@ public interface DependencyTarget {
         depend(configurationName, notation);
     }
 
+    /**
+     * Adds a new dependency within the {@code implementation} configuration.
+     *
+     * @see #depend(String, String)
+     */
     default void implementation(String notation) {
         depend(IMPLEMENTATION_CONFIGURATION_NAME, notation);
     }
 
+    /**
+     * Adds a new dependency within a given configuration.
+     *
+     * @param configurationName
+     *         the name of the Gradle configuration
+     * @param notation
+     *         the dependency string, e.g. {@code "io.spine:spine-base:1.0.0"}
+     */
     void depend(String configurationName, String notation);
 }

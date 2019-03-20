@@ -30,6 +30,12 @@ import java.util.stream.Stream;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
+/**
+ * A Gradle project plugin implemented in a {@code .gradle} script.
+ *
+ * <p>The script file lays in the Bootstrap plugin classpath. The Bootstrap plugin may
+ * {@link #apply} this plugin to a project.
+ */
 final class PluginScript implements Plugin<Project> {
 
     private final Name resourceName;
@@ -46,17 +52,22 @@ final class PluginScript implements Plugin<Project> {
 
     @Override
     public void apply(Project target) {
-        target.apply(config -> config.from(resourceName.inClasspath()));
+        target.apply(config -> config.from(resourceName.resolveInClasspath()));
     }
 
+    /**
+     * The names of the existing plugin scripts.
+     */
     enum Name {
 
+        @SuppressWarnings("unused") // Enum instances are accessed via `values()`.
         dependencies,
+        @SuppressWarnings("unused")
         version;
 
         private static final String SCRIPT_EXTENSION = ".gradle";
 
-        private URL inClasspath() {
+        private URL resolveInClasspath() {
             String resourceName = name() + SCRIPT_EXTENSION;
             URL resource = PluginScript.class.getClassLoader()
                                              .getResource(resourceName);

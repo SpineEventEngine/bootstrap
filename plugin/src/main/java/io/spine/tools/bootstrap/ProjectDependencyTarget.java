@@ -25,6 +25,9 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * A {@link DependencyTarget} implemented on top of a {@link DependencyHandler}  of a project.
+ */
 final class ProjectDependencyTarget implements DependencyTarget {
 
     private final DependencyHandler dependencies;
@@ -33,6 +36,9 @@ final class ProjectDependencyTarget implements DependencyTarget {
         this.dependencies = dependencies;
     }
 
+    /**
+     * Creates a new instance of {@code ProjectDependencyTarget} for the given project.
+     */
     static ProjectDependencyTarget from(Project project) {
         checkNotNull(project);
         return new ProjectDependencyTarget(project.getDependencies());

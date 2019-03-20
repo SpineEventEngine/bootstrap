@@ -70,18 +70,32 @@ abstract class CodeGenExtension implements Logging {
         protobufGenerator.disableBuiltIn(codeGenJob);
     }
 
+    /**
+     * Obtains the container of plugins associated with this extension.
+     */
     final PluginTarget pluginTarget() {
         return pluginTarget;
     }
 
+    /**
+     * Obtains the dependency container associated with this extension.
+     */
     final DependencyTarget dependencyTarget() {
         return dependencyTarget;
     }
 
+    /**
+     * Obtains the version of Spine framework used in this project.
+     *
+     * <p>This is also the version of the Bootstrap plugin itself.
+     */
     final String spineVersion() {
         return spineVersion;
     }
 
+    /**
+     * Obtains the configurator of the Protobuf code generation.
+     */
     final ProtobufGenerator protobufGenerator() {
         return protobufGenerator;
     }
@@ -150,8 +164,16 @@ abstract class CodeGenExtension implements Logging {
             return doBuild();
         }
 
+        /**
+         * Obtains a reference to {@code this} which has the required compile-time type.
+         */
         abstract B self();
 
+        /**
+         * Instantiates a new extension based on the data of this builder.
+         *
+         * <p>This method assumes that the data is valid and all the required fields are set.
+         */
         abstract E doBuild();
     }
 }

@@ -22,6 +22,9 @@ package io.spine.tools.bootstrap;
 
 import io.spine.tools.gradle.Artifact;
 
+/**
+ * An enumeration of some of the Spine modules.
+ */
 enum SpineModule {
 
     base,
@@ -34,6 +37,12 @@ enum SpineModule {
         return SPINE_PREFIX + name();
     }
 
+    /**
+     * Compiles an {@link Artifact} out for this module.
+     *
+     * @param version
+     *         the version of the artifact, e.g. {@code 1.0.0}
+     */
     Artifact withVersion(String version) {
         Artifact artifact = Artifact
                 .newBuilder()

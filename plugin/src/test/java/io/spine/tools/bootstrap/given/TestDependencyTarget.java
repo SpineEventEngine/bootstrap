@@ -27,6 +27,9 @@ import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
 
+/**
+ * A memoizing test-only implementation of {@link DependencyTarget}.
+ */
 public final class TestDependencyTarget implements DependencyTarget {
 
     private final Set<String> dependencies = newHashSet();

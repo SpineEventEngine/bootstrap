@@ -28,12 +28,15 @@ import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
 
+/**
+ * A memoizing test-only implementation of {@link CodeLayout}.
+ */
 public final class TestCodeLayout implements CodeLayout {
 
     private final Set<Path> javaSourceDirs = newHashSet();
 
     @Override
-    public void markJavaSourcesRoot(Path rootDirectory) {
+    public void markCodeGenRoot(Path rootDirectory) {
         javaSourceDirs.add(rootDirectory);
     }
 
