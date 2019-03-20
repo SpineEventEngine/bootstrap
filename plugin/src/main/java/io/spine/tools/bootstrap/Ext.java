@@ -20,7 +20,6 @@
 
 package io.spine.tools.bootstrap;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
@@ -32,7 +31,19 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
+/**
+ * Accesses the project's {@code ext} values.
+ */
 final class Ext {
+
+    @SuppressWarnings("DuplicateStringLiteralInspection") // Used in other contexts.
+    private static final String SPINE_VERSION = "spineVersion";
+    private static final String GRPC = "grpc";
+    @SuppressWarnings("DuplicateStringLiteralInspection") // Used in other contexts.
+    private static final String PROTOC = "protoc";
+    @SuppressWarnings("DuplicateStringLiteralInspection") // Used in other contexts.
+    private static final String BUILD = "build";
+    private static final String DEPS = "deps";
 
     private final ExtraPropertiesExtension ext;
 
@@ -40,6 +51,9 @@ final class Ext {
         this.ext = ext;
     }
 
+    /**
+     * Creates an instance of {@code Ext} for the given project.
+     */
     static Ext of(Project project) {
         checkNotNull(project);
 
@@ -49,50 +63,59 @@ final class Ext {
         return new Ext(ext);
     }
 
+    /**
+     * Accesses the versions of the project dependencies.
+     *
+     * <p>These versions are defined in {@code deps.versions} and in the {@code versions.gradle}
+     * file.
+     */
     Versions versions() {
         return new Versions();
     }
 
+    /**
+     * Accesses the project dependency artifacts.
+     *
+     * <p>These artifacts are defined in {@code deps.build} and {@code deps.grpc}.
+     */
     Artifacts artifacts() {
         return new Artifacts();
     }
 
     final class Versions {
 
+        /**
+         * Obtains the version of the Spine framework.
+         */
         String spine() {
-            return Ext.this.property("spineVersion").value();
-        }
-
-        String grpc() {
-            return property().subProperty("grpc").value();
-        }
-
-        String protobuf() {
-            return property().subProperty("protobuf").value();
-        }
-
-        private Property property() {
-            return deps().subProperty("versions");
+            return Ext.this.property(SPINE_VERSION).value();
         }
     }
 
     final class Artifacts {
 
+        /**
+         * Obtains the artifact spec for the Protobuf compiler.
+         */
         String protoc() {
-            return property().subProperty("protoc").value();
+            return property().subProperty(PROTOC).value();
         }
 
+        /**
+         * Obtains artifact specs for the gRPC Java runtime.
+         */
         List<String> grpc() {
-            return deps().subProperty("grpc").allValues();
+            return deps().subProperty(GRPC).allValues();
         }
 
         private Property property() {
-            return deps().subProperty("build");
+            return deps().subProperty(BUILD);
         }
     }
 
+    @SuppressWarnings("MethodOnlyUsedFromInnerClass") // Logically belongs to the upper level.
     private Property deps() {
-        return property("deps");
+        return property(DEPS);
     }
 
     private Property property(String name) {
@@ -101,6 +124,9 @@ final class Ext {
         return new Property(value);
     }
 
+    /**
+     * A project extra property.
+     */
     private static final class Property {
 
         private final Object value;
@@ -109,10 +135,16 @@ final class Ext {
             this.value = value;
         }
 
+        /**
+         * Obtains the string value of the property.
+         */
         private String value() {
             return value.toString();
         }
 
+        /**
+         * Obtains all the values of this map property.
+         */
         private List<String> allValues() {
             @SuppressWarnings("unchecked") // Groovy interop.
             Map<String, ?> map = (Map<String, ?>) value;
@@ -123,6 +155,9 @@ final class Ext {
             return result;
         }
 
+        /**
+         * Obtains a sub-property of this map property.
+         */
         private Property subProperty(String name) {
             @SuppressWarnings("unchecked") // Groovy interop.
             Map<String, ?> map = (Map<String, ?>) value;
@@ -130,13 +165,6 @@ final class Ext {
             Object subValue = map.get(name);
             checkNotNull(subValue);
             return new Property(subValue);
-        }
-
-        @Override
-        public String toString() {
-            return MoreObjects.toStringHelper(this)
-                              .add("value", value)
-                              .toString();
         }
     }
 }
