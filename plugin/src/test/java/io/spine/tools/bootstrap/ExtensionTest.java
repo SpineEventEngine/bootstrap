@@ -74,7 +74,13 @@ class ExtensionTest {
         pluginTarget = new TestPluginRegistry();
         dependencyTarget = new TestDependencyTarget();
         codeLayout = new TestCodeLayout();
-        extension = Extension.newInstance(project, pluginTarget, codeLayout, dependencyTarget);
+        extension = Extension
+                .newBuilder()
+                .setProject(project)
+                .setLayout(codeLayout)
+                .setPluginTarget(pluginTarget)
+                .setDependencyTarget(dependencyTarget)
+                .build();
     }
 
     @Nested
@@ -199,7 +205,7 @@ class ExtensionTest {
         private void assertNotApplied(Class<? extends Plugin<? extends Project>> pluginClass) {
             GradlePlugin plugin = GradlePlugin.implementedIn(pluginClass);
             assertFalse(pluginTarget.isApplied(plugin),
-                       format("Plugin %s must NOT be applied.", plugin.className()));
+                        format("Plugin %s must NOT be applied.", plugin.className()));
         }
     }
 

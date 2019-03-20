@@ -42,37 +42,9 @@ public final class Extension {
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
 
-    private Extension(JavaExtension java, JavaScriptExtension javaScript) {
-        this.java = java;
-        this.javaScript = javaScript;
-    }
-
-    /**
-     * Creates a new instance of {@code Extension} for the given project.
-     */
-    static Extension newInstance(Project project, PluginTarget pluginTarget, CodeLayout layout, DependencyTarget dependencyTarget) {
-        checkNotNull(project);
-        checkNotNull(pluginTarget);
-
-        ProtobufGenerator generator = new ProtobufGenerator(project);
-
-        JavaExtension javaExtension = JavaExtension
-                .newBuilder()
-                .setProject(project)
-                .setDependencyTarget(dependencyTarget)
-                .setPluginTarget(pluginTarget)
-                .setProtobufGenerator(generator)
-                .setCodeLayout(layout)
-                .build();
-        JavaScriptExtension javaScriptExtension = JavaScriptExtension
-                .newBuilder()
-                .setProject(project)
-                .setDependencyTarget(dependencyTarget)
-                .setPluginTarget(pluginTarget)
-                .setProtobufGenerator(generator)
-                .doBuild();
-        Extension extension = new Extension(javaExtension, javaScriptExtension);
-        return extension;
+    private Extension(Builder builder) {
+        this.java = builder.buildJavaExtension();
+        this.javaScript = builder.buildJavaScriptExtension();
     }
 
     /**
@@ -134,5 +106,91 @@ public final class Extension {
      */
     void disableJavaGeneration() {
         java.disableGeneration();
+    }
+
+    /**
+     * Creates a new instance of {@code Builder} for {@code Extension} instances.
+     *
+     * @return new instance of {@code Builder}
+     */
+    static Builder newBuilder() {
+        return new Builder();
+    }
+
+    /**
+     * A builder for the {@code Extension} instances.
+     */
+    static final class Builder {
+
+        private Project project;
+        private ProtobufGenerator generator;
+        private PluginTarget pluginTarget;
+        private CodeLayout layout;
+        private DependencyTarget dependencyTarget;
+
+        /**
+         * Prevents direct instantiation.
+         */
+        private Builder() {
+        }
+
+        Builder setProject(Project project) {
+            this.project = checkNotNull(project);
+            this.generator = new ProtobufGenerator(project);
+            return this;
+        }
+
+        Builder setPluginTarget(PluginTarget pluginTarget) {
+            this.pluginTarget = checkNotNull(pluginTarget);
+            return this;
+        }
+
+        Builder setLayout(CodeLayout layout) {
+            this.layout = checkNotNull(layout);
+            return this;
+        }
+
+        Builder setDependencyTarget(DependencyTarget dependencyTarget) {
+            this.dependencyTarget = checkNotNull(dependencyTarget);
+            return this;
+        }
+
+        private JavaExtension buildJavaExtension() {
+            JavaExtension javaExtension = JavaExtension
+                    .newBuilder()
+                    .setProject(project)
+                    .setDependencyTarget(dependencyTarget)
+                    .setPluginTarget(pluginTarget)
+                    .setProtobufGenerator(generator)
+                    .setCodeLayout(layout)
+                    .build();
+            return javaExtension;
+        }
+
+        private JavaScriptExtension buildJavaScriptExtension() {
+            JavaScriptExtension javaScriptExtension = JavaScriptExtension
+                    .newBuilder()
+                    .setProject(project)
+                    .setDependencyTarget(dependencyTarget)
+                    .setPluginTarget(pluginTarget)
+                    .setProtobufGenerator(generator)
+                    .doBuild();
+            return javaScriptExtension;
+        }
+
+        /**
+         * Creates a new instance of {@code Extension}.
+         *
+         * @return new instance of {@code Extension}
+         */
+        public Extension build() {
+            checkNotNull(project);
+            checkNotNull(generator);
+            checkNotNull(pluginTarget);
+            checkNotNull(layout);
+            checkNotNull(dependencyTarget);
+
+            return new Extension(this);
+        }
     }
 }
