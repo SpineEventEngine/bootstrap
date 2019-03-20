@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
+import io.spine.tools.bootstrap.given.ExtensionTextEnv;
 import io.spine.tools.bootstrap.given.TestCodeLayout;
 import io.spine.tools.bootstrap.given.TestDependencyTarget;
 import io.spine.tools.bootstrap.given.TestPluginRegistry;
@@ -45,6 +46,7 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
+import static io.spine.tools.bootstrap.given.ExtensionTextEnv.GRPC_DEPENDENCY;
 import static io.spine.tools.bootstrap.given.ExtensionTextEnv.addExt;
 import static io.spine.tools.bootstrap.given.ExtensionTextEnv.spineVersion;
 import static java.lang.String.format;
@@ -170,6 +172,15 @@ class ExtensionTest {
             assertApplied(JavaPlugin.class);
             ImmutableSet<Path> declaredPaths = codeLayout.javaSourceDirs();
             assertThat(declaredPaths).contains(projectDir.resolve("generated"));
+        }
+
+        @Test
+        @DisplayName("declare gRPC dependencies when code gen is required")
+        void grpcDeps() {
+            extension.java().setGrpc(true);
+
+            assertApplied(JavaPlugin.class);
+            assertThat(dependencyTarget.dependencies()).contains(GRPC_DEPENDENCY);
         }
 
         private String serverDependency() {

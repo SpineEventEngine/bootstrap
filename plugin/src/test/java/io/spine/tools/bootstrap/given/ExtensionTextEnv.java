@@ -28,6 +28,8 @@ import java.util.Map;
 
 public final class ExtensionTextEnv {
 
+    public static final String GRPC_DEPENDENCY = "io.foo.bar.grpc:fake-dependency:6.14";
+
     public static final String spineVersion = "42.3.14-AVOCADO";
     private static final Map<String, ?> deps = ImmutableMap.of(
             "versions", ImmutableMap.of(
@@ -37,7 +39,7 @@ public final class ExtensionTextEnv {
             "build", ImmutableMap.of(
                     "protoc", "com.google.protobuf:protoc:3.6.1"
             ),
-            "grpc", ImmutableMap.of()
+            "grpc", ImmutableMap.of("grpcTest", GRPC_DEPENDENCY)
     );
 
     /**
