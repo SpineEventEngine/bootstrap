@@ -36,7 +36,8 @@ public final class ExtensionTextEnv {
             ),
             "build", ImmutableMap.of(
                     "protoc", "com.google.protobuf:protoc:3.6.1"
-            )
+            ),
+            "grpc", ImmutableMap.of()
     );
 
     /**

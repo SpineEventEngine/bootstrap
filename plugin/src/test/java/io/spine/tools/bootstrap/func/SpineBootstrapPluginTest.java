@@ -42,7 +42,6 @@ import static io.spine.tools.gradle.TaskName.generateJsonParsers;
 import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(TempDirectory.class)
 @Functional
@@ -108,7 +107,8 @@ class SpineBootstrapPluginTest {
         GradleProject project = this.project.build();
         BuildResult result = project.executeTask(build);
 
-        assertThat(result.task(generateValidatingBuilders.path()).getOutcome()).isEqualTo(SUCCESS);
+        assertThat(result.task(generateValidatingBuilders.path())
+                         .getOutcome()).isEqualTo(SUCCESS);
 
         Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
@@ -138,22 +138,84 @@ class SpineBootstrapPluginTest {
         assertThat(result.task(generateJsonParsers.path()).getOutcome()).isEqualTo(SUCCESS);
     }
 
-    @SuppressWarnings("CheckReturnValue")
+    @Test
+    @DisplayName("add client dependencies to the project")
+    void clientDeps() {
+        configureJavaClient();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+        assertThat(generatedClassFileNames())
+                .contains("ReceivedQuery.class");
+    }
+
+    @Test
+    @DisplayName("add server dependencies to the project")
+    void serverDeps() {
+        configureJavaServer();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+        assertThat(generatedClassFileNames())
+                .contains("Nonevent.class");
+    }
+
+    @Test
+    @DisplayName("generate gRPC stubs if required")
+    void generateGrpc() {
+        configureGrpc();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+        assertThat(generatedClassFileNames())
+                .containsAllOf("OrderServiceGrpc.class",
+                               "OrderServiceGrpc$OrderServiceStub.class",
+                               "OrderServiceGrpc$OrderServiceImplBase.class");
+    }
+
     private void noAdditionalConfig() {
-        project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.of());
+        writeConfigGradle();
     }
 
-    @SuppressWarnings("CheckReturnValue")
     private void configureJavaGeneration() {
-        project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.of("spine.java()"));
+        writeConfigGradle("spine.java()");
     }
 
-    @SuppressWarnings("CheckReturnValue")
     private void configureJsGeneration() {
-        project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.of(
+        writeConfigGradle(
                 "spine.javaScript()",
                 "compileJava.enabled = false"
-        ));
+        );
+    }
+
+    @SuppressWarnings("CheckReturnValue")
+    private void configureJavaClient() {
+        writeConfigGradle(
+                "spine.java().client()"
+        );
+        project.addProtoFile("client.proto");
+    }
+
+    @SuppressWarnings("CheckReturnValue")
+    private void configureJavaServer() {
+        writeConfigGradle(
+                "spine.java().server()"
+        );
+        project.addProtoFile("server.proto");
+    }
+
+    @SuppressWarnings("CheckReturnValue")
+    private void configureGrpc() {
+        writeConfigGradle(
+                "spine {",
+                "    java {",
+                "        grpc = true",
+                "    }",
+                "}"
+        );
+        project.addProtoFile("restaurant.proto");
+    }
+
+    @SuppressWarnings("CheckReturnValue")
+    private void writeConfigGradle(String... lines) {
+        project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.copyOf(lines));
     }
 
     private Collection<String> generatedClassFileNames() {
