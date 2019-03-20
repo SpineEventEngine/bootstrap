@@ -18,5 +18,5 @@ script:
 after_success:
   # See: https://github.com/codecov/example-java/blob/master/.travis.yml
   - bash <(curl -s https://codecov.io/bash)
-  - chmod +x ./scripts/report-coverage.sh
-  - ./scripts/report-coverage.sh
+  - chmod +x ./config/scripts/report-coverage.sh
+  - ./config/scripts/report-coverage.sh
