@@ -36,9 +36,11 @@ ext {
     projectsToPublish = ["plugin"]
 }
 
-subprojects {
+allprojects {
     apply plugin: 'java'
+}
 
+subprojects {
     apply plugin: 'maven'
     apply plugin: 'jacoco'
     apply plugin: 'idea'
