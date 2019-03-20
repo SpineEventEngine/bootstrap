@@ -83,7 +83,7 @@ public final class BootstrapPlugin extends SpinePlugin {
     private static void configureProtocArtifact(Project project) {
         ProtobufGenerator generator = new ProtobufGenerator(project);
         String protocSpec = Ext.of(project)
-                               .build()
+                               .artifacts()
                                .protoc();
         generator.useCompiler(protocSpec);
     }

@@ -23,6 +23,7 @@ package io.spine.tools.bootstrap;
 import io.spine.tools.gradle.Artifact;
 
 import static org.gradle.api.plugins.JavaPlugin.COMPILE_CONFIGURATION_NAME;
+import static org.gradle.api.plugins.JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAME;
 
 public interface DependencyTarget {
 
@@ -36,6 +37,10 @@ public interface DependencyTarget {
         // See issue https://github.com/google/protobuf-gradle-plugin/issues/242.
         String configurationName = COMPILE_CONFIGURATION_NAME;
         depend(configurationName, notation);
+    }
+
+    default void implementation(String notation) {
+        depend(IMPLEMENTATION_CONFIGURATION_NAME, notation);
     }
 
     void depend(String configurationName, String notation);

@@ -21,13 +21,16 @@
 package io.spine.tools.bootstrap;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.ImmutableList.toImmutableList;
 
 final class Ext {
 
@@ -50,36 +53,40 @@ final class Ext {
         return new Versions();
     }
 
-    Build build() {
-        return new Build();
+    Artifacts artifacts() {
+        return new Artifacts();
     }
 
     final class Versions {
 
         String spine() {
-            return property("spineVersion").value();
+            return Ext.this.property("spineVersion").value();
         }
 
         String grpc() {
-            return versions().subProperty("grpc").value();
+            return property().subProperty("grpc").value();
         }
 
         String protobuf() {
-            return versions().subProperty("protobuf").value();
+            return property().subProperty("protobuf").value();
         }
 
-        private Property versions() {
+        private Property property() {
             return deps().subProperty("versions");
         }
     }
 
-    final class Build {
+    final class Artifacts {
 
         String protoc() {
-            return build().subProperty("protoc").value();
+            return property().subProperty("protoc").value();
         }
 
-        private Property build() {
+        List<String> grpc() {
+            return deps().subProperty("grpc").allValues();
+        }
+
+        private Property property() {
             return deps().subProperty("build");
         }
     }
@@ -104,6 +111,16 @@ final class Ext {
 
         private String value() {
             return value.toString();
+        }
+
+        private List<String> allValues() {
+            @SuppressWarnings("unchecked") // Groovy interop.
+            Map<String, ?> map = (Map<String, ?>) value;
+            ImmutableList<String> result = map.values()
+                                              .stream()
+                                              .map(Object::toString)
+                                              .collect(toImmutableList());
+            return result;
         }
 
         private Property subProperty(String name) {

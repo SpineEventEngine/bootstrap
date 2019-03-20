@@ -68,6 +68,7 @@ public final class JavaExtension extends CodeGenExtension {
         this.generateGrpc = generateGrpc;
         if (generateGrpc) {
             protobufGenerator().enablePlugin(called(grpc));
+            addGrpcDependencies();
         } else {
             protobufGenerator().disablePlugin(called(grpc));
         }
@@ -97,5 +98,13 @@ public final class JavaExtension extends CodeGenExtension {
         File projectDir = project.getProjectDir();
         File generatedDir = new File(projectDir, GENERATED);
         codeLayout.markJavaSourcesRoot(generatedDir.toPath());
+    }
+
+    private void addGrpcDependencies() {
+        DependencyTarget dependencyTarget = dependencyTarget();
+        Ext.of(project)
+           .artifacts()
+           .grpc()
+           .forEach(dependencyTarget::implementation);
     }
 }
