@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
-import io.spine.tools.bootstrap.given.ExtensionTextEnv;
 import io.spine.tools.bootstrap.given.TestCodeLayout;
 import io.spine.tools.bootstrap.given.TestDependencyTarget;
 import io.spine.tools.bootstrap.given.TestPluginRegistry;
