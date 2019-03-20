@@ -5,6 +5,7 @@ before_install:
 
 install:
   - openssl aes-256-cbc -K $encrypted_484d6a99d515_key -iv $encrypted_484d6a99d515_iv -in credentials.tar.enc -out credentials.tar -d
+  - tar xvf credentials.tar
 
 script:
   - ./gradlew check --stacktrace
