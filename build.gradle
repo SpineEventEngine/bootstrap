@@ -31,7 +31,7 @@ buildscript { final scriptHandler ->
 }
 
 ext {
-    credentialsPropertyFile = 'credentials.properties'
+    credentialsPropertyFile = 'cloudrepo.properties'
     publishPlugin = "$rootDir/config/gradle/publish.gradle"
     projectsToPublish = ["plugin"]
 }
