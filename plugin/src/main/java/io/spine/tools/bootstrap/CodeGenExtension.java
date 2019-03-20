@@ -26,6 +26,7 @@ import io.spine.tools.bootstrap.protobuf.ProtobufGenerator;
 import io.spine.tools.bootstrap.protobuf.ProtocPlugin;
 import org.gradle.api.Project;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.bootstrap.SpineModule.base;
 
 /**
@@ -41,16 +42,12 @@ abstract class CodeGenExtension implements Logging {
     private final DependencyTarget dependencyTarget;
     private final String spineVersion;
 
-    CodeGenExtension(ProtobufGenerator protobufGenerator,
-                     ProtocPlugin job,
-                     PluginTarget pluginTarget,
-                     DependencyTarget dependencyTarget,
-                     Project project) {
-        this.protobufGenerator = protobufGenerator;
-        this.codeGenJob = job;
-        this.pluginTarget = pluginTarget;
-        this.dependencyTarget = dependencyTarget;
-        this.spineVersion = Ext.of(project)
+    CodeGenExtension(Builder<?, ?> builder) {
+        this.protobufGenerator = builder.getProtobufGenerator();
+        this.codeGenJob = builder.getCodeGenJob();
+        this.pluginTarget = builder.getPluginTarget();
+        this.dependencyTarget = builder.getDependencyTarget();
+        this.spineVersion = Ext.of(builder.getProject())
                                .versions()
                                .spine();
     }
@@ -87,5 +84,74 @@ abstract class CodeGenExtension implements Logging {
 
     final ProtobufGenerator protobufGenerator() {
         return protobufGenerator;
+    }
+
+    /**
+     * An abstract builder for the {@code CodeGenExtension} subtypes.
+     */
+    abstract static class Builder<E extends CodeGenExtension, B extends Builder<E, B>> {
+
+        private final ProtocPlugin codeGenJob;
+
+        private ProtobufGenerator protobufGenerator;
+        private PluginTarget pluginTarget;
+        private DependencyTarget dependencyTarget;
+        private Project project;
+
+        Builder(ProtocPlugin codeGenJob) {
+            this.codeGenJob = codeGenJob;
+        }
+
+        ProtobufGenerator getProtobufGenerator() {
+            return protobufGenerator;
+        }
+
+        B setProtobufGenerator(ProtobufGenerator protobufGenerator) {
+            this.protobufGenerator = protobufGenerator;
+            return self();
+        }
+
+        ProtocPlugin getCodeGenJob() {
+            return codeGenJob;
+        }
+
+        PluginTarget getPluginTarget() {
+            return pluginTarget;
+        }
+
+        B setPluginTarget(PluginTarget pluginTarget) {
+            this.pluginTarget = pluginTarget;
+            return self();
+        }
+
+        DependencyTarget getDependencyTarget() {
+            return dependencyTarget;
+        }
+
+        B setDependencyTarget(DependencyTarget dependencyTarget) {
+            this.dependencyTarget = dependencyTarget;
+            return self();
+        }
+
+        Project getProject() {
+            return project;
+        }
+
+        B setProject(Project project) {
+            this.project = project;
+            return self();
+        }
+
+        E build() {
+            checkNotNull(protobufGenerator);
+            checkNotNull(codeGenJob);
+            checkNotNull(pluginTarget);
+            checkNotNull(dependencyTarget);
+            return doBuild();
+        }
+
+        abstract B self();
+
+        abstract E doBuild();
     }
 }

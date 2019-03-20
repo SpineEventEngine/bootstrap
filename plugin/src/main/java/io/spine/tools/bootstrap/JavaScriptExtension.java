@@ -21,11 +21,9 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.tools.bootstrap.protobuf.ProtobufGenerator;
-import org.gradle.api.Project;
+import io.spine.tools.bootstrap.protobuf.ProtocPlugin;
 
 import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.Name.js;
-import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.withOption;
 
 /**
  * An extension which configures JavaScript code generation.
@@ -34,8 +32,8 @@ public final class JavaScriptExtension extends CodeGenExtension {
 
     private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
 
-    JavaScriptExtension(ProtobufGenerator generator, PluginTarget pluginTarget, DependencyTarget dependencyTarget, Project project) {
-        super(generator, withOption(js, IMPORT_STYLE_OPTION), pluginTarget, dependencyTarget, project);
+    private JavaScriptExtension(Builder builder) {
+        super(builder);
     }
 
     @OverridingMethodsMustInvokeSuper
@@ -43,5 +41,29 @@ public final class JavaScriptExtension extends CodeGenExtension {
     void enableGeneration() {
         super.enableGeneration();
         pluginTarget().applyProtoJsPlugin();
+    }
+
+    static Builder newBuilder() {
+        return new Builder();
+    }
+
+    static final class Builder extends CodeGenExtension.Builder<JavaScriptExtension, Builder> {
+
+        /**
+         * Prevents direct instantiation.
+         */
+        private Builder() {
+            super(ProtocPlugin.withOption(js, IMPORT_STYLE_OPTION));
+        }
+
+        @Override
+        Builder self() {
+            return this;
+        }
+
+        @Override
+        JavaScriptExtension doBuild() {
+            return new JavaScriptExtension(this);
+        }
     }
 }

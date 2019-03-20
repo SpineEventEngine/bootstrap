@@ -55,8 +55,23 @@ public final class Extension {
         checkNotNull(pluginTarget);
 
         ProtobufGenerator generator = new ProtobufGenerator(project);
-        Extension extension = new Extension(new JavaExtension(project, generator, pluginTarget, layout, dependencyTarget),
-                                            new JavaScriptExtension(generator, pluginTarget, dependencyTarget, project));
+
+        JavaExtension javaExtension = JavaExtension
+                .newBuilder()
+                .setProject(project)
+                .setDependencyTarget(dependencyTarget)
+                .setPluginTarget(pluginTarget)
+                .setProtobufGenerator(generator)
+                .setCodeLayout(layout)
+                .build();
+        JavaScriptExtension javaScriptExtension = JavaScriptExtension
+                .newBuilder()
+                .setProject(project)
+                .setDependencyTarget(dependencyTarget)
+                .setPluginTarget(pluginTarget)
+                .setProtobufGenerator(generator)
+                .doBuild();
+        Extension extension = new Extension(javaExtension, javaScriptExtension);
         return extension;
     }
 

@@ -21,16 +21,16 @@
 package io.spine.tools.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.tools.bootstrap.protobuf.ProtobufGenerator;
 import org.gradle.api.Project;
 
 import java.io.File;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.bootstrap.SpineModule.client;
+import static io.spine.tools.bootstrap.SpineModule.server;
 import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.Name.grpc;
 import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.Name.java;
 import static io.spine.tools.bootstrap.protobuf.ProtocPlugin.called;
-import static io.spine.tools.bootstrap.SpineModule.client;
-import static io.spine.tools.bootstrap.SpineModule.server;
 
 /**
  * An extension which configures Java code generation.
@@ -44,14 +44,10 @@ public final class JavaExtension extends CodeGenExtension {
 
     private boolean generateGrpc = false;
 
-    JavaExtension(Project project,
-                  ProtobufGenerator generator,
-                  PluginTarget pluginTarget,
-                  CodeLayout codeLayout,
-                  DependencyTarget dependencyTarget) {
-        super(generator, called(java), pluginTarget, dependencyTarget, project);
-        this.project = project;
-        this.codeLayout = codeLayout;
+    private JavaExtension(Builder builder) {
+        super(builder);
+        this.project = builder.getProject();
+        this.codeLayout = builder.getCodeLayout();
     }
 
     /**
@@ -106,5 +102,46 @@ public final class JavaExtension extends CodeGenExtension {
            .artifacts()
            .grpc()
            .forEach(dependencyTarget::implementation);
+    }
+
+    static Builder newBuilder() {
+        return new Builder();
+    }
+
+    static final class Builder extends CodeGenExtension.Builder<JavaExtension, Builder> {
+
+        private CodeLayout codeLayout;
+
+        /**
+         * Prevents direct instantiation.
+         */
+        private Builder() {
+            super(called(java));
+        }
+
+        CodeLayout getCodeLayout() {
+            return codeLayout;
+        }
+
+        Builder setCodeLayout(CodeLayout codeLayout) {
+            this.codeLayout = codeLayout;
+            return this;
+        }
+
+        @Override
+        Builder self() {
+            return this;
+        }
+
+        @Override
+        JavaExtension build() {
+            checkNotNull(codeLayout);
+            return super.build();
+        }
+
+        @Override
+        JavaExtension doBuild() {
+            return new JavaExtension(this);
+        }
     }
 }
