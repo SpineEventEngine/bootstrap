@@ -84,4 +84,10 @@ pluginBundle {
     website = 'https://spine.io/'
     vcsUrl = 'https://github.com/SpineEventEngine/bootstrap.git'
     tags = ['java', 'spine', 'event-sourcing', 'bootstrap', 'quick-start']
+
+    mavenCoordinates {
+        groupId = 'io.spine.tools'
+        artifactId = 'spine-bootstrap'
+        version = spineVersion
+    }
 }
