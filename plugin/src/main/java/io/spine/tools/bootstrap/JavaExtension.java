@@ -45,8 +45,8 @@ public final class JavaExtension extends CodeGenExtension {
 
     private JavaExtension(Builder builder) {
         super(builder);
-        this.project = builder.getProject();
-        this.codeLayout = builder.getCodeLayout();
+        this.project = builder.project();
+        this.codeLayout = builder.codeLayout();
     }
 
     /**
@@ -127,7 +127,7 @@ public final class JavaExtension extends CodeGenExtension {
             super(called(java));
         }
 
-        CodeLayout getCodeLayout() {
+        private CodeLayout codeLayout() {
             return codeLayout;
         }
 

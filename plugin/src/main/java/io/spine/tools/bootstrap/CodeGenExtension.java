@@ -43,11 +43,11 @@ abstract class CodeGenExtension implements Logging {
     private final String spineVersion;
 
     CodeGenExtension(Builder<?, ?> builder) {
-        this.protobufGenerator = builder.getProtobufGenerator();
-        this.codeGenJob = builder.getCodeGenJob();
-        this.pluginTarget = builder.getPluginTarget();
-        this.dependencyTarget = builder.getDependencyTarget();
-        this.spineVersion = Ext.of(builder.getProject())
+        this.protobufGenerator = builder.protobufGenerator();
+        this.codeGenJob = builder.codeGenJob();
+        this.pluginTarget = builder.pluginTarget();
+        this.dependencyTarget = builder.dependencyTarget();
+        this.spineVersion = Ext.of(builder.project())
                                .versions()
                                .spine();
     }
@@ -116,7 +116,11 @@ abstract class CodeGenExtension implements Logging {
             this.codeGenJob = codeGenJob;
         }
 
-        ProtobufGenerator getProtobufGenerator() {
+        private ProtocPlugin codeGenJob() {
+            return codeGenJob;
+        }
+
+        private ProtobufGenerator protobufGenerator() {
             return protobufGenerator;
         }
 
@@ -125,11 +129,7 @@ abstract class CodeGenExtension implements Logging {
             return self();
         }
 
-        ProtocPlugin getCodeGenJob() {
-            return codeGenJob;
-        }
-
-        PluginTarget getPluginTarget() {
+        private PluginTarget pluginTarget() {
             return pluginTarget;
         }
 
@@ -138,7 +138,7 @@ abstract class CodeGenExtension implements Logging {
             return self();
         }
 
-        DependencyTarget getDependencyTarget() {
+        private DependencyTarget dependencyTarget() {
             return dependencyTarget;
         }
 
@@ -147,7 +147,7 @@ abstract class CodeGenExtension implements Logging {
             return self();
         }
 
-        Project getProject() {
+        Project project() {
             return project;
         }
 
