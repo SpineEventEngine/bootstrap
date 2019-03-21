@@ -26,9 +26,9 @@ import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.PluginTarget;
-import io.spine.tools.gradle.bootstrap.given.TestCodeLayout;
 import io.spine.tools.gradle.bootstrap.given.TestDependencyTarget;
 import io.spine.tools.gradle.bootstrap.given.TestPluginRegistry;
+import io.spine.tools.gradle.bootstrap.given.TestSourceLayout;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.groovy.ConsumerClosure;
 import org.gradle.api.Plugin;
@@ -60,7 +60,7 @@ class ExtensionTest {
 
     private PluginTarget pluginTarget;
     private Extension extension;
-    private TestCodeLayout codeLayout;
+    private TestSourceLayout codeLayout;
     private TestDependencyTarget dependencyTarget;
     private Path projectDir;
 
@@ -75,7 +75,7 @@ class ExtensionTest {
         addExt(project);
         pluginTarget = new TestPluginRegistry();
         dependencyTarget = new TestDependencyTarget();
-        codeLayout = new TestCodeLayout();
+        codeLayout = new TestSourceLayout();
         extension = Extension
                 .newBuilder()
                 .setProject(project)

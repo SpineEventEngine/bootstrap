@@ -20,10 +20,10 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import io.spine.tools.gradle.CodeLayout;
 import io.spine.tools.gradle.DependencyTarget;
 import io.spine.tools.gradle.Ext;
 import io.spine.tools.gradle.GeneratedSourceRoot;
+import io.spine.tools.gradle.SourceLayout;
 import io.spine.tools.gradle.SpineModule;
 import org.gradle.api.Project;
 
@@ -40,14 +40,14 @@ import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 public final class JavaExtension extends CodeGenExtension {
 
     private final Project project;
-    private final CodeLayout codeLayout;
+    private final SourceLayout sourceLayout;
 
     private boolean generateGrpc = false;
 
     private JavaExtension(Builder builder) {
         super(builder);
         this.project = builder.project();
-        this.codeLayout = builder.codeLayout();
+        this.sourceLayout = builder.sourceLayout();
     }
 
     /**
@@ -101,7 +101,7 @@ public final class JavaExtension extends CodeGenExtension {
 
     private void addSourceSets() {
         GeneratedSourceRoot sourceRoot = GeneratedSourceRoot.of(project);
-        codeLayout.markCodeGenRoot(sourceRoot);
+        sourceLayout.markCodeGenRoot(sourceRoot);
     }
 
     private void addGrpcDependencies() {
@@ -118,7 +118,7 @@ public final class JavaExtension extends CodeGenExtension {
 
     static final class Builder extends CodeGenExtension.Builder<JavaExtension, Builder> {
 
-        private CodeLayout codeLayout;
+        private SourceLayout sourceLayout;
 
         /**
          * Prevents direct instantiation.
@@ -127,12 +127,12 @@ public final class JavaExtension extends CodeGenExtension {
             super(called(java));
         }
 
-        private CodeLayout codeLayout() {
-            return codeLayout;
+        private SourceLayout sourceLayout() {
+            return sourceLayout;
         }
 
-        Builder setCodeLayout(CodeLayout codeLayout) {
-            this.codeLayout = codeLayout;
+        Builder setSourceLayout(SourceLayout sourceLayout) {
+            this.sourceLayout = sourceLayout;
             return this;
         }
 
@@ -143,7 +143,7 @@ public final class JavaExtension extends CodeGenExtension {
 
         @Override
         JavaExtension build() {
-            checkNotNull(codeLayout);
+            checkNotNull(sourceLayout);
             return super.build();
         }
 

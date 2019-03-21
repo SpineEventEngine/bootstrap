@@ -20,12 +20,12 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import io.spine.tools.gradle.CodeLayout;
 import io.spine.tools.gradle.Ext;
 import io.spine.tools.gradle.PlugableProject;
 import io.spine.tools.gradle.PluginScript;
 import io.spine.tools.gradle.PluginTarget;
 import io.spine.tools.gradle.ProjectDependencyTarget;
+import io.spine.tools.gradle.SourceLayout;
 import io.spine.tools.gradle.SourceSetsLayout;
 import io.spine.tools.gradle.SpinePlugin;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
@@ -74,7 +74,7 @@ public final class BootstrapPlugin extends SpinePlugin {
 
     private static void applyExtension(Project project) {
         PluginTarget plugableProject = new PlugableProject(project);
-        CodeLayout layout = SourceSetsLayout.of(project);
+        SourceLayout layout = SourceSetsLayout.of(project);
         ProjectDependencyTarget dependencyTarget = ProjectDependencyTarget.from(project);
         Extension extension = Extension
                 .newBuilder()

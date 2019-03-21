@@ -28,12 +28,12 @@ import org.gradle.api.tasks.SourceSetContainer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A {@link CodeLayout} implementation based on source sets.
+ * A {@link SourceLayout} implementation based on source sets.
  *
  * <p>{@code SourceSetsLayout} does not try to resolve any files or find the current project
  * source sets unless {@link #markCodeGenRoot} is called.
  */
-public final class SourceSetsLayout implements CodeLayout {
+public final class SourceSetsLayout implements SourceLayout {
 
     private final Project project;
 
