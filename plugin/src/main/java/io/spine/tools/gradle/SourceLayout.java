@@ -30,12 +30,6 @@ public interface SourceLayout {
     /**
      * Marks the given directory as a generated code root dir.
      *
-     * <p>The directory should have a sub-directory for each source set present in the project.
-     * Each sub-directory should have {@code java}, {@code spine}, and {@code grpc} directories,
-     * which contain Java sources.
-     *
-     * <p>If one of the described directories is missing, it is ignored.
-     *
      * @param directory
      *         the directory to mark
      */
