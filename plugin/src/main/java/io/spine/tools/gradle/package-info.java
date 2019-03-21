@@ -18,6 +18,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/**
+ * This package contains components working with the Gradle API.
+ *
+ * <p>Many aspects of this integration are specific to projects powered by Spine.
+ */
+
 @CheckReturnValue
 @ParametersAreNonnullByDefault
 package io.spine.tools.gradle;

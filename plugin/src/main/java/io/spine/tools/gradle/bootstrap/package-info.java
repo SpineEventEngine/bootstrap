@@ -19,7 +19,7 @@
  */
 
 /**
- * This package and its subpackages contain the Spine bootstrap Gradle plugin.
+ * This package contains the Spine bootstrap Gradle plugin.
  *
  * <p>See {@link io.spine.tools.gradle.bootstrap.BootstrapPlugin} for the plugin entrance point.
  */
