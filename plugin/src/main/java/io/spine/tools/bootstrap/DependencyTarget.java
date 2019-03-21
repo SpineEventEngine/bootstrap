@@ -34,6 +34,16 @@ import static org.gradle.api.plugins.JavaPlugin.IMPLEMENTATION_CONFIGURATION_NAM
 public interface DependencyTarget {
 
     /**
+     * Adds a new dependency within a given configuration.
+     *
+     * @param configurationName
+     *         the name of the Gradle configuration
+     * @param notation
+     *         the dependency string, e.g. {@code "io.spine:spine-base:1.0.0"}
+     */
+    void depend(String configurationName, String notation);
+
+    /**
      * Adds a new dependency within the {@code compile} configuration.
      *
      * @see #compile(String)
@@ -67,14 +77,4 @@ public interface DependencyTarget {
     default void implementation(String notation) {
         depend(IMPLEMENTATION_CONFIGURATION_NAME, notation);
     }
-
-    /**
-     * Adds a new dependency within a given configuration.
-     *
-     * @param configurationName
-     *         the name of the Gradle configuration
-     * @param notation
-     *         the dependency string, e.g. {@code "io.spine:spine-base:1.0.0"}
-     */
-    void depend(String configurationName, String notation);
 }
