@@ -73,7 +73,7 @@ gradlePlugin {
     it.plugins {
         spineBootstrapPlugin {
             id = 'io.spine.bootstrap'
-            implementationClass = 'io.spine.tools.bootstrap.BootstrapPlugin'
+            implementationClass = 'io.spine.tools.gradle.bootstrap.BootstrapPlugin'
             displayName = 'Spine Bootstrap'
             description = 'Prepares a Gradle project for development on Spine.'
         }
