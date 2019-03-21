@@ -29,6 +29,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.ImmutableList.toImmutableList;
 
 /**
@@ -146,8 +147,7 @@ public final class Ext {
          * Obtains all the values of this map property.
          */
         private List<String> allValues() {
-            @SuppressWarnings("unchecked") // Groovy interop.
-            Map<String, ?> map = (Map<String, ?>) value;
+            Map<String, ?> map = asMap();
             ImmutableList<String> result = map.values()
                                               .stream()
                                               .map(Object::toString)
@@ -159,12 +159,18 @@ public final class Ext {
          * Obtains a sub-property of this map property.
          */
         private Property subProperty(String name) {
-            @SuppressWarnings("unchecked") // Groovy interop.
-            Map<String, ?> map = (Map<String, ?>) value;
+            Map<String, ?> map = asMap();
             checkArgument(map.containsKey(name));
             Object subValue = map.get(name);
             checkNotNull(subValue);
             return new Property(subValue);
+        }
+
+        private Map<String, ?> asMap() {
+            checkState(value instanceof Map);
+            @SuppressWarnings("unchecked") // Groovy interop.
+            Map<String, ?> map = (Map<String, ?>) value;
+            return map;
         }
     }
 }
