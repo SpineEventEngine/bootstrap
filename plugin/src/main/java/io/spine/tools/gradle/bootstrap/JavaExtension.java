@@ -23,10 +23,9 @@ package io.spine.tools.gradle.bootstrap;
 import io.spine.tools.gradle.CodeLayout;
 import io.spine.tools.gradle.DependencyTarget;
 import io.spine.tools.gradle.Ext;
+import io.spine.tools.gradle.GeneratedSourceRoot;
 import io.spine.tools.gradle.SpineModule;
 import org.gradle.api.Project;
-
-import java.io.File;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.SpineModule.client;
@@ -39,8 +38,6 @@ import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
  * An extension which configures Java code generation.
  */
 public final class JavaExtension extends CodeGenExtension {
-
-    private static final String GENERATED = "generated";
 
     private final Project project;
     private final CodeLayout codeLayout;
@@ -103,9 +100,8 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     private void addSourceSets() {
-        File projectDir = project.getProjectDir();
-        File generatedDir = new File(projectDir, GENERATED);
-        codeLayout.markCodeGenRoot(generatedDir.toPath());
+        GeneratedSourceRoot sourceRoot = GeneratedSourceRoot.of(project);
+        codeLayout.markCodeGenRoot(sourceRoot);
     }
 
     private void addGrpcDependencies() {

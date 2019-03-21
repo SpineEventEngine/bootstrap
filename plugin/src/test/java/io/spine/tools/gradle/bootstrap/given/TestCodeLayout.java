@@ -22,6 +22,7 @@ package io.spine.tools.gradle.bootstrap.given;
 
 import com.google.common.collect.ImmutableSet;
 import io.spine.tools.gradle.CodeLayout;
+import io.spine.tools.gradle.GeneratedSourceRoot;
 
 import java.nio.file.Path;
 import java.util.Set;
@@ -36,8 +37,8 @@ public final class TestCodeLayout implements CodeLayout {
     private final Set<Path> javaSourceDirs = newHashSet();
 
     @Override
-    public void markCodeGenRoot(Path rootDirectory) {
-        javaSourceDirs.add(rootDirectory);
+    public void markCodeGenRoot(GeneratedSourceRoot directory) {
+        javaSourceDirs.add(directory.getPath());
     }
 
     public ImmutableSet<Path> javaSourceDirs() {

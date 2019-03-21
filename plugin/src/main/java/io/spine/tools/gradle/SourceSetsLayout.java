@@ -20,11 +20,10 @@
 
 package io.spine.tools.gradle;
 
+import io.spine.tools.gradle.GeneratedSourceRoot.GeneratedSourceSet;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.tasks.SourceSetContainer;
-
-import java.nio.file.Path;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,7 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * A {@link CodeLayout} implementation based on source sets.
  *
  * <p>{@code SourceSetsLayout} does not try to resolve any files or find the current project
- * source sets unless {@link #markCodeGenRoot(Path)} is called.
+ * source sets unless {@link #markCodeGenRoot} is called.
  */
 public final class SourceSetsLayout implements CodeLayout {
 
@@ -51,18 +50,14 @@ public final class SourceSetsLayout implements CodeLayout {
     }
 
     @Override
-    public void markCodeGenRoot(Path rootDirectory) {
+    public void markCodeGenRoot(GeneratedSourceRoot rootDirectory) {
         checkNotNull(rootDirectory);
 
         SourceSetContainer sourceSets = sourceSets();
         sourceSets.forEach(sourceSet -> {
-            Path scopeDir = rootDirectory.resolve(sourceSet.getName());
+            GeneratedSourceSet scopeDir = rootDirectory.sourceSet(sourceSet.getName());
             sourceSet.getJava()
-                     .srcDirs(
-                             scopeDir.resolve("java").toFile(),
-                             scopeDir.resolve("spine").toFile(),
-                             scopeDir.resolve("grpc").toFile()
-                     );
+                     .srcDirs(scopeDir.java(), scopeDir.spine(), scopeDir.grpc());
         });
     }
 

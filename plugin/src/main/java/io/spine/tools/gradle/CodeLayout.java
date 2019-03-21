@@ -20,8 +20,6 @@
 
 package io.spine.tools.gradle;
 
-import java.nio.file.Path;
-
 /**
  * A description of the project code layout on the file system.
  *
@@ -38,8 +36,8 @@ public interface CodeLayout {
      *
      * <p>If one of the described directories is missing, it is ignored.
      *
-     * @param rootDirectory
+     * @param directory
      *         the directory to mark
      */
-    void markCodeGenRoot(Path rootDirectory);
+    void markCodeGenRoot(GeneratedSourceRoot directory);
 }
