@@ -89,7 +89,8 @@ public final class Ext {
          * Obtains the version of the Spine framework.
          */
         public String spine() {
-            return Ext.this.property(SPINE_VERSION).value();
+            return Ext.this.property(SPINE_VERSION)
+                           .value();
         }
     }
 
@@ -99,18 +100,17 @@ public final class Ext {
          * Obtains the artifact spec for the Protobuf compiler.
          */
         public String protoc() {
-            return property().subProperty(PROTOC).value();
+            return deps().subProperty(BUILD)
+                         .subProperty(PROTOC)
+                         .value();
         }
 
         /**
          * Obtains artifact specs for the gRPC Java runtime.
          */
         public List<String> grpc() {
-            return deps().subProperty(GRPC).allValues();
-        }
-
-        private Property property() {
-            return deps().subProperty(BUILD);
+            return deps().subProperty(GRPC)
+                         .allValues();
         }
     }
 
