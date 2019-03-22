@@ -20,7 +20,7 @@
 
 @CheckReturnValue
 @ParametersAreNonnullByDefault
-package io.spine.tools.gradle.bootstrap.protobuf.given;
+package io.spine.tools.gradle.protoc.given;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
