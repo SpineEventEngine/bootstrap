@@ -26,7 +26,7 @@ buildscript { final scriptHandler ->
 }
 
 plugins {
-    id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
+    id 'io.spine.tools.gradle.bootstrap' version '1.0.0-SNAPSHOT'
 }
 
 defaultRepositories(project)
