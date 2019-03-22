@@ -18,22 +18,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-buildscript { final scriptHandler ->
-    apply from: 'test-env.gradle'
-    apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+package io.spine.tools.gradle.bootstrap.given;
 
-    defaultRepositories(scriptHandler)
+import com.google.common.collect.ImmutableSet;
+import io.spine.tools.gradle.DirectoryStructure;
+import io.spine.tools.gradle.GeneratedSourceRoot;
+
+import java.nio.file.Path;
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
+
+/**
+ * A memoizing test-only implementation of {@link DirectoryStructure}.
+ */
+public final class TestDirectoryStructure implements DirectoryStructure {
+
+    private final Set<Path> javaSourceDirs = newHashSet();
+
+    @Override
+    public void markCodeGenRoot(GeneratedSourceRoot directory) {
+        javaSourceDirs.add(directory.getPath());
+    }
+
+    public ImmutableSet<Path> javaSourceDirs() {
+        return ImmutableSet.copyOf(javaSourceDirs);
+    }
 }
-
-plugins {
-    id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
-}
-
-defaultRepositories(project)
-
-// This script file is created at a test runtime by the `GradleProject`.
-//
-// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
-// performs such a configuration in `config.gradle`. 
-//
-apply from: 'config.gradle'

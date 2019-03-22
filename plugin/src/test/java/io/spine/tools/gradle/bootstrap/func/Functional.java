@@ -18,22 +18,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-buildscript { final scriptHandler ->
-    apply from: 'test-env.gradle'
-    apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+package io.spine.tools.gradle.bootstrap.func;
 
-    defaultRepositories(scriptHandler)
+import org.junit.jupiter.api.Tag;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.TYPE;
+
+/**
+ * Marks a functional test suite.
+ *
+ * <p>Functional tests are generally slow and may be executed independently from unit tests.
+ */
+@Target(TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Tag("functional")
+public @interface Functional {
 }
-
-plugins {
-    id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
-}
-
-defaultRepositories(project)
-
-// This script file is created at a test runtime by the `GradleProject`.
-//
-// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
-// performs such a configuration in `config.gradle`. 
-//
-apply from: 'config.gradle'

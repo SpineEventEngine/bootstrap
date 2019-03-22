@@ -18,22 +18,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-buildscript { final scriptHandler ->
-    apply from: 'test-env.gradle'
-    apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.tools.gradle.bootstrap.given;
 
-    defaultRepositories(scriptHandler)
-}
+import com.google.errorprone.annotations.CheckReturnValue;
 
-plugins {
-    id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
-}
-
-defaultRepositories(project)
-
-// This script file is created at a test runtime by the `GradleProject`.
-//
-// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
-// performs such a configuration in `config.gradle`. 
-//
-apply from: 'config.gradle'
+import javax.annotation.ParametersAreNonnullByDefault;

@@ -18,22 +18,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-buildscript { final scriptHandler ->
-    apply from: 'test-env.gradle'
-    apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+package io.spine.tools.gradle;
 
-    defaultRepositories(scriptHandler)
+/**
+ * An enumeration of some of the Spine modules.
+ */
+public enum SpineModule {
+
+    base,
+    client,
+    server;
+
+    private static final String SPINE_PREFIX = "spine-";
+
+    private String notation() {
+        return SPINE_PREFIX + name();
+    }
+
+    /**
+     * Compiles an {@link Artifact} out for this module.
+     *
+     * @param version
+     *         the version of the artifact, e.g. {@code 1.0.0}
+     */
+    public Artifact withVersion(String version) {
+        Artifact artifact = Artifact
+                .newBuilder()
+                .setGroup("io.spine")
+                .setName(notation())
+                .setVersion(version)
+                .build();
+        return artifact;
+    }
 }
-
-plugins {
-    id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
-}
-
-defaultRepositories(project)
-
-// This script file is created at a test runtime by the `GradleProject`.
-//
-// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
-// performs such a configuration in `config.gradle`. 
-//
-apply from: 'config.gradle'

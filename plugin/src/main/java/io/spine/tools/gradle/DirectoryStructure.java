@@ -18,22 +18,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-buildscript { final scriptHandler ->
-    apply from: 'test-env.gradle'
-    apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+package io.spine.tools.gradle;
 
-    defaultRepositories(scriptHandler)
+/**
+ * A description of the project code layout on the file system.
+ *
+ * <p>Typically represented by the project {@link org.gradle.api.tasks.SourceSetContainer}.
+ */
+public interface DirectoryStructure {
+
+    /**
+     * Marks the given directory as a generated code root dir.
+     *
+     * @param directory
+     *         the directory to mark
+     */
+    void markCodeGenRoot(GeneratedSourceRoot directory);
 }
-
-plugins {
-    id 'io.spine.bootstrap' version '1.0.0-SNAPSHOT'
-}
-
-defaultRepositories(project)
-
-// This script file is created at a test runtime by the `GradleProject`.
-//
-// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
-// performs such a configuration in `config.gradle`. 
-//
-apply from: 'config.gradle'
