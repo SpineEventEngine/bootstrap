@@ -48,10 +48,10 @@ project.task("downloadProtocPlugin") {
         }
     }
 
-    mustRunAfter clean
-    functionalTest.dependsOn it
+    mustRunAfter project.clean
+    project.functionalTest.dependsOn it
 }
 
-clean {
+project.clean {
     delete += spineArtifactDir
 }

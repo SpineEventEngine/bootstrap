@@ -18,10 +18,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-gradlePlugin {
+project.gradlePlugin {
     it.plugins {
         spineBootstrapPlugin {
-            id = 'io.spine.bootstrap'
+            id = 'io.spine.tools.gradle.bootstrap'
             implementationClass = 'io.spine.tools.bootstrap.BootstrapPlugin'
             displayName = 'Spine Bootstrap'
             description = 'Prepares a Gradle project for development on Spine.'
@@ -29,26 +29,26 @@ gradlePlugin {
     }
 }
 
-pluginBundle {
+project.pluginBundle {
     website = 'https://spine.io/'
     vcsUrl = 'https://github.com/SpineEventEngine/bootstrap.git'
     tags = ['java', 'spine', 'event-sourcing', 'bootstrap', 'quick-start']
 
-    mavenCoordinates {
+    it.mavenCoordinates {
         groupId = 'io.spine.tools'
         artifactId = 'spine-bootstrap'
-        version = spineVersion
+        version = project.spineVersion
     }
 
-    withDependencies { it.clear() }
+    it.withDependencies { it.clear() }
 }
 
-jar {
+project.jar {
     classifier = 'pure'
-    dependsOn shadowJar
+    it.dependsOn project.shadowJar
 }
 
-shadowJar {
+project.shadowJar {
     classifier = ''
 }
 
