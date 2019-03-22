@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle.bootstrap.protobuf.given;
+package io.spine.tools.gradle.protoc.given;
 
 import com.google.protobuf.gradle.GenerateProtoTask.PluginOptions;
 import org.gradle.api.internal.AbstractNamedDomainObjectContainer;

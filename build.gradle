@@ -31,16 +31,18 @@ buildscript { final scriptHandler ->
 }
 
 ext {
-    credentialsPropertyFile = 'credentials.properties'
+    credentialsPropertyFile = 'cloudrepo.properties'
     publishPlugin = "$rootDir/config/gradle/publish.gradle"
     projectsToPublish = ["plugin"]
 }
 
-subprojects {
+allprojects {
     apply plugin: 'java'
-
-    apply plugin: 'maven'
     apply plugin: 'jacoco'
+}
+
+subprojects {
+    apply plugin: 'maven'
     apply plugin: 'idea'
 
     apply plugin: 'net.ltgt.errorprone'
@@ -120,5 +122,11 @@ subprojects {
     apply from: deps.scripts.pmd
 }
 
-apply from: deps.scripts.jacoco
 apply from: deps.scripts.publish
+
+rootProject.afterEvaluate {
+    final Project pluginProject = project(':plugin')
+    pluginProject.publish.dependsOn(pluginProject.publishPlugins)
+}
+
+apply from: deps.scripts.jacoco

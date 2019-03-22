@@ -177,7 +177,7 @@ public final class Extension {
                     .setDependencyTarget(dependencyTarget)
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
-                    .doBuild();
+                    .build();
             return javaScriptExtension;
         }
 

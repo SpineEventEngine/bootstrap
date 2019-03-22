@@ -18,10 +18,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-@CheckReturnValue
-@ParametersAreNonnullByDefault
-package io.spine.tools.gradle.bootstrap.protobuf.given;
+Dependency spineProtocPluginDependency = null
 
-import com.google.errorprone.annotations.CheckReturnValue;
+/*
+ * Creates a configuration named `fetch`.
+ *
+ * The configuration is used in order to download artifacts. The artifacts are NOT added into
+ * the application classpath.
+ */
+configurations { fetch }
 
-import javax.annotation.ParametersAreNonnullByDefault;
+dependencies {
+    spineProtocPluginDependency = fetch("io.spine.tools:spine-protoc-plugin:${spineVersion}@jar")
+}
+
+final File spineArtifactDir = file("$projectDir/.spine")
+
+project.task("downloadProtocPlugin") {
+    description = 'Downloads the Spine Protoc plugin for functional tests.'
+
+    doLast {
+        final File executableJar = configurations.fetch
+                .fileCollection(spineProtocPluginDependency)
+                .getSingleFile()
+        spineArtifactDir.mkdirs()
+        copy {
+            from executableJar
+            into spineArtifactDir
+        }
+    }
+
+    mustRunAfter project.clean
+    project.functionalTest.dependsOn it
+}
+
+project.clean {
+    delete += spineArtifactDir
+}

@@ -18,12 +18,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle.bootstrap.protobuf;
+package io.spine.tools.gradle.protoc;
 
 import com.google.protobuf.gradle.GenerateProtoTask.PluginOptions;
-import io.spine.tools.gradle.bootstrap.protobuf.given.TestPluginOptionsContainer;
-import io.spine.tools.gradle.protoc.ProtocPlugin;
 import io.spine.tools.gradle.protoc.ProtocPlugin.Name;
+import io.spine.tools.gradle.protoc.given.TestPluginOptionsContainer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

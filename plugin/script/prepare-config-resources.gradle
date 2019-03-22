@@ -18,22 +18,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-buildscript { final scriptHandler ->
-    apply from: 'test-env.gradle'
-    apply from: "$enclosingRootDir/config/gradle/dependencies.gradle"
+final File depsDir = "$buildDir/deps" as File
+sourceSets.main.resources.srcDir(depsDir)
 
-    defaultRepositories(scriptHandler)
+task('writeDependencies') {
+    final Collection<File> configResources = [
+            "$rootDir/version.gradle" as File,
+            "$rootDir/config/gradle/dependencies.gradle" as File
+    ]
+
+    inputs.files(configResources)
+    outputs.dir(depsDir)
+
+    doLast {
+        depsDir.mkdirs()
+
+        configResources.each { final File resource ->
+            copy {
+                from resource
+                into depsDir
+            }
+        }
+    }
 }
 
-plugins {
-    id 'io.spine.tools.gradle.bootstrap' version '1.0.0-SNAPSHOT'
-}
-
-defaultRepositories(project)
-
-// This script file is created at a test runtime by the `GradleProject`.
-//
-// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case
-// performs such a configuration in `config.gradle`. 
-//
-apply from: 'config.gradle'
+processResources.dependsOn writeDependencies

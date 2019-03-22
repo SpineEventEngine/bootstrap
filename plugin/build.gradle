@@ -21,17 +21,12 @@
 plugins {
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '0.10.1'
+    id "com.github.johnrengelman.shadow" version "5.0.0"
 }
 
-Dependency spineProtocPluginDependency = null
-
-/*
- * Creates a configuration named `fetch`.
- *
- * The configuration is used in order to download artifacts. The artifacts are NOT added into
- * the application classpath.
- */
-configurations { fetch }
+apply from: "$projectDir/script/plugin.gradle"
+apply from: "$projectDir/script/func-test-env.gradle"
+apply from: "$projectDir/script/prepare-config-resources.gradle"
 
 dependencies {
     implementation "io.spine.tools:spine-plugin-base:$spineVersion"
@@ -41,78 +36,4 @@ dependencies {
     
     testImplementation "io.spine:spine-testlib:$spineVersion"
     testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
-
-    spineProtocPluginDependency = fetch("io.spine.tools:spine-protoc-plugin:${spineVersion}@jar")
 }
-
-final File spineArtifactDir = file("$projectDir/.spine")
-
-task('downloadProtocPlugin') {
-    description = 'Downloads the Spine Protoc plugin for functional tests.'
-    
-    doLast {
-        final File executableJar = configurations.fetch
-                .fileCollection(spineProtocPluginDependency)
-                .getSingleFile()
-        spineArtifactDir.mkdirs()
-        copy {
-            from executableJar
-            into spineArtifactDir
-        }
-    }
-
-    mustRunAfter clean
-    functionalTest.dependsOn it
-}
-
-clean {
-    delete += spineArtifactDir
-}
-
-gradlePlugin {
-    it.plugins {
-        spineBootstrapPlugin {
-            id = 'io.spine.bootstrap'
-            implementationClass = 'io.spine.tools.gradle.bootstrap.BootstrapPlugin'
-            displayName = 'Spine Bootstrap'
-            description = 'Prepares a Gradle project for development on Spine.'
-        }
-    }
-}
-
-pluginBundle {
-    website = 'https://spine.io/'
-    vcsUrl = 'https://github.com/SpineEventEngine/bootstrap.git'
-    tags = ['java', 'spine', 'event-sourcing', 'bootstrap', 'quick-start']
-}
-
-final File depsDir = "$buildDir/deps" as File
-sourceSets.main.resources.srcDir(depsDir)
-
-task('writeDependencies') {
-    final File versionFile = "$rootDir/version.gradle" as File
-    final File depsFile = "$rootDir/config/gradle/dependencies.gradle" as File
-
-    inputs.file(versionFile)
-    inputs.file(depsFile)
-
-    outputs.dir(depsDir)
-
-    doLast {
-        depsDir.mkdirs()
-        copy {
-            from versionFile
-            into depsDir
-        }
-    }
-
-    doLast {
-        depsDir.mkdirs()
-        copy {
-            from depsFile
-            into depsDir
-        }
-    }
-}
-
-processResources.dependsOn writeDependencies
