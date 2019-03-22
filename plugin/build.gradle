@@ -47,7 +47,7 @@ dependencies {
 
 final File spineArtifactDir = file("$projectDir/.spine")
 
-project.task("downloadProtocPlugin") {
+task('downloadProtocPlugin') {
     description = 'Downloads the Spine Protoc plugin for functional tests.'
     
     doLast {
@@ -73,7 +73,7 @@ gradlePlugin {
     it.plugins {
         spineBootstrapPlugin {
             id = 'io.spine.bootstrap'
-            implementationClass = 'io.spine.tools.bootstrap.BootstrapPlugin'
+            implementationClass = 'io.spine.tools.gradle.bootstrap.BootstrapPlugin'
             displayName = 'Spine Bootstrap'
             description = 'Prepares a Gradle project for development on Spine.'
         }
@@ -85,3 +85,34 @@ pluginBundle {
     vcsUrl = 'https://github.com/SpineEventEngine/bootstrap.git'
     tags = ['java', 'spine', 'event-sourcing', 'bootstrap', 'quick-start']
 }
+
+final File depsDir = "$buildDir/deps" as File
+sourceSets.main.resources.srcDir(depsDir)
+
+task('writeDependencies') {
+    final File versionFile = "$rootDir/version.gradle" as File
+    final File depsFile = "$rootDir/config/gradle/dependencies.gradle" as File
+
+    inputs.file(versionFile)
+    inputs.file(depsFile)
+
+    outputs.dir(depsDir)
+
+    doLast {
+        depsDir.mkdirs()
+        copy {
+            from versionFile
+            into depsDir
+        }
+    }
+
+    doLast {
+        depsDir.mkdirs()
+        copy {
+            from depsFile
+            into depsDir
+        }
+    }
+}
+
+processResources.dependsOn writeDependencies
