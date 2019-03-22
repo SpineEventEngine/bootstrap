@@ -21,6 +21,7 @@
 plugins {
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '0.10.1'
+    id "com.github.johnrengelman.shadow" version "5.0.0"
 }
 
 Dependency spineProtocPluginDependency = null
@@ -90,4 +91,19 @@ pluginBundle {
         artifactId = 'spine-bootstrap'
         version = spineVersion
     }
+    
+    withDependencies { it.clear() }
+}
+
+jar {
+    classifier = 'pure'
+    dependsOn shadowJar
+}
+
+shadowJar {
+    classifier = ''
+}
+
+artifacts {
+    archives shadowJar
 }
