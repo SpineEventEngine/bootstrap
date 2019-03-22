@@ -33,7 +33,7 @@ defaultRepositories(project)
 
 // This script file is created at a test runtime by the `GradleProject`.
 //
-// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case 
+// If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case
 // performs such a configuration in `config.gradle`. 
 //
 apply from: 'config.gradle'
