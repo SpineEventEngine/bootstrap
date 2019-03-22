@@ -28,25 +28,25 @@ import org.gradle.api.tasks.SourceSetContainer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A {@link SourceLayout} implementation based on source sets.
+ * A {@link DirectoryStructure} implementation based on source sets.
  *
- * <p>{@code SourceSetsLayout} does not try to resolve any files or find the current project
+ * <p>{@code SourceSetStructure} does not try to resolve any files or find the current project
  * source sets unless {@link #markCodeGenRoot} is called.
  */
-public final class SourceSetsLayout implements SourceLayout {
+public final class SourceSetStructure implements DirectoryStructure {
 
     private final Project project;
 
-    private SourceSetsLayout(Project project) {
+    private SourceSetStructure(Project project) {
         this.project = project;
     }
 
     /**
-     * Creates a new instance of {@code SourceSetsLayout} for the given project.
+     * Creates a new instance of {@code SourceSetStructure} for the given project.
      */
-    public static SourceSetsLayout of(Project project) {
+    public static SourceSetStructure of(Project project) {
         checkNotNull(project);
-        return new SourceSetsLayout(project);
+        return new SourceSetStructure(project);
     }
 
     @Override

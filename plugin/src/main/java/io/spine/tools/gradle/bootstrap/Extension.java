@@ -23,8 +23,8 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.DependencyTarget;
+import io.spine.tools.gradle.DirectoryStructure;
 import io.spine.tools.gradle.PluginTarget;
-import io.spine.tools.gradle.SourceLayout;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -128,7 +128,7 @@ public final class Extension {
         private Project project;
         private ProtobufGenerator generator;
         private PluginTarget pluginTarget;
-        private SourceLayout layout;
+        private DirectoryStructure layout;
         private DependencyTarget dependencyTarget;
 
         /**
@@ -148,7 +148,7 @@ public final class Extension {
             return this;
         }
 
-        Builder setLayout(SourceLayout layout) {
+        Builder setLayout(DirectoryStructure layout) {
             this.layout = checkNotNull(layout);
             return this;
         }
@@ -165,7 +165,7 @@ public final class Extension {
                     .setDependencyTarget(dependencyTarget)
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
-                    .setSourceLayout(layout)
+                    .setDirectoryStructure(layout)
                     .build();
             return javaExtension;
         }

@@ -21,9 +21,9 @@
 package io.spine.tools.gradle.bootstrap;
 
 import io.spine.tools.gradle.DependencyTarget;
+import io.spine.tools.gradle.DirectoryStructure;
 import io.spine.tools.gradle.Ext;
 import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.SourceLayout;
 import io.spine.tools.gradle.SpineModule;
 import org.gradle.api.Project;
 
@@ -40,14 +40,14 @@ import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 public final class JavaExtension extends CodeGenExtension {
 
     private final Project project;
-    private final SourceLayout sourceLayout;
+    private final DirectoryStructure directoryStructure;
 
     private boolean generateGrpc = false;
 
     private JavaExtension(Builder builder) {
         super(builder);
         this.project = builder.project();
-        this.sourceLayout = builder.sourceLayout();
+        this.directoryStructure = builder.directoryStructure();
     }
 
     /**
@@ -101,7 +101,7 @@ public final class JavaExtension extends CodeGenExtension {
 
     private void addSourceSets() {
         GeneratedSourceRoot sourceRoot = GeneratedSourceRoot.of(project);
-        sourceLayout.markCodeGenRoot(sourceRoot);
+        directoryStructure.markCodeGenRoot(sourceRoot);
     }
 
     private void addGrpcDependencies() {
@@ -118,7 +118,7 @@ public final class JavaExtension extends CodeGenExtension {
 
     static final class Builder extends CodeGenExtension.Builder<JavaExtension, Builder> {
 
-        private SourceLayout sourceLayout;
+        private DirectoryStructure directoryStructure;
 
         /**
          * Prevents direct instantiation.
@@ -127,12 +127,12 @@ public final class JavaExtension extends CodeGenExtension {
             super(called(java));
         }
 
-        private SourceLayout sourceLayout() {
-            return sourceLayout;
+        private DirectoryStructure directoryStructure() {
+            return directoryStructure;
         }
 
-        Builder setSourceLayout(SourceLayout sourceLayout) {
-            this.sourceLayout = sourceLayout;
+        Builder setDirectoryStructure(DirectoryStructure directoryStructure) {
+            this.directoryStructure = directoryStructure;
             return this;
         }
 
@@ -143,7 +143,7 @@ public final class JavaExtension extends CodeGenExtension {
 
         @Override
         JavaExtension build() {
-            checkNotNull(sourceLayout);
+            checkNotNull(directoryStructure);
             return super.build();
         }
 

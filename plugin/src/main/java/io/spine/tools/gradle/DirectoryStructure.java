@@ -18,30 +18,20 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle.bootstrap.given;
-
-import com.google.common.collect.ImmutableSet;
-import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.SourceLayout;
-
-import java.nio.file.Path;
-import java.util.Set;
-
-import static com.google.common.collect.Sets.newHashSet;
+package io.spine.tools.gradle;
 
 /**
- * A memoizing test-only implementation of {@link SourceLayout}.
+ * A description of the project code layout on the file system.
+ *
+ * <p>Typically represented by the project {@link org.gradle.api.tasks.SourceSetContainer}.
  */
-public final class TestSourceLayout implements SourceLayout {
+public interface DirectoryStructure {
 
-    private final Set<Path> javaSourceDirs = newHashSet();
-
-    @Override
-    public void markCodeGenRoot(GeneratedSourceRoot directory) {
-        javaSourceDirs.add(directory.getPath());
-    }
-
-    public ImmutableSet<Path> javaSourceDirs() {
-        return ImmutableSet.copyOf(javaSourceDirs);
-    }
+    /**
+     * Marks the given directory as a generated code root dir.
+     *
+     * @param directory
+     *         the directory to mark
+     */
+    void markCodeGenRoot(GeneratedSourceRoot directory);
 }
