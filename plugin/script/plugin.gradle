@@ -18,21 +18,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-plugins {
-    id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.10.1'
-    id "com.github.johnrengelman.shadow" version "5.0.0"
+gradlePlugin {
+    it.plugins {
+        spineBootstrapPlugin {
+            id = 'io.spine.bootstrap'
+            implementationClass = 'io.spine.tools.bootstrap.BootstrapPlugin'
+            displayName = 'Spine Bootstrap'
+            description = 'Prepares a Gradle project for development on Spine.'
+        }
+    }
 }
 
-apply from: "$projectDir/script/plugin.gradle"
-apply from: "$projectDir/script/func-test-env.gradle"
+pluginBundle {
+    website = 'https://spine.io/'
+    vcsUrl = 'https://github.com/SpineEventEngine/bootstrap.git'
+    tags = ['java', 'spine', 'event-sourcing', 'bootstrap', 'quick-start']
 
-dependencies {
-    implementation "io.spine.tools:spine-plugin-base:$spineVersion"
-    implementation "io.spine.tools:spine-model-compiler:$spineVersion"
-    implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
-    implementation deps.build.gradlePlugins.protobuf
-    
-    testImplementation "io.spine:spine-testlib:$spineVersion"
-    testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
+    mavenCoordinates {
+        groupId = 'io.spine.tools'
+        artifactId = 'spine-bootstrap'
+        version = spineVersion
+    }
+
+    withDependencies { it.clear() }
+}
+
+jar {
+    classifier = 'pure'
+    dependsOn shadowJar
+}
+
+shadowJar {
+    classifier = ''
+}
+
+artifacts {
+    archives shadowJar
 }
