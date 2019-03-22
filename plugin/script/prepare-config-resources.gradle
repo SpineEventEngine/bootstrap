@@ -18,22 +18,28 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-plugins {
-    id 'java-gradle-plugin'
-    id 'com.gradle.plugin-publish' version '0.10.1'
-    id "com.github.johnrengelman.shadow" version "5.0.0"
+final File depsDir = "$buildDir/deps" as File
+sourceSets.main.resources.srcDir(depsDir)
+
+task('writeDependencies') {
+    final Collection<File> configResources = [
+            "$rootDir/version.gradle" as File,
+            "$rootDir/config/gradle/dependencies.gradle" as File
+    ]
+
+    inputs.files(configResources)
+    outputs.dir(depsDir)
+
+    doLast {
+        depsDir.mkdirs()
+
+        configResources.each { final File resource ->
+            copy {
+                from resource
+                into depsDir
+            }
+        }
+    }
 }
 
-apply from: "$projectDir/script/plugin.gradle"
-apply from: "$projectDir/script/func-test-env.gradle"
-apply from: "$projectDir/script/prepare-config-resources.gradle"
-
-dependencies {
-    implementation "io.spine.tools:spine-plugin-base:$spineVersion"
-    implementation "io.spine.tools:spine-model-compiler:$spineVersion"
-    implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
-    implementation deps.build.gradlePlugins.protobuf
-    
-    testImplementation "io.spine:spine-testlib:$spineVersion"
-    testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
-}
+processResources.dependsOn writeDependencies
