@@ -49,10 +49,10 @@ import org.gradle.api.Project;
  *     }
  *
  *     spine {
- *         java {
+ *         enableJava {
  *             grpc = true
  *         }
- *         javaScript()
+ *         enableJavaScript()
  *     }
  *     }
  * </pre>
