@@ -35,11 +35,12 @@ import static org.gradle.util.ConfigureUtil.configure;
 /**
  * The {@code spine} Gradle DSL extension.
  *
- * <p>Configures the project as a {@linkplain #java() Java} or/and a {@linkplain #javaScript()
+ * <p>Configures the project as a {@linkplain #enableJava() Java} or/and a {@linkplain #enableJavaScript()
  * JavaScript} project based on Spine.
  */
 public final class Extension {
 
+    @SuppressWarnings("DuplicateStringLiteralInspection") // Used in tests and with other meanings.
     static final String NAME = "spine";
 
     private final JavaExtension java;
@@ -55,11 +56,11 @@ public final class Extension {
      *
      * @param configuration
      *         Groovy style configuration
-     * @see #java()
+     * @see #enableJava()
      */
-    public void java(Closure configuration) {
+    public void enableJava(Closure configuration) {
         checkNotNull(configuration);
-        java();
+        enableJava();
         configure(configuration, java);
     }
 
@@ -68,11 +69,11 @@ public final class Extension {
      *
      * @param configuration
      *         Java/Kotlin style configuration
-     * @see #java()
+     * @see #enableJava()
      */
-    public void java(Action<JavaExtension> configuration) {
+    public void enableJava(Action<JavaExtension> configuration) {
         checkNotNull(configuration);
-        java();
+        enableJava();
         configuration.execute(java);
     }
 
@@ -83,7 +84,7 @@ public final class Extension {
      * is not applied to this project, applies it immediately.
      */
     @CanIgnoreReturnValue
-    public JavaExtension java() {
+    public JavaExtension enableJava() {
         java.enableGeneration();
         return java;
     }
@@ -95,7 +96,7 @@ public final class Extension {
      * not applied to this project, applies it immediately.
      */
     @CanIgnoreReturnValue
-    public JavaScriptExtension javaScript() {
+    public JavaScriptExtension enableJavaScript() {
         javaScript.enableGeneration();
         return javaScript;
     }

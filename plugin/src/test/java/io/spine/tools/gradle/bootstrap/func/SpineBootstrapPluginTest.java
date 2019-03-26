@@ -175,12 +175,12 @@ class SpineBootstrapPluginTest {
     }
 
     private void configureJavaGeneration() {
-        writeConfigGradle("spine.java()");
+        writeConfigGradle("spine.enableJava()");
     }
 
     private void configureJsGeneration() {
         writeConfigGradle(
-                "spine.javaScript()",
+                "spine.enableJavaScript()",
                 "compileJava.enabled = false"
         );
     }
@@ -188,7 +188,7 @@ class SpineBootstrapPluginTest {
     @SuppressWarnings("CheckReturnValue")
     private void configureJavaClient() {
         writeConfigGradle(
-                "spine.java().client()"
+                "spine.enableJava().client()"
         );
         project.addProtoFile("client.proto");
     }
@@ -196,7 +196,7 @@ class SpineBootstrapPluginTest {
     @SuppressWarnings("CheckReturnValue")
     private void configureJavaServer() {
         writeConfigGradle(
-                "spine.java().server()"
+                "spine.enableJava().server()"
         );
         project.addProtoFile("server.proto");
     }
@@ -205,7 +205,7 @@ class SpineBootstrapPluginTest {
     private void configureGrpc() {
         writeConfigGradle(
                 "spine {",
-                "    java {",
+                "    enableJava {",
                 "        grpc = true",
                 "    }",
                 "}"

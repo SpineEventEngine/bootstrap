@@ -92,7 +92,7 @@ class ExtensionTest {
         @Test
         @DisplayName("apply Model Compiler plugin to a Java project")
         void applyModelCompiler() {
-            extension.java();
+            extension.enableJava();
 
             assertApplied(ModelCompilerPlugin.class);
             assertNotApplied(ProtoJsPlugin.class);
@@ -101,7 +101,7 @@ class ExtensionTest {
         @Test
         @DisplayName("apply `java` plugin to a Java project")
         void applyJava() {
-            extension.java();
+            extension.enableJava();
 
             assertApplied(JavaPlugin.class);
         }
@@ -109,25 +109,25 @@ class ExtensionTest {
         @Test
         @DisplayName("apply `com.google.protobuf` plugin to a Java project")
         void applyProtoForJava() {
-            extension.java();
+            extension.enableJava();
 
             assertApplied(ProtobufPlugin.class);
         }
 
         @Test
-        @DisplayName("not apply `java` if already present")
+        @DisplayName("not apply `enableJava` if already present")
         void notApplyJavaIfJavaLib() {
             pluginTarget.apply(GradlePlugin.implementedIn(JavaPlugin.class));
 
             assertApplied(JavaPlugin.class);
 
-            extension.java();
+            extension.enableJava();
         }
 
         @Test
         @DisplayName("apply Proto JS plugin to a JS project")
         void applyProtoJs() {
-            extension.javaScript();
+            extension.enableJavaScript();
 
             assertApplied(ProtoJsPlugin.class);
             assertNotApplied(ModelCompilerPlugin.class);
@@ -136,7 +136,7 @@ class ExtensionTest {
         @Test
         @DisplayName("apply `com.google.protobuf` plugin to a JS project")
         void applyProtoForJs() {
-            extension.javaScript();
+            extension.enableJavaScript();
 
             assertApplied(ProtobufPlugin.class);
         }
@@ -144,8 +144,8 @@ class ExtensionTest {
         @Test
         @DisplayName("apply both Model Compiler and Proto JS plugin to a complex project")
         void combine() {
-            extension.javaScript();
-            extension.java();
+            extension.enableJavaScript();
+            extension.enableJava();
 
             assertApplied(JavaPlugin.class);
             assertApplied(ProtoJsPlugin.class);
@@ -155,7 +155,7 @@ class ExtensionTest {
         @Test
         @DisplayName("add server dependencies if required")
         void server() {
-            extension.java().server();
+            extension.enableJava().server();
 
             assertApplied(JavaPlugin.class);
             assertThat(dependencyTarget.dependencies()).contains(serverDependency());
@@ -164,7 +164,7 @@ class ExtensionTest {
         @Test
         @DisplayName("add client dependencies if required")
         void client() {
-            extension.java().client();
+            extension.enableJava().client();
 
             IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
             assertDependencies.contains(clientDependency());
@@ -174,7 +174,7 @@ class ExtensionTest {
         @Test
         @DisplayName("declare `generated` directory a source root")
         void declareGeneratedDirectory() {
-            extension.java();
+            extension.enableJava();
 
             assertApplied(JavaPlugin.class);
             ImmutableSet<Path> declaredPaths = codeLayout.javaSourceDirs();
@@ -184,7 +184,7 @@ class ExtensionTest {
         @Test
         @DisplayName("declare gRPC dependencies when code gen is required")
         void grpcDeps() {
-            extension.java().setGrpc(true);
+            extension.enableJava().setGrpc(true);
 
             assertApplied(JavaPlugin.class);
             assertThat(dependencyTarget.dependencies()).contains(GRPC_DEPENDENCY);
@@ -223,7 +223,7 @@ class ExtensionTest {
             @DisplayName("with an action")
             void action() {
                 AtomicBoolean executedAction = new AtomicBoolean(false);
-                extension.java(javaExtension -> {
+                extension.enableJava(javaExtension -> {
                     boolean defaultValue = javaExtension.getGrpc();
                     assertThat(defaultValue).isFalse();
 
@@ -241,7 +241,7 @@ class ExtensionTest {
             @DisplayName("with a closure")
             void closure() {
                 AtomicBoolean executedClosure = new AtomicBoolean(false);
-                extension.java(ConsumerClosure.<JavaExtension>closure(javaExtension -> {
+                extension.enableJava(ConsumerClosure.<JavaExtension>closure(javaExtension -> {
                     boolean defaultValue = javaExtension.getGrpc();
                     assertThat(defaultValue).isFalse();
 
