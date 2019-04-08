@@ -18,39 +18,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle.bootstrap.given;
+package io.spine.tools.gradle;
 
-import com.google.common.collect.ImmutableSet;
-import io.spine.tools.gradle.DependencyModule;
-import io.spine.tools.gradle.DependencyTarget;
+public final class ProtobufArtifacts {
 
-import java.util.Set;
+    private static final String GROUP_ID = "com.google.protobuf";
+    @SuppressWarnings("DuplicateStringLiteralInspection") // Used in other contexts.
+    private static final String PROTOC = "protoc";
+    private static final String PROTOBUF_LITE = "protobuf-lite";
 
-import static com.google.common.collect.Sets.newHashSet;
-
-/**
- * A memoizing test-only implementation of {@link DependencyTarget}.
- */
-public final class TestDependencyTarget implements DependencyTarget {
-
-    private final Set<String> dependencies = newHashSet();
-    private final Set<DependencyModule> exclusions = newHashSet();
-
-    @Override
-    public void depend(String configuration, String notation) {
-        dependencies.add(notation);
+    /**
+     * Prevents the utility class instantiation.
+     */
+    private ProtobufArtifacts() {
     }
 
-    @Override
-    public void exclude(String groupId, String artifactId) {
-        exclusions.add(new DependencyModule(groupId, artifactId));
+    public static String gradlePlugin() {
+        return GROUP_ID;
     }
 
-    public ImmutableSet<String> dependencies() {
-        return ImmutableSet.copyOf(dependencies);
+    public static DependencyModule protobufLite() {
+        return new DependencyModule(GROUP_ID, PROTOBUF_LITE);
     }
 
-    public ImmutableSet<DependencyModule> exclusions() {
-        return ImmutableSet.copyOf(exclusions);
+    public static DependencyModule protobufCompiler() {
+        return new DependencyModule(GROUP_ID, PROTOC);
     }
 }

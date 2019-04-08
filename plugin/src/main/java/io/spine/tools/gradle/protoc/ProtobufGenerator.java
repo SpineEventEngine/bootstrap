@@ -27,6 +27,7 @@ import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
 import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
+import io.spine.tools.gradle.ProtobufArtifacts;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.PluginManager;
@@ -43,11 +44,6 @@ import static io.spine.tools.groovy.ConsumerClosure.closure;
  * <p>Configures the {@code protoc} built-ins and plugins to be used for code generation.
  */
 public final class ProtobufGenerator {
-
-    /**
-     * Identifier of the {@link com.google.protobuf.gradle.ProtobufPlugin}.
-     */
-    private static final String PROTOBUF_GRADLE_PLUGIN = "com.google.protobuf";
 
     private final Project project;
 
@@ -127,10 +123,11 @@ public final class ProtobufGenerator {
 
     private void withProtobufPlugin(Runnable action) {
         PluginManager pluginManager = project.getPluginManager();
-        if (pluginManager.hasPlugin(PROTOBUF_GRADLE_PLUGIN)) {
+        String pluginId = ProtobufArtifacts.gradlePlugin();
+        if (pluginManager.hasPlugin(pluginId)) {
             action.run();
         } else {
-            pluginManager.withPlugin(PROTOBUF_GRADLE_PLUGIN, plugin -> action.run());
+            pluginManager.withPlugin(pluginId, plugin -> action.run());
         }
     }
 

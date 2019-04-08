@@ -18,39 +18,47 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle.bootstrap.given;
+package io.spine.tools.gradle;
 
-import com.google.common.collect.ImmutableSet;
-import io.spine.tools.gradle.DependencyModule;
-import io.spine.tools.gradle.DependencyTarget;
+import com.google.common.base.Objects;
 
-import java.util.Set;
+import static com.google.common.base.Preconditions.checkNotNull;
 
-import static com.google.common.collect.Sets.newHashSet;
+public final class DependencyModule implements ArtifactModule {
 
-/**
- * A memoizing test-only implementation of {@link DependencyTarget}.
- */
-public final class TestDependencyTarget implements DependencyTarget {
+    private final String groupId;
+    private final String name;
 
-    private final Set<String> dependencies = newHashSet();
-    private final Set<DependencyModule> exclusions = newHashSet();
-
-    @Override
-    public void depend(String configuration, String notation) {
-        dependencies.add(notation);
+    public DependencyModule(String groupId, String name) {
+        this.groupId = checkNotNull(groupId);
+        this.name = checkNotNull(name);
     }
 
     @Override
-    public void exclude(String groupId, String artifactId) {
-        exclusions.add(new DependencyModule(groupId, artifactId));
+    public String groupId() {
+        return groupId;
     }
 
-    public ImmutableSet<String> dependencies() {
-        return ImmutableSet.copyOf(dependencies);
+    @Override
+    public String moduleName() {
+        return name;
     }
 
-    public ImmutableSet<DependencyModule> exclusions() {
-        return ImmutableSet.copyOf(exclusions);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DependencyModule)) {
+            return false;
+        }
+        DependencyModule module = (DependencyModule) o;
+        return Objects.equal(groupId, module.groupId) &&
+                Objects.equal(name, module.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(groupId, name);
     }
 }

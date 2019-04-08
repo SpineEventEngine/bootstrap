@@ -20,24 +20,27 @@
 
 package io.spine.tools.gradle;
 
-/**
- * An enumeration of some of the Spine modules.
- */
-public enum SpineModule implements ArtifactModule {
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    base,
-    client,
-    server;
+public interface ArtifactModule {
 
-    private static final String SPINE_PREFIX = "spine-";
+    String groupId();
 
-    @Override
-    public  String moduleName() {
-        return SPINE_PREFIX + name();
-    }
+    String moduleName();
 
-    @Override
-    public String groupId() {
-        return "io.spine";
+    /**
+     * Compiles an {@link Artifact} out for this module.
+     *
+     * @param version
+     *         the version of the artifact, e.g. {@code 1.0.0}
+     */
+    default Artifact withVersion(String version) {
+        checkNotNull(version);
+        return Artifact
+                .newBuilder()
+                .setGroup(groupId())
+                .setName(moduleName())
+                .setVersion(version)
+                .build();
     }
 }
