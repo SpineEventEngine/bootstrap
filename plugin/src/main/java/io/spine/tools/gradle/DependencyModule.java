@@ -24,6 +24,9 @@ import com.google.common.base.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * A module which represents a third-party dependency.
+ */
 public final class DependencyModule implements ArtifactModule {
 
     private final String groupId;

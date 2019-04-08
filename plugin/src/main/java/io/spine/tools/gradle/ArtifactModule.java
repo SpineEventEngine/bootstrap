@@ -22,10 +22,21 @@ package io.spine.tools.gradle;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * The identifier of a module of an artifact.
+ *
+ * <p>Consists of the group ID and the module name.
+ */
 public interface ArtifactModule {
 
+    /**
+     * Obtains the module group ID.
+     */
     String groupId();
 
+    /**
+     * Obtains the module name.
+     */
     String moduleName();
 
     /**

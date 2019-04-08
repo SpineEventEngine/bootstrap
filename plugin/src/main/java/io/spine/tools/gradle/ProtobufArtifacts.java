@@ -20,11 +20,12 @@
 
 package io.spine.tools.gradle;
 
+/**
+ * A factory of Protobuf-related artifact specs.
+ */
 public final class ProtobufArtifacts {
 
     private static final String GROUP_ID = "com.google.protobuf";
-    @SuppressWarnings("DuplicateStringLiteralInspection") // Used in other contexts.
-    private static final String PROTOC = "protoc";
     private static final String PROTOBUF_LITE = "protobuf-lite";
 
     /**
@@ -33,15 +34,17 @@ public final class ProtobufArtifacts {
     private ProtobufArtifacts() {
     }
 
+    /**
+     * Obtains the ID of the Protobuf Gradle plugin.
+     */
     public static String gradlePlugin() {
         return GROUP_ID;
     }
 
+    /**
+     * Obtains the {@link DependencyModule} of the Protobuf Lite Java runtime library.
+     */
     public static DependencyModule protobufLite() {
         return new DependencyModule(GROUP_ID, PROTOBUF_LITE);
-    }
-
-    public static DependencyModule protobufCompiler() {
-        return new DependencyModule(GROUP_ID, PROTOC);
     }
 }

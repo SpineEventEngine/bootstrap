@@ -28,6 +28,7 @@ import io.spine.tools.gradle.SpineModule;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.gradle.ProtobufArtifacts.protobufLite;
 import static io.spine.tools.gradle.SpineModule.client;
 import static io.spine.tools.gradle.SpineModule.server;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.grpc;
@@ -95,7 +96,7 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     private void fixRuntimeConfigurations() {
-        dependencyTarget().exclude("com.google.protobuf", "protobuf-lite");
+        dependencyTarget().exclude(protobufLite());
     }
 
     @Override

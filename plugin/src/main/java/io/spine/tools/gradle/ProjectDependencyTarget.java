@@ -58,18 +58,18 @@ public final class ProjectDependencyTarget implements DependencyTarget {
     }
 
     @Override
-    public void exclude(String groupId, String artifactId) {
+    public void exclude(ArtifactModule module) {
         Configuration mainConfig = configurations.getByName(RUNTIME_CLASSPATH.getValue());
-        exclude(mainConfig, groupId, artifactId);
+        exclude(mainConfig, module);
 
         Configuration testConfig = configurations.getByName(TEST_RUNTIME_CLASSPATH.getValue());
-        exclude(testConfig, groupId, artifactId);
+        exclude(testConfig, module);
     }
 
-    private static void exclude(Configuration configuration, String groupId, String artifactId) {
+    private static void exclude(Configuration configuration, ArtifactModule module) {
         configuration.exclude(ImmutableMap.of(
-                "group", groupId,
-                "module", artifactId
+                "group", module.groupId(),
+                "module", module.moduleName()
         ));
     }
 }

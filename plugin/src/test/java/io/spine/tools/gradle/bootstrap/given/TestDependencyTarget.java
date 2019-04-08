@@ -21,7 +21,7 @@
 package io.spine.tools.gradle.bootstrap.given;
 
 import com.google.common.collect.ImmutableSet;
-import io.spine.tools.gradle.DependencyModule;
+import io.spine.tools.gradle.ArtifactModule;
 import io.spine.tools.gradle.DependencyTarget;
 
 import java.util.Set;
@@ -34,7 +34,7 @@ import static com.google.common.collect.Sets.newHashSet;
 public final class TestDependencyTarget implements DependencyTarget {
 
     private final Set<String> dependencies = newHashSet();
-    private final Set<DependencyModule> exclusions = newHashSet();
+    private final Set<ArtifactModule> exclusions = newHashSet();
 
     @Override
     public void depend(String configuration, String notation) {
@@ -42,15 +42,15 @@ public final class TestDependencyTarget implements DependencyTarget {
     }
 
     @Override
-    public void exclude(String groupId, String artifactId) {
-        exclusions.add(new DependencyModule(groupId, artifactId));
+    public void exclude(ArtifactModule module) {
+        exclusions.add(module);
     }
 
     public ImmutableSet<String> dependencies() {
         return ImmutableSet.copyOf(dependencies);
     }
 
-    public ImmutableSet<DependencyModule> exclusions() {
+    public ImmutableSet<ArtifactModule> exclusions() {
         return ImmutableSet.copyOf(exclusions);
     }
 }
