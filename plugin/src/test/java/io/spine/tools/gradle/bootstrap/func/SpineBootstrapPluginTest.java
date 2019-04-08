@@ -36,6 +36,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.TaskName.build;
@@ -178,8 +179,9 @@ class SpineBootstrapPluginTest {
     void includeResources() {
         configureJavaGeneration();
         String resourceName = "foo.txt";
+        Set<String> emptyFile = emptySet();
         GradleProject project =
-                this.project.createFile("generated/main/resources/" + resourceName, emptySet())
+                this.project.createFile("generated/main/resources/" + resourceName, emptyFile)
                             .build();
         project.executeTask(build);
         Collection<String> resourceFiles = assembledResources();
