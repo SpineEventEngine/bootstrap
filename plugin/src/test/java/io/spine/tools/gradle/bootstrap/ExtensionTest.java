@@ -27,6 +27,7 @@ import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.PluginTarget;
 import io.spine.tools.gradle.bootstrap.given.TestDependencyTarget;
+import io.spine.tools.gradle.bootstrap.given.TestDependencyTarget.ExcludedDependency;
 import io.spine.tools.gradle.bootstrap.given.TestDirectoryStructure;
 import io.spine.tools.gradle.bootstrap.given.TestPluginRegistry;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
@@ -46,6 +47,7 @@ import org.junitpioneer.jupiter.TempDirectory.TempDir;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.GRPC_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.addExt;
@@ -169,6 +171,35 @@ class ExtensionTest {
             IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
             assertDependencies.contains(clientDependency());
             assertDependencies.doesNotContain(serverDependency());
+        }
+
+        @Test
+        @DisplayName("exclude Protobuf Lite dependencies for sever modules")
+        void exclusionsServer() {
+            extension.enableJava().server();
+
+            assertThat(dependencyTarget.exclusions()).hasSize(1);
+            ExcludedDependency exclusion = getOnlyElement(dependencyTarget.exclusions());
+            assertThat(exclusion.groupId()).isEqualTo("com.google.protobuf");
+            assertThat(exclusion.artifactId()).isEqualTo("protobuf-lite");
+        }
+
+        @Test
+        @DisplayName("exclude Protobuf Lite dependencies for client modules")
+        void exclusionsClient() {
+            extension.enableJava().client();
+
+            assertThat(dependencyTarget.exclusions()).hasSize(1);
+            ExcludedDependency exclusion = getOnlyElement(dependencyTarget.exclusions());
+            assertThat(exclusion.groupId()).isEqualTo("com.google.protobuf");
+            assertThat(exclusion.artifactId()).isEqualTo("protobuf-lite");
+        }
+
+        @Test
+        @DisplayName("not exclude any dependencies by default")
+        void noExclusions() {
+            extension.enableJava();
+            assertThat(dependencyTarget.exclusions()).isEmpty();
         }
 
         @Test
