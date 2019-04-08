@@ -58,6 +58,8 @@ public final class SourceSetStructure implements DirectoryStructure {
             GeneratedSourceSet scopeDir = rootDirectory.sourceSet(sourceSet.getName());
             sourceSet.getJava()
                      .srcDirs(scopeDir.java(), scopeDir.spine(), scopeDir.grpc());
+            sourceSet.getResources()
+                     .srcDir(scopeDir.resources());
         });
     }
 
