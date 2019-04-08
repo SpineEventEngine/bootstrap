@@ -173,24 +173,11 @@ class ExtensionTest {
         }
 
         @Test
-        @DisplayName("exclude Protobuf Lite dependencies for sever modules")
-        void exclusionsServer() {
-            extension.enableJava().server();
-            assertThat(dependencyTarget.exclusions()).containsExactly(protobufLite());
-        }
-
-        @Test
-        @DisplayName("exclude Protobuf Lite dependencies for client modules")
-        void exclusionsClient() {
-            extension.enableJava().client();
-            assertThat(dependencyTarget.exclusions()).containsExactly(protobufLite());
-        }
-
-        @Test
-        @DisplayName("not exclude any dependencies by default")
+        @DisplayName("exclude Protobuf Lite dependencies for Java projects")
         void noExclusions() {
-            extension.enableJava();
             assertThat(dependencyTarget.exclusions()).isEmpty();
+            extension.enableJava();
+            assertThat(dependencyTarget.exclusions()).containsExactly(protobufLite());
         }
 
         @Test

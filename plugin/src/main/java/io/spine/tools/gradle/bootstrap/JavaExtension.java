@@ -51,6 +51,18 @@ public final class JavaExtension extends CodeGenExtension {
         this.directoryStructure = builder.directoryStructure();
     }
 
+    @Override
+    void enableGeneration() {
+        super.enableGeneration();
+        pluginTarget().applyModelCompiler();
+        addSourceSets();
+        excludeProtobufLite();
+    }
+
+    private void excludeProtobufLite() {
+        dependencyTarget().exclude(protobufLite());
+    }
+
     /**
      * Indicates whether the gRPC stub generation is enabled or not.
      */
@@ -78,7 +90,6 @@ public final class JavaExtension extends CodeGenExtension {
      */
     public void client() {
         dependOn(client);
-        fixRuntimeConfigurations();
     }
 
     /**
@@ -88,22 +99,10 @@ public final class JavaExtension extends CodeGenExtension {
      */
     public void server() {
         dependOn(server);
-        fixRuntimeConfigurations();
     }
 
     private void dependOn(SpineModule module) {
         dependencyTarget().compile(module.withVersion(spineVersion()));
-    }
-
-    private void fixRuntimeConfigurations() {
-        dependencyTarget().exclude(protobufLite());
-    }
-
-    @Override
-    void enableGeneration() {
-        super.enableGeneration();
-        pluginTarget().applyModelCompiler();
-        addSourceSets();
     }
 
     private void addSourceSets() {
