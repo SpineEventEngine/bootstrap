@@ -77,6 +77,7 @@ public final class JavaExtension extends CodeGenExtension {
      */
     public void client() {
         dependOn(client);
+        fixRuntimeConfigurations();
     }
 
     /**
@@ -86,10 +87,15 @@ public final class JavaExtension extends CodeGenExtension {
      */
     public void server() {
         dependOn(server);
+        fixRuntimeConfigurations();
     }
 
     private void dependOn(SpineModule module) {
         dependencyTarget().compile(module.withVersion(spineVersion()));
+    }
+
+    private void fixRuntimeConfigurations() {
+        dependencyTarget().exclude("com.google.protobuf", "protobuf-lite");
     }
 
     @Override

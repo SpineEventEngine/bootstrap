@@ -41,6 +41,8 @@ public interface DependencyTarget {
      */
     void depend(String configurationName, String notation);
 
+    void exclude(String groupId, String artifactId);
+
     /**
      * Adds a new dependency within the {@code compile} configuration.
      *

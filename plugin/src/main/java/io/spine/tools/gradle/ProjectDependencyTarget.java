@@ -20,10 +20,15 @@
 
 package io.spine.tools.gradle;
 
+import com.google.common.collect.ImmutableMap;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.gradle.ConfigurationName.RUNTIME_CLASSPATH;
+import static io.spine.tools.gradle.ConfigurationName.TEST_RUNTIME_CLASSPATH;
 
 /**
  * A {@link DependencyTarget} implemented on top of a {@link DependencyHandler}  of a project.
@@ -31,9 +36,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class ProjectDependencyTarget implements DependencyTarget {
 
     private final DependencyHandler dependencies;
+    private final ConfigurationContainer configurations;
 
-    private ProjectDependencyTarget(DependencyHandler dependencies) {
+    private ProjectDependencyTarget(DependencyHandler dependencies,
+                                    ConfigurationContainer configurations) {
         this.dependencies = dependencies;
+        this.configurations = configurations;
     }
 
     /**
@@ -41,11 +49,27 @@ public final class ProjectDependencyTarget implements DependencyTarget {
      */
     public static ProjectDependencyTarget from(Project project) {
         checkNotNull(project);
-        return new ProjectDependencyTarget(project.getDependencies());
+        return new ProjectDependencyTarget(project.getDependencies(), project.getConfigurations());
     }
 
     @Override
     public void depend(String configurationName, String notation) {
         dependencies.add(configurationName, notation);
+    }
+
+    @Override
+    public void exclude(String groupId, String artifactId) {
+        Configuration mainConfig = configurations.getByName(RUNTIME_CLASSPATH.getValue());
+        exclude(mainConfig, groupId, artifactId);
+
+        Configuration testConfig = configurations.getByName(TEST_RUNTIME_CLASSPATH.getValue());
+        exclude(testConfig, groupId, artifactId);
+    }
+
+    private static void exclude(Configuration configuration, String groupId, String artifactId) {
+        configuration.exclude(ImmutableMap.of(
+                "group", groupId,
+                "module", artifactId
+        ));
     }
 }

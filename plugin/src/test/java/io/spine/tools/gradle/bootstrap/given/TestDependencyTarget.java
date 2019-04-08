@@ -20,6 +20,7 @@
 
 package io.spine.tools.gradle.bootstrap.given;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableSet;
 import io.spine.tools.gradle.DependencyTarget;
 
@@ -33,13 +34,60 @@ import static com.google.common.collect.Sets.newHashSet;
 public final class TestDependencyTarget implements DependencyTarget {
 
     private final Set<String> dependencies = newHashSet();
+    private final Set<ExcludedDependency> exclusions = newHashSet();
 
     @Override
     public void depend(String configuration, String notation) {
         dependencies.add(notation);
     }
 
+    @Override
+    public void exclude(String groupId, String artifactId) {
+        exclusions.add(new ExcludedDependency(groupId, artifactId));
+    }
+
     public ImmutableSet<String> dependencies() {
         return ImmutableSet.copyOf(dependencies);
+    }
+
+    public ImmutableSet<ExcludedDependency> exclusions() {
+        return ImmutableSet.copyOf(exclusions);
+    }
+
+    public static final class ExcludedDependency {
+
+        private final String groupId;
+        private final String artifactId;
+
+        private ExcludedDependency(String groupId, String artifactId) {
+            this.groupId = groupId;
+            this.artifactId = artifactId;
+        }
+
+        public String groupId() {
+            return groupId;
+        }
+
+        public String artifactId() {
+            return artifactId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (!(o instanceof ExcludedDependency)) {
+                return false;
+            }
+            ExcludedDependency that = (ExcludedDependency) o;
+            return Objects.equal(groupId, that.groupId) &&
+                    Objects.equal(artifactId, that.artifactId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(groupId, artifactId);
+        }
     }
 }
