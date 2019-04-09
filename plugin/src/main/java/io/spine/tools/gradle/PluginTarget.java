@@ -42,6 +42,8 @@ public interface PluginTarget {
      */
     boolean isApplied(GradlePlugin plugin);
 
+    void apply(PluginScript pluginScript);
+
     /**
      * Checks if the given plugin is not applied yet.
      */

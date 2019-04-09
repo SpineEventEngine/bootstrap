@@ -21,6 +21,7 @@
 package io.spine.tools.gradle.bootstrap.given;
 
 import io.spine.tools.gradle.GradlePlugin;
+import io.spine.tools.gradle.PluginScript;
 import io.spine.tools.gradle.PluginTarget;
 
 import java.util.Set;
@@ -44,5 +45,10 @@ public final class TestPluginRegistry implements PluginTarget {
     @Override
     public boolean isApplied(GradlePlugin plugin) {
         return plugins.contains(plugin);
+    }
+
+    @Override
+    public void apply(PluginScript pluginScript) {
+        // NoOp for tests.
     }
 }

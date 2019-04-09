@@ -24,7 +24,8 @@ sourceSets.main.resources.srcDir(depsDir)
 task('writeDependencies') {
     final Collection<File> configResources = [
             "$rootDir/version.gradle" as File,
-            "$rootDir/config/gradle/dependencies.gradle" as File
+            "$rootDir/config/gradle/dependencies.gradle" as File,
+            "$rootDir/config/gradle/model-compiler.gradle" as File
     ]
 
     inputs.files(configResources)

@@ -58,4 +58,9 @@ public final class PlugableProject implements PluginTarget, Logging {
         boolean result = plugins.hasPlugin(plugin.implementationClass());
         return result;
     }
+
+    @Override
+    public void apply(PluginScript pluginScript) {
+        pluginScript.apply(project);
+    }
 }
