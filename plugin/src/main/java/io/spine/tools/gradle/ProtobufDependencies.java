@@ -43,7 +43,7 @@ public final class ProtobufDependencies {
     }
 
     /**
-     * Obtains the {@link ThirdPartyDependency} of the Protobuf Lite Java runtime library.
+     * Obtains the {@link ThirdPartyDependency} on the Protobuf Lite Java runtime library.
      */
     public static ThirdPartyDependency protobufLite() {
         return new ThirdPartyDependency(GROUP_ID, PROTOBUF_LITE);

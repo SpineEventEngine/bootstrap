@@ -25,7 +25,7 @@ import com.google.common.base.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * A module which represents a third-party dependency.
+ * A dependency on a third-party module.
  */
 public final class ThirdPartyDependency implements Dependency {
 
@@ -63,5 +63,10 @@ public final class ThirdPartyDependency implements Dependency {
     @Override
     public int hashCode() {
         return Objects.hashCode(groupId, name);
+    }
+
+    @Override
+    public String toString() {
+        return groupId() + ':' + name();
     }
 }

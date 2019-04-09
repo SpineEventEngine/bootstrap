@@ -23,9 +23,9 @@ package io.spine.tools.gradle;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * The identifier of a module of an artifact.
+ * A project dependency specification.
  *
- * <p>Consists of the group ID and the module name.
+ * <p>Consists of the group ID and the module name. Does not specify a concrete artifact.
  */
 public interface Dependency {
 

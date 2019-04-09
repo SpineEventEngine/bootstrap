@@ -42,13 +42,13 @@ public interface DependencyTarget {
     void depend(String configurationName, String notation);
 
     /**
-     * Excludes the given module from the project dependencies.
+     * Excludes the given dependency from the project.
      *
-     * @param module
-     *         the module to exclude, may refer to multiple dependencies with different versions,
+     * @param dependency
+     *         the dependency to exclude, may refer to multiple artifacts with different versions,
      *         classifiers, etc.
      */
-    void exclude(Dependency module);
+    void exclude(Dependency dependency);
 
     /**
      * Adds a new dependency within the {@code compile} configuration.

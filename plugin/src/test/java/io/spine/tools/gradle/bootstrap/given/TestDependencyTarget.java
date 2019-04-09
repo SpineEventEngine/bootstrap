@@ -42,8 +42,8 @@ public final class TestDependencyTarget implements DependencyTarget {
     }
 
     @Override
-    public void exclude(Dependency module) {
-        exclusions.add(module);
+    public void exclude(Dependency dependency) {
+        exclusions.add(dependency);
     }
 
     public ImmutableSet<String> dependencies() {

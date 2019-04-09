@@ -58,12 +58,12 @@ public final class ProjectDependencyTarget implements DependencyTarget {
     }
 
     @Override
-    public void exclude(Dependency module) {
+    public void exclude(Dependency dependency) {
         Configuration mainConfig = configurations.getByName(RUNTIME_CLASSPATH.getValue());
-        exclude(mainConfig, module);
+        exclude(mainConfig, dependency);
 
         Configuration testConfig = configurations.getByName(TEST_RUNTIME_CLASSPATH.getValue());
-        exclude(testConfig, module);
+        exclude(testConfig, dependency);
     }
 
     private static void exclude(Configuration configuration, Dependency module) {

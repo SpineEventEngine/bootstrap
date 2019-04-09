@@ -21,7 +21,7 @@
 package io.spine.tools.gradle;
 
 /**
- * An enumeration of some of the Spine modules.
+ * A {@link Dependency} on a Spine module.
  */
 public final class SpineDependency implements Dependency {
 
@@ -37,14 +37,23 @@ public final class SpineDependency implements Dependency {
         this.shortName = name;
     }
 
+    /**
+     * Obtains a dependency on the {@code io.spine:spine-base} module.
+     */
     public static SpineDependency base() {
         return base;
     }
 
+    /**
+     * Obtains a dependency on the {@code io.spine:spine-client} module.
+     */
     public static SpineDependency client() {
         return client;
     }
 
+    /**
+     * Obtains a dependency on the {@code io.spine:spine-server} module.
+     */
     public static SpineDependency server() {
         return server;
     }
