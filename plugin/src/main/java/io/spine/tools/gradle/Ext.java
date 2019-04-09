@@ -21,11 +21,13 @@
 package io.spine.tools.gradle;
 
 import com.google.common.collect.ImmutableList;
+import groovy.lang.Closure;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -45,6 +47,7 @@ public final class Ext {
     @SuppressWarnings("DuplicateStringLiteralInspection") // Used in other contexts.
     private static final String BUILD = "build";
     private static final String DEPS = "deps";
+    private static final String DEFAULT_REPOSITORIES = "defaultRepositories";
 
     private final ExtraPropertiesExtension ext;
 
@@ -81,6 +84,15 @@ public final class Ext {
      */
     public Artifacts artifacts() {
         return new Artifacts();
+    }
+
+    /**
+     * Obtains the default repositories configuration.
+     *
+     * <p>The configuration declared the Spine default repositories within the given project.
+     */
+    public Consumer<Project> defaultRepositories() {
+        return property(DEFAULT_REPOSITORIES).asConfigClosure();
     }
 
     public final class Versions {
@@ -171,6 +183,26 @@ public final class Ext {
             @SuppressWarnings("unchecked") // Groovy interop.
             Map<String, ?> map = (Map<String, ?>) value;
             return map;
+        }
+
+        private Consumer<Project> asConfigClosure() {
+            checkState(value instanceof Closure);
+            Closure<?> closure = (Closure<?>) value;
+            return new ProjectConfiguration(closure);
+        }
+    }
+
+    private static final class ProjectConfiguration implements Consumer<Project> {
+
+        private final Closure<?> closure;
+
+        private ProjectConfiguration(Closure<?> closure) {
+            this.closure = closure;
+        }
+
+        @Override
+        public void accept(Project project) {
+            closure.call(project);
         }
     }
 }

@@ -90,6 +90,9 @@ public final class BootstrapPlugin extends SpinePlugin {
 
     private static void applyScriptPlugins(Project project) {
         PluginScript.dependencies().apply(project);
+        Ext.of(project)
+           .defaultRepositories()
+           .accept(project);
         PluginScript.version().apply(project);
     }
 
