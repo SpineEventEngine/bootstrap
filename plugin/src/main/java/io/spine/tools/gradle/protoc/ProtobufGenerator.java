@@ -27,6 +27,7 @@ import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
 import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
+import io.spine.tools.gradle.PluginId;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.PluginManager;
@@ -35,7 +36,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ProtobufArtifacts.gradlePlugin;
+import static io.spine.tools.gradle.ProtobufDependencies.gradlePlugin;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
 
 /**
@@ -123,11 +124,11 @@ public final class ProtobufGenerator {
 
     private void withProtobufPlugin(Runnable action) {
         PluginManager pluginManager = project.getPluginManager();
-        String pluginId = gradlePlugin();
-        if (pluginManager.hasPlugin(pluginId)) {
+        PluginId pluginId = gradlePlugin();
+        if (pluginManager.hasPlugin(pluginId.value())) {
             action.run();
         } else {
-            pluginManager.withPlugin(pluginId, plugin -> action.run());
+            pluginManager.withPlugin(pluginId.value(), plugin -> action.run());
         }
     }
 

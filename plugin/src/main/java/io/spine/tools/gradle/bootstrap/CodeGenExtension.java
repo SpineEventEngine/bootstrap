@@ -30,7 +30,7 @@ import io.spine.tools.gradle.protoc.ProtocPlugin;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.SpineModule.base;
+import static io.spine.tools.gradle.SpineDependency.base;
 
 /**
  * A part of the {@link Extension spine} extension which configures certain code generation tasks.
@@ -62,7 +62,7 @@ abstract class CodeGenExtension implements Logging {
     void enableGeneration() {
         pluginTarget.applyProtobufPlugin();
         protobufGenerator.enableBuiltIn(codeGenJob);
-        dependencyTarget.compile(base.withVersion(spineVersion));
+        dependencyTarget.compile(base().ofVersion(spineVersion));
     }
 
     /**

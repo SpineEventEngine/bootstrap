@@ -48,7 +48,7 @@ public interface DependencyTarget {
      *         the module to exclude, may refer to multiple dependencies with different versions,
      *         classifiers, etc.
      */
-    void exclude(ArtifactModule module);
+    void exclude(Dependency module);
 
     /**
      * Adds a new dependency within the {@code compile} configuration.

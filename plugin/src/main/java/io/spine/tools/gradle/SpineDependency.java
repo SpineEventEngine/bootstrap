@@ -20,38 +20,47 @@
 
 package io.spine.tools.gradle;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
- * The identifier of a module of an artifact.
- *
- * <p>Consists of the group ID and the module name.
+ * An enumeration of some of the Spine modules.
  */
-public interface ArtifactModule {
+public final class SpineDependency implements Dependency {
 
-    /**
-     * Obtains the module group ID.
-     */
-    String groupId();
+    private static final String SPINE_PREFIX = "spine-";
 
-    /**
-     * Obtains the module name.
-     */
-    String moduleName();
+    private static final SpineDependency base = new SpineDependency("base");
+    private static final SpineDependency client = new SpineDependency("client");
+    private static final SpineDependency server = new SpineDependency("server");
 
-    /**
-     * Compiles an {@link Artifact} out for this module.
-     *
-     * @param version
-     *         the version of the artifact, e.g. {@code 1.0.0}
-     */
-    default Artifact withVersion(String version) {
-        checkNotNull(version);
-        return Artifact
-                .newBuilder()
-                .setGroup(groupId())
-                .setName(moduleName())
-                .setVersion(version)
-                .build();
+    private final String shortName;
+
+    private SpineDependency(String name) {
+        this.shortName = name;
+    }
+
+    public static SpineDependency base() {
+        return base;
+    }
+
+    public static SpineDependency client() {
+        return client;
+    }
+
+    public static SpineDependency server() {
+        return server;
+    }
+
+    @Override
+    public  String name() {
+        return SPINE_PREFIX + shortName;
+    }
+
+    @Override
+    public String groupId() {
+        return "io.spine";
+    }
+
+    @Override
+    public String toString() {
+        return groupId() + ':' + name();
     }
 }

@@ -20,31 +20,48 @@
 
 package io.spine.tools.gradle;
 
+import com.google.common.base.Objects;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
- * A factory of Protobuf-related artifact specs.
+ * A module which represents a third-party dependency.
  */
-public final class ProtobufArtifacts {
+public final class ThirdPartyDependency implements Dependency {
 
-    private static final String GROUP_ID = "com.google.protobuf";
-    private static final String PROTOBUF_LITE = "protobuf-lite";
+    private final String groupId;
+    private final String name;
 
-    /**
-     * Prevents the utility class instantiation.
-     */
-    private ProtobufArtifacts() {
+    public ThirdPartyDependency(String groupId, String name) {
+        this.groupId = checkNotNull(groupId);
+        this.name = checkNotNull(name);
     }
 
-    /**
-     * Obtains the ID of the Protobuf Gradle plugin.
-     */
-    public static String gradlePlugin() {
-        return GROUP_ID;
+    @Override
+    public String groupId() {
+        return groupId;
     }
 
-    /**
-     * Obtains the {@link DependencyModule} of the Protobuf Lite Java runtime library.
-     */
-    public static DependencyModule protobufLite() {
-        return new DependencyModule(GROUP_ID, PROTOBUF_LITE);
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ThirdPartyDependency)) {
+            return false;
+        }
+        ThirdPartyDependency module = (ThirdPartyDependency) o;
+        return Objects.equal(groupId, module.groupId) &&
+                Objects.equal(name, module.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(groupId, name);
     }
 }

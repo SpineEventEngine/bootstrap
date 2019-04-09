@@ -18,39 +18,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle.bootstrap.given;
+package io.spine.tools.gradle;
 
-import com.google.common.collect.ImmutableSet;
-import io.spine.tools.gradle.Dependency;
-import io.spine.tools.gradle.DependencyTarget;
-
-import java.util.Set;
-
-import static com.google.common.collect.Sets.newHashSet;
+import io.spine.value.StringTypeValue;
 
 /**
- * A memoizing test-only implementation of {@link DependencyTarget}.
+ * An identifier of a Gradle plugin.
  */
-public final class TestDependencyTarget implements DependencyTarget {
+public final class PluginId extends StringTypeValue {
 
-    private final Set<String> dependencies = newHashSet();
-    private final Set<Dependency> exclusions = newHashSet();
+    private static final long serialVersionUID = 0L;
 
-    @Override
-    public void depend(String configuration, String notation) {
-        dependencies.add(notation);
-    }
-
-    @Override
-    public void exclude(Dependency module) {
-        exclusions.add(module);
-    }
-
-    public ImmutableSet<String> dependencies() {
-        return ImmutableSet.copyOf(dependencies);
-    }
-
-    public ImmutableSet<Dependency> exclusions() {
-        return ImmutableSet.copyOf(exclusions);
+    public PluginId(String value) {
+        super(value);
     }
 }

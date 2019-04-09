@@ -24,13 +24,11 @@ import io.spine.tools.gradle.DependencyTarget;
 import io.spine.tools.gradle.DirectoryStructure;
 import io.spine.tools.gradle.Ext;
 import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.SpineModule;
+import io.spine.tools.gradle.SpineDependency;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ProtobufArtifacts.protobufLite;
-import static io.spine.tools.gradle.SpineModule.client;
-import static io.spine.tools.gradle.SpineModule.server;
+import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.grpc;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
@@ -89,7 +87,7 @@ public final class JavaExtension extends CodeGenExtension {
      * <p>Adds the {@code io.spine:spine-client} dependency to the project.
      */
     public void client() {
-        dependOn(client);
+        dependOn(SpineDependency.client());
     }
 
     /**
@@ -98,11 +96,11 @@ public final class JavaExtension extends CodeGenExtension {
      * <p>Adds the {@code io.spine:spine-server} dependency to the project.
      */
     public void server() {
-        dependOn(server);
+        dependOn(SpineDependency.server());
     }
 
-    private void dependOn(SpineModule module) {
-        dependencyTarget().compile(module.withVersion(spineVersion()));
+    private void dependOn(SpineDependency module) {
+        dependencyTarget().compile(module.ofVersion(spineVersion()));
     }
 
     private void addSourceSets() {

@@ -47,7 +47,7 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
-import static io.spine.tools.gradle.ProtobufArtifacts.protobufLite;
+import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.GRPC_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.addExt;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.spineVersion;

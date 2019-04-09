@@ -58,7 +58,7 @@ public final class ProjectDependencyTarget implements DependencyTarget {
     }
 
     @Override
-    public void exclude(ArtifactModule module) {
+    public void exclude(Dependency module) {
         Configuration mainConfig = configurations.getByName(RUNTIME_CLASSPATH.getValue());
         exclude(mainConfig, module);
 
@@ -66,10 +66,10 @@ public final class ProjectDependencyTarget implements DependencyTarget {
         exclude(testConfig, module);
     }
 
-    private static void exclude(Configuration configuration, ArtifactModule module) {
+    private static void exclude(Configuration configuration, Dependency module) {
         configuration.exclude(ImmutableMap.of(
                 "group", module.groupId(),
-                "module", module.moduleName()
+                "module", module.name()
         ));
     }
 }

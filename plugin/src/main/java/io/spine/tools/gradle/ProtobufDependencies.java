@@ -20,48 +20,32 @@
 
 package io.spine.tools.gradle;
 
-import com.google.common.base.Objects;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
- * A module which represents a third-party dependency.
+ * A factory of Protobuf-related artifact specs.
  */
-public final class DependencyModule implements ArtifactModule {
+public final class ProtobufDependencies {
 
-    private final String groupId;
-    private final String name;
+    private static final String GROUP_ID = "com.google.protobuf";
+    private static final String PROTOBUF_LITE = "protobuf-lite";
+    private static final PluginId PROTOBUF_PLUGIN_ID = new PluginId(GROUP_ID);
 
-    public DependencyModule(String groupId, String name) {
-        this.groupId = checkNotNull(groupId);
-        this.name = checkNotNull(name);
+    /**
+     * Prevents the utility class instantiation.
+     */
+    private ProtobufDependencies() {
     }
 
-    @Override
-    public String groupId() {
-        return groupId;
+    /**
+     * Obtains the ID of the Protobuf Gradle plugin.
+     */
+    public static PluginId gradlePlugin() {
+        return PROTOBUF_PLUGIN_ID;
     }
 
-    @Override
-    public String moduleName() {
-        return name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof DependencyModule)) {
-            return false;
-        }
-        DependencyModule module = (DependencyModule) o;
-        return Objects.equal(groupId, module.groupId) &&
-                Objects.equal(name, module.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(groupId, name);
+    /**
+     * Obtains the {@link ThirdPartyDependency} of the Protobuf Lite Java runtime library.
+     */
+    public static ThirdPartyDependency protobufLite() {
+        return new ThirdPartyDependency(GROUP_ID, PROTOBUF_LITE);
     }
 }
