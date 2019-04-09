@@ -31,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 
@@ -49,7 +50,8 @@ class GeneratedSourceRootTest {
     private GeneratedSourceRoot sourceRoot;
 
     @BeforeEach
-    void setUp(@TempDir Path dir) {
+    void setUp(@TempDir Path dir) throws IOException {
+        dir = dir.toRealPath();
         Project project = ProjectBuilder
                 .builder()
                 .withProjectDir(dir.toFile())
@@ -62,10 +64,8 @@ class GeneratedSourceRootTest {
     @DisplayName("resolve '$projectDir/generated'")
     void resolveToGenerated() {
         Path generated = projectDir.resolve(GENERATED);
-        Path absoluteExpected = generated.toAbsolutePath();
-        Path absoluteActual = sourceRoot.getPath()
-                                        .toAbsolutePath();
-        assertThat((Object) absoluteActual).isEqualTo(absoluteExpected);
+        Path absoluteActual = sourceRoot.getPath();
+        assertThat((Object) absoluteActual).isEqualTo(generated);
     }
 
     @Test
@@ -74,11 +74,9 @@ class GeneratedSourceRootTest {
         String sourceSetName = "dysfunctional-test";
         GeneratedSourceSet sourceSet = sourceRoot.sourceSet(sourceSetName);
         assertThat(sourceSet).isNotNull();
-        Path subdirectory = sourceSet.getPath()
-                                     .toAbsolutePath();
+        Path subdirectory = sourceSet.getPath();
         Path expectedSubdirectory = projectDir.resolve(GENERATED)
-                                              .resolve(sourceSetName)
-                                              .toAbsolutePath();
+                                              .resolve(sourceSetName);
         assertThat((Object) subdirectory).isEqualTo(expectedSubdirectory);
     }
 
@@ -107,14 +105,14 @@ class GeneratedSourceRootTest {
 
         @Test
         @DisplayName("obtain `grpc` subdir")
-        void grpc() {
+        void grpc()  {
             testSubDir(GRPC, sourceSet::grpc);
         }
 
         @Test
         @DisplayName("obtain `resources` subdir")
         void resources() {
-            testSubDir(RESOURCES, sourceSet::grpc);
+            testSubDir(RESOURCES, sourceSet::resources);
         }
 
         private void testSubDir(String name, Supplier<Path> selector) {
