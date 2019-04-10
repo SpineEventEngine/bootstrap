@@ -41,14 +41,30 @@ public final class PluginScript implements Plugin<Project> {
         this.resourceName = resourceName;
     }
 
+    /**
+     * Obtains the {@code dependencies.gradle} script.
+     *
+     * <p>The script adds several dependency-related properties to the project.
+     */
     public static PluginScript dependencies() {
         return new PluginScript(Name.DEPENDENCIES);
     }
 
+    /**
+     * Obtains the {@code version.gradle} script.
+     *
+     * <p>The script adds the {@code spineVersion} property to the project.
+     */
     public static PluginScript version() {
         return new PluginScript(Name.VERSION);
     }
 
+    /**
+     * Obtains the {@code model-compiler.gradle} script.
+     *
+     * <p>The script configures the {@link io.spine.tools.gradle.compiler.ModelCompilerPlugin} to
+     * the recommended default settings.
+     */
     public static PluginScript modelCompilerConfig() {
         return new PluginScript(Name.MODEL_COMPILER);
     }

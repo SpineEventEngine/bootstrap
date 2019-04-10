@@ -31,7 +31,7 @@ import static com.google.common.collect.Sets.newHashSet;
 /**
  * A test implementation of {@link PluginTarget}.
  *
- * <p>Memoizes the applied plugins and checks the m
+ * <p>Memoizes the applied plugins.
  */
 public final class TestPluginRegistry implements PluginTarget {
 
@@ -43,12 +43,12 @@ public final class TestPluginRegistry implements PluginTarget {
     }
 
     @Override
-    public boolean isApplied(GradlePlugin plugin) {
-        return plugins.contains(plugin);
+    public void apply(PluginScript pluginScript) {
+        // NoOp for tests.
     }
 
     @Override
-    public void apply(PluginScript pluginScript) {
-        // NoOp for tests.
+    public boolean isApplied(GradlePlugin plugin) {
+        return plugins.contains(plugin);
     }
 }

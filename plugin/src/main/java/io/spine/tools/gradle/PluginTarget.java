@@ -38,11 +38,14 @@ public interface PluginTarget {
     void apply(GradlePlugin plugin);
 
     /**
+     * Applies the given plugin script.
+     */
+    void apply(PluginScript pluginScript);
+
+    /**
      * Checks if the given plugin is already applied.
      */
     boolean isApplied(GradlePlugin plugin);
-
-    void apply(PluginScript pluginScript);
 
     /**
      * Checks if the given plugin is not applied yet.

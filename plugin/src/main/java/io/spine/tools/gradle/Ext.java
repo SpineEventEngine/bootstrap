@@ -168,6 +168,15 @@ public final class Ext {
         }
 
         /**
+         * Obtains this property as an executable {@code Project} configuration.
+         */
+        private Consumer<Project> asConfigClosure() {
+            checkState(value instanceof Closure);
+            Closure<?> closure = (Closure<?>) value;
+            return new ProjectConfiguration(closure);
+        }
+
+        /**
          * Obtains a sub-property of this map property.
          */
         private Property subProperty(String name) {
@@ -184,14 +193,14 @@ public final class Ext {
             Map<String, ?> map = (Map<String, ?>) value;
             return map;
         }
-
-        private Consumer<Project> asConfigClosure() {
-            checkState(value instanceof Closure);
-            Closure<?> closure = (Closure<?>) value;
-            return new ProjectConfiguration(closure);
-        }
     }
 
+    /**
+     * An executable configuration of a Gradle project.
+     *
+     * <p>Represents a Groovy closure written in a Gradle script. The closure is named and
+     * discovered as a {@link Property}. It accepts a {@link Project} as the only parameter.
+     */
     private static final class ProjectConfiguration implements Consumer<Project> {
 
         private final Closure<?> closure;
