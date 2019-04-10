@@ -63,7 +63,7 @@ public final class PluginScript implements Plugin<Project> {
      * Obtains the {@code model-compiler.gradle} script.
      *
      * <p>The script configures the {@link io.spine.tools.gradle.compiler.ModelCompilerPlugin} to
-     * the recommended default settings.
+     * the recommended settings.
      */
     public static PluginScript modelCompilerConfig() {
         return new PluginScript(Name.MODEL_COMPILER);
