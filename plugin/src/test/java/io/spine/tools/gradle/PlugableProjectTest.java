@@ -41,6 +41,7 @@ import java.util.ArrayDeque;
 import java.util.Queue;
 
 import static com.google.common.testing.NullPointerTester.Visibility.PACKAGE;
+import static com.google.common.truth.Truth.assertThat;
 import static io.spine.testing.logging.LogTruth.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -51,10 +52,11 @@ import static org.slf4j.event.Level.DEBUG;
 class PlugableProjectTest {
 
     private PlugableProject plugableProject;
+    private Project project;
 
     @BeforeEach
     void setUp(@TempDir Path dir) {
-        Project project = ProjectBuilder
+        project = ProjectBuilder
                 .builder()
                 .withName(PlugableProjectTest.class.getSimpleName())
                 .withProjectDir(dir.toFile())
@@ -104,9 +106,22 @@ class PlugableProjectTest {
         SubstituteLoggingEvent loggingEvent = log.poll();
         LogEventSubject assertLoggingEvent = assertThat(loggingEvent);
         assertLoggingEvent.isNotNull();
-        assertLoggingEvent.hasLevelThat().isEqualTo(DEBUG);
+        assertLoggingEvent.hasLevelThat()
+                          .isEqualTo(DEBUG);
         Object[] argumentArray = loggingEvent.getArgumentArray();
-        assertLoggingEvent.hasArgumentsThat().hasLength(1);
-        Truth.assertThat((String) argumentArray[0]).isEqualTo(plugin.className());
+        assertLoggingEvent.hasArgumentsThat()
+                          .hasLength(1);
+        Truth.assertThat((String) argumentArray[0])
+             .isEqualTo(plugin.className());
+    }
+
+    @Test
+    @DisplayName("apply Gradle scripts from classpath")
+    void applyPluginScript() {
+        plugableProject.apply(PluginScript.version());
+        String spineVersion = Ext.of(project)
+                                 .versions()
+                                 .spine();
+        assertThat(spineVersion).isNotEmpty();
     }
 }

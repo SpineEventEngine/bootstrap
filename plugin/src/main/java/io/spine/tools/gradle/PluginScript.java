@@ -20,15 +20,12 @@
 
 package io.spine.tools.gradle;
 
-import com.google.common.collect.ImmutableSet;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 import java.net.URL;
-import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.ImmutableSet.toImmutableSet;
 
 /**
  * A Gradle project plugin implemented in a {@code .gradle} script.
@@ -40,14 +37,36 @@ public final class PluginScript implements Plugin<Project> {
 
     private final Name resourceName;
 
-    public static ImmutableSet<PluginScript> all() {
-        return Stream.of(Name.values())
-                     .map(PluginScript::new)
-                     .collect(toImmutableSet());
-    }
-
     private PluginScript(Name resourceName) {
         this.resourceName = resourceName;
+    }
+
+    /**
+     * Obtains the {@code dependencies.gradle} script.
+     *
+     * <p>The script adds several dependency-related properties to the project.
+     */
+    public static PluginScript dependencies() {
+        return new PluginScript(Name.DEPENDENCIES);
+    }
+
+    /**
+     * Obtains the {@code version.gradle} script.
+     *
+     * <p>The script adds the {@code spineVersion} property to the project.
+     */
+    public static PluginScript version() {
+        return new PluginScript(Name.VERSION);
+    }
+
+    /**
+     * Obtains the {@code model-compiler.gradle} script.
+     *
+     * <p>The script configures the {@link io.spine.tools.gradle.compiler.ModelCompilerPlugin} to
+     * the recommended settings.
+     */
+    public static PluginScript modelCompilerConfig() {
+        return new PluginScript(Name.MODEL_COMPILER);
     }
 
     @Override
@@ -60,15 +79,20 @@ public final class PluginScript implements Plugin<Project> {
      */
     enum Name {
 
-        @SuppressWarnings("unused") // Enum instances are accessed via `values()`.
-        dependencies,
-        @SuppressWarnings("unused")
-        version;
+        DEPENDENCIES("dependencies"),
+        VERSION("version"),
+        MODEL_COMPILER("model-compiler");
 
         private static final String SCRIPT_EXTENSION = ".gradle";
 
+        private final String name;
+
+        Name(String name) {
+            this.name = name;
+        }
+
         private URL resolveInClasspath() {
-            String resourceName = name() + SCRIPT_EXTENSION;
+            String resourceName = name + SCRIPT_EXTENSION;
             URL resource = PluginScript.class.getClassLoader()
                                              .getResource(resourceName);
             checkNotNull(resource, "Resource `%s` not found.", resourceName);

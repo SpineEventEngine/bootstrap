@@ -24,6 +24,7 @@ import io.spine.tools.gradle.DependencyTarget;
 import io.spine.tools.gradle.DirectoryStructure;
 import io.spine.tools.gradle.Ext;
 import io.spine.tools.gradle.GeneratedSourceRoot;
+import io.spine.tools.gradle.PluginScript;
 import io.spine.tools.gradle.SpineDependency;
 import org.gradle.api.Project;
 
@@ -53,6 +54,7 @@ public final class JavaExtension extends CodeGenExtension {
     void enableGeneration() {
         super.enableGeneration();
         pluginTarget().applyModelCompiler();
+        pluginTarget().apply(PluginScript.modelCompilerConfig());
         addSourceSets();
         excludeProtobufLite();
     }

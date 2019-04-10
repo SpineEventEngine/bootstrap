@@ -89,8 +89,11 @@ public final class BootstrapPlugin extends SpinePlugin {
     }
 
     private static void applyScriptPlugins(Project project) {
-        PluginScript.all()
-                    .forEach(plugin -> plugin.apply(project));
+        PluginScript.dependencies().apply(project);
+        Ext.of(project)
+           .defaultRepositories()
+           .accept(project);
+        PluginScript.version().apply(project);
     }
 
     private static void configureProtocArtifact(Project project) {

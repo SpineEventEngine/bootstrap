@@ -21,6 +21,7 @@
 package io.spine.tools.gradle.bootstrap.given;
 
 import io.spine.tools.gradle.GradlePlugin;
+import io.spine.tools.gradle.PluginScript;
 import io.spine.tools.gradle.PluginTarget;
 
 import java.util.Set;
@@ -30,7 +31,7 @@ import static com.google.common.collect.Sets.newHashSet;
 /**
  * A test implementation of {@link PluginTarget}.
  *
- * <p>Memoizes the applied plugins and checks the m
+ * <p>Memoizes the applied plugins.
  */
 public final class TestPluginRegistry implements PluginTarget {
 
@@ -39,6 +40,11 @@ public final class TestPluginRegistry implements PluginTarget {
     @Override
     public void apply(GradlePlugin plugin) {
         plugins.add(plugin);
+    }
+
+    @Override
+    public void apply(PluginScript pluginScript) {
+        // NoOp for tests.
     }
 
     @Override

@@ -51,6 +51,11 @@ public final class PlugableProject implements PluginTarget, Logging {
     }
 
     @Override
+    public void apply(PluginScript pluginScript) {
+        pluginScript.apply(project);
+    }
+
+    @Override
     public boolean isApplied(GradlePlugin plugin) {
         checkNotNull(plugin);
 
