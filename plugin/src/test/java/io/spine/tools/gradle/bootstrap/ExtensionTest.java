@@ -47,6 +47,7 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
+import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.GRPC_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.addExt;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.spineVersion;
@@ -169,6 +170,14 @@ class ExtensionTest {
             IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
             assertDependencies.contains(clientDependency());
             assertDependencies.doesNotContain(serverDependency());
+        }
+
+        @Test
+        @DisplayName("exclude Protobuf Lite dependencies for Java projects")
+        void noExclusions() {
+            assertThat(dependencyTarget.exclusions()).isEmpty();
+            extension.enableJava();
+            assertThat(dependencyTarget.exclusions()).containsExactly(protobufLite());
         }
 
         @Test

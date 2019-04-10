@@ -66,8 +66,6 @@ subprojects {
 
         implementation "io.spine:spine-base:$spineVersion"
 
-        //Use jdk14 bindings for test purposes only.
-        testImplementation deps.test.slf4j
         testImplementation deps.test.guavaTestlib
         testImplementation deps.test.junit5Api
         testImplementation deps.test.junit5Runner

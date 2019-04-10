@@ -20,6 +20,7 @@
 
 package io.spine.tools.gradle.bootstrap.func;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import io.spine.tools.gradle.testing.GradleProject;
@@ -35,12 +36,15 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.TaskName.build;
 import static io.spine.tools.gradle.TaskName.generateJsonParsers;
 import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
+import static java.util.Collections.emptySet;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(TempDirectory.class)
@@ -170,6 +174,20 @@ class SpineBootstrapPluginTest {
                                "OrderServiceGrpc$OrderServiceImplBase.class");
     }
 
+    @Test
+    @DisplayName("register `generated/main/resources` as a resource directory")
+    void includeResources() {
+        configureJavaGeneration();
+        String resourceName = "foo.txt";
+        Set<String> emptyFile = emptySet();
+        GradleProject project =
+                this.project.createFile("generated/main/resources/" + resourceName, emptyFile)
+                            .build();
+        project.executeTask(build);
+        Collection<String> resourceFiles = assembledResources();
+        assertThat(resourceFiles).contains(resourceName);
+    }
+
     private void noAdditionalConfig() {
         writeConfigGradle();
     }
@@ -216,6 +234,18 @@ class SpineBootstrapPluginTest {
     @SuppressWarnings("CheckReturnValue")
     private void writeConfigGradle(String... lines) {
         project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.copyOf(lines));
+    }
+
+    private Collection<String> assembledResources() {
+        Path resourcePath = projectDir.resolve("build")
+                                      .resolve("resources")
+                                      .resolve("main");
+        File resourceDir = resourcePath.toFile();
+        assertTrue(resourceDir.exists());
+        assertTrue(resourceDir.isDirectory());
+        String[] resources = resourceDir.list();
+        assertNotNull(resources);
+        return ImmutableList.copyOf(resources);
     }
 
     private Collection<String> generatedClassFileNames() {

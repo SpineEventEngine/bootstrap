@@ -42,6 +42,15 @@ public interface DependencyTarget {
     void depend(String configurationName, String notation);
 
     /**
+     * Excludes the given dependency from the project.
+     *
+     * @param dependency
+     *         the dependency to exclude, may refer to multiple artifacts with different versions,
+     *         classifiers, etc.
+     */
+    void exclude(Dependency dependency);
+
+    /**
      * Adds a new dependency within the {@code compile} configuration.
      *
      * @see #compile(String)

@@ -18,39 +18,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle.bootstrap.given;
-
-import com.google.common.collect.ImmutableSet;
-import io.spine.tools.gradle.Dependency;
-import io.spine.tools.gradle.DependencyTarget;
-
-import java.util.Set;
-
-import static com.google.common.collect.Sets.newHashSet;
+package io.spine.tools.gradle;
 
 /**
- * A memoizing test-only implementation of {@link DependencyTarget}.
+ * A factory of Protobuf-related artifact specs.
  */
-public final class TestDependencyTarget implements DependencyTarget {
+public final class ProtobufDependencies {
 
-    private final Set<String> dependencies = newHashSet();
-    private final Set<Dependency> exclusions = newHashSet();
+    private static final String GROUP_ID = "com.google.protobuf";
+    private static final String PROTOBUF_LITE = "protobuf-lite";
+    private static final PluginId PROTOBUF_PLUGIN_ID = new PluginId(GROUP_ID);
 
-    @Override
-    public void depend(String configuration, String notation) {
-        dependencies.add(notation);
+    /**
+     * Prevents the utility class instantiation.
+     */
+    private ProtobufDependencies() {
     }
 
-    @Override
-    public void exclude(Dependency dependency) {
-        exclusions.add(dependency);
+    /**
+     * Obtains the ID of the Protobuf Gradle plugin.
+     */
+    public static PluginId gradlePlugin() {
+        return PROTOBUF_PLUGIN_ID;
     }
 
-    public ImmutableSet<String> dependencies() {
-        return ImmutableSet.copyOf(dependencies);
-    }
-
-    public ImmutableSet<Dependency> exclusions() {
-        return ImmutableSet.copyOf(exclusions);
+    /**
+     * Obtains the {@link ThirdPartyDependency} on the Protobuf Lite Java runtime library.
+     */
+    public static ThirdPartyDependency protobufLite() {
+        return new ThirdPartyDependency(GROUP_ID, PROTOBUF_LITE);
     }
 }

@@ -20,10 +20,17 @@
 
 package io.spine.tools.gradle;
 
+import com.google.common.collect.ImmutableMap;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.gradle.ConfigurationName.RUNTIME_CLASSPATH;
+import static io.spine.tools.gradle.ConfigurationName.TEST_RUNTIME_CLASSPATH;
+import static org.gradle.api.artifacts.ExcludeRule.GROUP_KEY;
+import static org.gradle.api.artifacts.ExcludeRule.MODULE_KEY;
 
 /**
  * A {@link DependencyTarget} implemented on top of a {@link DependencyHandler}  of a project.
@@ -31,9 +38,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class ProjectDependencyTarget implements DependencyTarget {
 
     private final DependencyHandler dependencies;
+    private final ConfigurationContainer configurations;
 
-    private ProjectDependencyTarget(DependencyHandler dependencies) {
+    private ProjectDependencyTarget(DependencyHandler dependencies,
+                                    ConfigurationContainer configurations) {
         this.dependencies = dependencies;
+        this.configurations = configurations;
     }
 
     /**
@@ -41,11 +51,35 @@ public final class ProjectDependencyTarget implements DependencyTarget {
      */
     public static ProjectDependencyTarget from(Project project) {
         checkNotNull(project);
-        return new ProjectDependencyTarget(project.getDependencies());
+        return new ProjectDependencyTarget(project.getDependencies(), project.getConfigurations());
     }
 
     @Override
     public void depend(String configurationName, String notation) {
         dependencies.add(configurationName, notation);
+    }
+
+    @Override
+    public void exclude(Dependency dependency) {
+        Configuration mainConfig = configurations.getByName(RUNTIME_CLASSPATH.getValue());
+        exclude(mainConfig, dependency);
+
+        Configuration testConfig = configurations.getByName(TEST_RUNTIME_CLASSPATH.getValue());
+        exclude(testConfig, dependency);
+    }
+
+    /**
+     * Excludes the given dependency from the given configuration.
+     *
+     * @param configuration
+     *         the configuration to exclude from
+     * @param dependency
+     *         the dependency to exclude
+     */
+    private static void exclude(Configuration configuration, Dependency dependency) {
+        configuration.exclude(ImmutableMap.of(
+                GROUP_KEY, dependency.groupId(),
+                MODULE_KEY, dependency.name()
+        ));
     }
 }

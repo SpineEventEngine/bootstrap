@@ -35,8 +35,8 @@ import static org.gradle.util.ConfigureUtil.configure;
 /**
  * The {@code spine} Gradle DSL extension.
  *
- * <p>Configures the project as a {@linkplain #enableJava() Java} or/and a {@linkplain #enableJavaScript()
- * JavaScript} project based on Spine.
+ * <p>Configures the project as a {@linkplain #enableJava() Java} or/and
+ * a {@linkplain #enableJavaScript() JavaScript} project based on Spine.
  */
 public final class Extension {
 
