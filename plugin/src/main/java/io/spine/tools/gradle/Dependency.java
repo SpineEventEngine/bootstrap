@@ -25,22 +25,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A project dependency specification.
  *
- * <p>Consists of the group ID and the module name. Does not specify a concrete artifact.
+ * <p>Consists of a group ID and a name. Does not specify a concrete artifact.
  */
 public interface Dependency {
 
     /**
-     * Obtains the module group ID.
+     * Obtains the group ID of this dependency.
      */
     String groupId();
 
     /**
-     * Obtains the module name.
+     * Obtains the name of this dependency.
      */
     String name();
 
     /**
-     * Compiles an {@link Artifact} out for this module.
+     * Compiles an {@link Artifact} for this dependency.
      *
      * @param version
      *         the version of the artifact, e.g. {@code 1.0.0}
