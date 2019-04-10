@@ -29,6 +29,8 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ConfigurationName.RUNTIME_CLASSPATH;
 import static io.spine.tools.gradle.ConfigurationName.TEST_RUNTIME_CLASSPATH;
+import static org.gradle.api.artifacts.ExcludeRule.GROUP_KEY;
+import static org.gradle.api.artifacts.ExcludeRule.MODULE_KEY;
 
 /**
  * A {@link DependencyTarget} implemented on top of a {@link DependencyHandler}  of a project.
@@ -66,10 +68,18 @@ public final class ProjectDependencyTarget implements DependencyTarget {
         exclude(testConfig, dependency);
     }
 
-    private static void exclude(Configuration configuration, Dependency module) {
+    /**
+     * Excludes the given dependency from the given configuration.
+     *
+     * @param configuration
+     *         the configuration to exclude from
+     * @param dependency
+     *         the dependency to exclude
+     */
+    private static void exclude(Configuration configuration, Dependency dependency) {
         configuration.exclude(ImmutableMap.of(
-                "group", module.groupId(),
-                "module", module.name()
+                GROUP_KEY, dependency.groupId(),
+                MODULE_KEY, dependency.name()
         ));
     }
 }
