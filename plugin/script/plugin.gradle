@@ -37,6 +37,9 @@ project.pluginBundle {
     it.mavenCoordinates {
         groupId = 'io.spine.tools'
         artifactId = 'spine-bootstrap'
+        // Corresponds to the latest `web` version.
+        // Gradle Plugin portal does not allow to override published artifacts.
+        // Should be synchronized with the framework version as soon as 1.0.0-SNAPSHOT era is over.
         version = '0.15.2-SNAPSHOT'
     }
 
