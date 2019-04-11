@@ -24,9 +24,9 @@ plugins {
     id "com.github.johnrengelman.shadow" version "5.0.0"
 }
 
-apply from: "$projectDir/script/plugin.gradle"
-apply from: "$projectDir/script/func-test-env.gradle"
-apply from: "$projectDir/script/prepare-config-resources.gradle"
+apply from: "$rootDir/gradle/plugin.gradle"
+apply from: "$rootDir/gradle/func-test-env.gradle"
+apply from: "$rootDir/gradle/prepare-config-resources.gradle"
 
 dependencies {
     implementation "io.spine.tools:spine-plugin-base:$spineVersion"
