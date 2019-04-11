@@ -37,7 +37,7 @@ project.pluginBundle {
     it.mavenCoordinates {
         groupId = 'io.spine.tools'
         artifactId = 'spine-bootstrap'
-        version = project.spineVersion
+        version = '0.15.2-SNAPSHOT'
     }
 
     it.withDependencies { it.clear() }
