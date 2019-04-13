@@ -25,11 +25,11 @@ import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
-import io.spine.tools.gradle.PluginTarget;
-import io.spine.tools.gradle.bootstrap.given.TestDependencyTarget;
-import io.spine.tools.gradle.bootstrap.given.TestDirectoryStructure;
-import io.spine.tools.gradle.bootstrap.given.TestPluginRegistry;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
+import io.spine.tools.gradle.project.PluginTarget;
+import io.spine.tools.gradle.testing.MemoizingDependencyTarget;
+import io.spine.tools.gradle.testing.MemoizingDirectoryStructure;
+import io.spine.tools.gradle.testing.MemoizingPluginRegistry;
 import io.spine.tools.groovy.ConsumerClosure;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -51,8 +51,6 @@ import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.GRPC_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.addExt;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.spineVersion;
-import static java.lang.String.format;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(TempDirectory.class)
@@ -61,8 +59,8 @@ class ExtensionTest {
 
     private PluginTarget pluginTarget;
     private Extension extension;
-    private TestDirectoryStructure codeLayout;
-    private TestDependencyTarget dependencyTarget;
+    private MemoizingDirectoryStructure codeLayout;
+    private MemoizingDependencyTarget dependencyTarget;
     private Path projectDir;
 
     @BeforeEach
@@ -74,9 +72,9 @@ class ExtensionTest {
                 .build();
         this.projectDir = project.getProjectDir().toPath();
         addExt(project);
-        pluginTarget = new TestPluginRegistry();
-        dependencyTarget = new TestDependencyTarget();
-        codeLayout = new TestDirectoryStructure();
+        pluginTarget = new MemoizingPluginRegistry();
+        dependencyTarget = new MemoizingDependencyTarget();
+        codeLayout = new MemoizingDirectoryStructure();
         extension = Extension
                 .newBuilder()
                 .setProject(project)
