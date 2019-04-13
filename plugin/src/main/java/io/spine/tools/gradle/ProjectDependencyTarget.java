@@ -33,7 +33,7 @@ import static org.gradle.api.artifacts.ExcludeRule.GROUP_KEY;
 import static org.gradle.api.artifacts.ExcludeRule.MODULE_KEY;
 
 /**
- * A {@link DependencyTarget} implemented on top of a {@link DependencyHandler}  of a project.
+ * A {@link DependencyTarget} implemented on top of a {@link DependencyHandler} of a project.
  */
 public final class ProjectDependencyTarget implements DependencyTarget {
 
