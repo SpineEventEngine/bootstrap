@@ -22,15 +22,15 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
-import io.spine.tools.gradle.DependencyTarget;
-import io.spine.tools.gradle.Ext;
-import io.spine.tools.gradle.PluginTarget;
+import io.spine.tools.gradle.config.Ext;
+import io.spine.tools.gradle.project.DependencyTarget;
+import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.SpineDependency.base;
+import static io.spine.tools.gradle.config.SpineDependency.base;
 
 /**
  * A part of the {@link Extension spine} extension which configures certain code generation tasks.
@@ -41,14 +41,14 @@ abstract class CodeGenExtension implements Logging {
 
     private final ProtobufGenerator protobufGenerator;
     private final ProtocPlugin codeGenJob;
-    private final PluginTarget pluginTarget;
+    private final SpinePluginTarget pluginTarget;
     private final DependencyTarget dependencyTarget;
     private final String spineVersion;
 
     CodeGenExtension(Builder<?, ?> builder) {
         this.protobufGenerator = builder.protobufGenerator();
         this.codeGenJob = builder.codeGenJob();
-        this.pluginTarget = builder.pluginTarget();
+        this.pluginTarget = new SpinePluginTarget(builder.pluginTarget());
         this.dependencyTarget = builder.dependencyTarget();
         this.spineVersion = Ext.of(builder.project())
                                .versions()
@@ -76,7 +76,7 @@ abstract class CodeGenExtension implements Logging {
     /**
      * Obtains the container of plugins associated with this extension.
      */
-    final PluginTarget pluginTarget() {
+    final SpinePluginTarget pluginTarget() {
         return pluginTarget;
     }
 

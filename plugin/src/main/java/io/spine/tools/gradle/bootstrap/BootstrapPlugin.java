@@ -20,14 +20,13 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import io.spine.tools.gradle.DirectoryStructure;
-import io.spine.tools.gradle.Ext;
-import io.spine.tools.gradle.PlugableProject;
-import io.spine.tools.gradle.PluginScript;
-import io.spine.tools.gradle.PluginTarget;
-import io.spine.tools.gradle.ProjectDependencyTarget;
-import io.spine.tools.gradle.SourceSetStructure;
 import io.spine.tools.gradle.SpinePlugin;
+import io.spine.tools.gradle.config.Ext;
+import io.spine.tools.gradle.project.DirectoryStructure;
+import io.spine.tools.gradle.project.PlugableProject;
+import io.spine.tools.gradle.project.PluginTarget;
+import io.spine.tools.gradle.project.ProjectDependencyTarget;
+import io.spine.tools.gradle.project.SourceSetStructure;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Project;
 
@@ -89,11 +88,11 @@ public final class BootstrapPlugin extends SpinePlugin {
     }
 
     private static void applyScriptPlugins(Project project) {
-        PluginScript.dependencies().apply(project);
+        SpinePluginScripts.dependencies().apply(project);
         Ext.of(project)
            .defaultRepositories()
            .accept(project);
-        PluginScript.version().apply(project);
+        SpinePluginScripts.version().apply(project);
     }
 
     private static void configureProtocArtifact(Project project) {

@@ -22,9 +22,9 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
-import io.spine.tools.gradle.DependencyTarget;
-import io.spine.tools.gradle.DirectoryStructure;
-import io.spine.tools.gradle.PluginTarget;
+import io.spine.tools.gradle.project.DependencyTarget;
+import io.spine.tools.gradle.project.DirectoryStructure;
+import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;

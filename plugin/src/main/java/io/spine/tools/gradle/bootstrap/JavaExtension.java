@@ -20,12 +20,11 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import io.spine.tools.gradle.DependencyTarget;
-import io.spine.tools.gradle.DirectoryStructure;
-import io.spine.tools.gradle.Ext;
 import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.PluginScript;
-import io.spine.tools.gradle.SpineDependency;
+import io.spine.tools.gradle.config.Ext;
+import io.spine.tools.gradle.config.SpineDependency;
+import io.spine.tools.gradle.project.DependencyTarget;
+import io.spine.tools.gradle.project.DirectoryStructure;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -54,7 +53,7 @@ public final class JavaExtension extends CodeGenExtension {
     void enableGeneration() {
         super.enableGeneration();
         pluginTarget().applyModelCompiler();
-        pluginTarget().apply(PluginScript.modelCompilerConfig());
+        pluginTarget().apply(SpinePluginScripts.modelCompilerConfig());
         addSourceSets();
         excludeProtobufLite();
     }
