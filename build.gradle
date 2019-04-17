@@ -118,6 +118,7 @@ subprojects {
     }
 
     apply from: deps.scripts.pmd
+    apply from: deps.scripts.projectLicenseReport
 }
 
 apply from: deps.scripts.publish
@@ -128,3 +129,4 @@ rootProject.afterEvaluate {
 }
 
 apply from: deps.scripts.jacoco
+apply from: deps.scripts.repoLicenseReport
