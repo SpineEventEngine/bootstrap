@@ -23,7 +23,7 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
 import io.spine.tools.gradle.config.Ext;
-import io.spine.tools.gradle.project.DependencyTarget;
+import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
@@ -42,14 +42,14 @@ abstract class CodeGenExtension implements Logging {
     private final ProtobufGenerator protobufGenerator;
     private final ProtocPlugin codeGenJob;
     private final SpinePluginTarget pluginTarget;
-    private final DependencyTarget dependencyTarget;
+    private final Dependant dependant;
     private final String spineVersion;
 
     CodeGenExtension(Builder<?, ?> builder) {
         this.protobufGenerator = builder.protobufGenerator();
         this.codeGenJob = builder.codeGenJob();
         this.pluginTarget = new SpinePluginTarget(builder.pluginTarget());
-        this.dependencyTarget = builder.dependencyTarget();
+        this.dependant = builder.dependant();
         this.spineVersion = Ext.of(builder.project())
                                .versions()
                                .spine();
@@ -62,7 +62,7 @@ abstract class CodeGenExtension implements Logging {
     void enableGeneration() {
         pluginTarget.applyProtobufPlugin();
         protobufGenerator.enableBuiltIn(codeGenJob);
-        dependencyTarget.compile(base().ofVersion(spineVersion));
+        dependant.compile(base().ofVersion(spineVersion));
     }
 
     /**
@@ -83,8 +83,8 @@ abstract class CodeGenExtension implements Logging {
     /**
      * Obtains the dependency container associated with this extension.
      */
-    final DependencyTarget dependencyTarget() {
-        return dependencyTarget;
+    final Dependant dependencyTarget() {
+        return dependant;
     }
 
     /**
@@ -112,7 +112,7 @@ abstract class CodeGenExtension implements Logging {
 
         private ProtobufGenerator protobufGenerator;
         private PluginTarget pluginTarget;
-        private DependencyTarget dependencyTarget;
+        private Dependant dependant;
         private Project project;
 
         Builder(ProtocPlugin codeGenJob) {
@@ -141,12 +141,12 @@ abstract class CodeGenExtension implements Logging {
             return self();
         }
 
-        private DependencyTarget dependencyTarget() {
-            return dependencyTarget;
+        private Dependant dependant() {
+            return dependant;
         }
 
-        B setDependencyTarget(DependencyTarget dependencyTarget) {
-            this.dependencyTarget = dependencyTarget;
+        B setDependant(Dependant dependant) {
+            this.dependant = dependant;
             return self();
         }
 
@@ -163,7 +163,7 @@ abstract class CodeGenExtension implements Logging {
             checkNotNull(protobufGenerator);
             checkNotNull(codeGenJob);
             checkNotNull(pluginTarget);
-            checkNotNull(dependencyTarget);
+            checkNotNull(dependant);
             return doBuild();
         }
 

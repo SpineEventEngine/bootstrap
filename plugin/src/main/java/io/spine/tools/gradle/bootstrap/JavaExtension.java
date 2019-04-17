@@ -23,8 +23,8 @@ package io.spine.tools.gradle.bootstrap;
 import io.spine.tools.gradle.GeneratedSourceRoot;
 import io.spine.tools.gradle.config.Ext;
 import io.spine.tools.gradle.config.SpineDependency;
-import io.spine.tools.gradle.project.DependencyTarget;
-import io.spine.tools.gradle.project.DirectoryStructure;
+import io.spine.tools.gradle.project.Dependant;
+import io.spine.tools.gradle.project.SourceSuperset;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -39,14 +39,14 @@ import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 public final class JavaExtension extends CodeGenExtension {
 
     private final Project project;
-    private final DirectoryStructure directoryStructure;
+    private final SourceSuperset directoryStructure;
 
     private boolean generateGrpc = false;
 
     private JavaExtension(Builder builder) {
         super(builder);
         this.project = builder.project();
-        this.directoryStructure = builder.directoryStructure();
+        this.directoryStructure = builder.sourceSuperset();
     }
 
     @Override
@@ -106,11 +106,11 @@ public final class JavaExtension extends CodeGenExtension {
 
     private void addSourceSets() {
         GeneratedSourceRoot sourceRoot = GeneratedSourceRoot.of(project);
-        directoryStructure.markCodeGenRoot(sourceRoot);
+        directoryStructure.register(sourceRoot);
     }
 
     private void addGrpcDependencies() {
-        DependencyTarget dependencyTarget = dependencyTarget();
+        Dependant dependencyTarget = dependencyTarget();
         Ext.of(project)
            .artifacts()
            .grpc()
@@ -123,7 +123,7 @@ public final class JavaExtension extends CodeGenExtension {
 
     static final class Builder extends CodeGenExtension.Builder<JavaExtension, Builder> {
 
-        private DirectoryStructure directoryStructure;
+        private SourceSuperset sourceSuperset;
 
         /**
          * Prevents direct instantiation.
@@ -132,12 +132,12 @@ public final class JavaExtension extends CodeGenExtension {
             super(called(java));
         }
 
-        private DirectoryStructure directoryStructure() {
-            return directoryStructure;
+        private SourceSuperset sourceSuperset() {
+            return sourceSuperset;
         }
 
-        Builder setDirectoryStructure(DirectoryStructure directoryStructure) {
-            this.directoryStructure = directoryStructure;
+        Builder setSourceSuperset(SourceSuperset sourceSuperset) {
+            this.sourceSuperset = sourceSuperset;
             return this;
         }
 
@@ -148,7 +148,7 @@ public final class JavaExtension extends CodeGenExtension {
 
         @Override
         JavaExtension build() {
-            checkNotNull(directoryStructure);
+            checkNotNull(sourceSuperset);
             return super.build();
         }
 

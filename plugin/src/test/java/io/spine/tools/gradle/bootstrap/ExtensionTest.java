@@ -27,9 +27,9 @@ import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.gradle.project.PluginTarget;
-import io.spine.tools.gradle.testing.MemoizingDependencyTarget;
-import io.spine.tools.gradle.testing.MemoizingDirectoryStructure;
+import io.spine.tools.gradle.testing.MemoizingDependant;
 import io.spine.tools.gradle.testing.MemoizingPluginRegistry;
+import io.spine.tools.gradle.testing.MemoizingSourceSuperset;
 import io.spine.tools.groovy.ConsumerClosure;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -61,8 +61,8 @@ class ExtensionTest {
 
     private PluginTarget pluginTarget;
     private Extension extension;
-    private MemoizingDirectoryStructure codeLayout;
-    private MemoizingDependencyTarget dependencyTarget;
+    private MemoizingSourceSuperset codeLayout;
+    private MemoizingDependant dependencyTarget;
     private Path projectDir;
 
     @BeforeEach
@@ -75,8 +75,8 @@ class ExtensionTest {
         this.projectDir = project.getProjectDir().toPath();
         addExt(project);
         pluginTarget = new MemoizingPluginRegistry();
-        dependencyTarget = new MemoizingDependencyTarget();
-        codeLayout = new MemoizingDirectoryStructure();
+        dependencyTarget = new MemoizingDependant();
+        codeLayout = new MemoizingSourceSuperset();
         extension = Extension
                 .newBuilder()
                 .setProject(project)
