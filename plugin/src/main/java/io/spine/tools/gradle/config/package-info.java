@@ -18,40 +18,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
- * A project dependency specification.
- *
- * <p>Consists of a group ID and a name. Does not specify a concrete artifact.
+ * Contains classes which are responsible for the Gradle configuration and values.
  */
-public interface Dependency {
 
-    /**
-     * Obtains the group ID of this dependency.
-     */
-    String groupId();
+@CheckReturnValue
+@ParametersAreNonnullByDefault
+package io.spine.tools.gradle.config;
 
-    /**
-     * Obtains the name of this dependency.
-     */
-    String name();
+import com.google.errorprone.annotations.CheckReturnValue;
 
-    /**
-     * Compiles an {@link Artifact} for this dependency.
-     *
-     * @param version
-     *         the version of the artifact, e.g. {@code 1.0.0}
-     */
-    default Artifact ofVersion(String version) {
-        checkNotNull(version);
-        return Artifact
-                .newBuilder()
-                .setGroup(groupId())
-                .setName(name())
-                .setVersion(version)
-                .build();
-    }
-}
+import javax.annotation.ParametersAreNonnullByDefault;

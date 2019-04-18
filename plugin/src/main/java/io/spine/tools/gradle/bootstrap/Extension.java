@@ -22,9 +22,9 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
-import io.spine.tools.gradle.DependencyTarget;
-import io.spine.tools.gradle.DirectoryStructure;
-import io.spine.tools.gradle.PluginTarget;
+import io.spine.tools.gradle.project.Dependant;
+import io.spine.tools.gradle.project.PluginTarget;
+import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -129,8 +129,8 @@ public final class Extension {
         private Project project;
         private ProtobufGenerator generator;
         private PluginTarget pluginTarget;
-        private DirectoryStructure layout;
-        private DependencyTarget dependencyTarget;
+        private SourceSuperset layout;
+        private Dependant dependencyTarget;
 
         /**
          * Prevents direct instantiation.
@@ -149,12 +149,12 @@ public final class Extension {
             return this;
         }
 
-        Builder setLayout(DirectoryStructure layout) {
+        Builder setLayout(SourceSuperset layout) {
             this.layout = checkNotNull(layout);
             return this;
         }
 
-        Builder setDependencyTarget(DependencyTarget dependencyTarget) {
+        Builder setDependencyTarget(Dependant dependencyTarget) {
             this.dependencyTarget = checkNotNull(dependencyTarget);
             return this;
         }
@@ -163,10 +163,10 @@ public final class Extension {
             JavaExtension javaExtension = JavaExtension
                     .newBuilder()
                     .setProject(project)
-                    .setDependencyTarget(dependencyTarget)
+                    .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
-                    .setDirectoryStructure(layout)
+                    .setSourceSuperset(layout)
                     .build();
             return javaExtension;
         }
@@ -175,7 +175,7 @@ public final class Extension {
             JavaScriptExtension javaScriptExtension = JavaScriptExtension
                     .newBuilder()
                     .setProject(project)
-                    .setDependencyTarget(dependencyTarget)
+                    .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
                     .build();

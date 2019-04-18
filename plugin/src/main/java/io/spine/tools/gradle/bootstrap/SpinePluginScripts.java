@@ -18,28 +18,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle;
+package io.spine.tools.gradle.bootstrap;
 
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
+import io.spine.io.Resource;
+import io.spine.tools.gradle.PluginScript;
 
-import java.net.URL;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
-/**
- * A Gradle project plugin implemented in a {@code .gradle} script.
- *
- * <p>The script file lays in the Bootstrap plugin classpath. The Bootstrap plugin may
- * {@link #apply} this plugin to a project.
- */
-public final class PluginScript implements Plugin<Project> {
-
-    private final Name resourceName;
-
-    private PluginScript(Name resourceName) {
-        this.resourceName = resourceName;
-    }
+public class SpinePluginScripts {
 
     /**
      * Obtains the {@code dependencies.gradle} script.
@@ -47,7 +31,7 @@ public final class PluginScript implements Plugin<Project> {
      * <p>The script adds several dependency-related properties to the project.
      */
     public static PluginScript dependencies() {
-        return new PluginScript(Name.DEPENDENCIES);
+        return PluginScript.declaredIn(Name.DEPENDENCIES.resourceFile());
     }
 
     /**
@@ -56,7 +40,7 @@ public final class PluginScript implements Plugin<Project> {
      * <p>The script adds the {@code spineVersion} property to the project.
      */
     public static PluginScript version() {
-        return new PluginScript(Name.VERSION);
+        return PluginScript.declaredIn(Name.VERSION.resourceFile());
     }
 
     /**
@@ -66,12 +50,7 @@ public final class PluginScript implements Plugin<Project> {
      * the recommended settings.
      */
     public static PluginScript modelCompilerConfig() {
-        return new PluginScript(Name.MODEL_COMPILER);
-    }
-
-    @Override
-    public void apply(Project target) {
-        target.apply(config -> config.from(resourceName.resolveInClasspath()));
+        return PluginScript.declaredIn(Name.MODEL_COMPILER.resourceFile());
     }
 
     /**
@@ -91,12 +70,9 @@ public final class PluginScript implements Plugin<Project> {
             this.name = name;
         }
 
-        private URL resolveInClasspath() {
+        private Resource resourceFile() {
             String resourceName = name + SCRIPT_EXTENSION;
-            URL resource = PluginScript.class.getClassLoader()
-                                             .getResource(resourceName);
-            checkNotNull(resource, "Resource `%s` not found.", resourceName);
-            return resource;
+            return Resource.file(resourceName);
         }
     }
 }

@@ -18,40 +18,40 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle;
+package io.spine.tools.gradle.bootstrap;
 
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
+import io.spine.tools.gradle.GradlePlugin;
+import io.spine.tools.gradle.PluginScript;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
+import io.spine.tools.gradle.project.PluginTarget;
 import org.gradle.api.plugins.JavaPlugin;
 
-/**
- * A target of Gradle plugin application.
- *
- * <p>Typically, represented by a Gradle {@link org.gradle.api.Project}.
- */
-public interface PluginTarget {
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    /**
-     * Applies the given plugin.
-     */
-    void apply(GradlePlugin plugin);
 
-    /**
-     * Applies the given plugin script.
-     */
-    void apply(PluginScript pluginScript);
+public final class SpinePluginTarget implements PluginTarget {
 
-    /**
-     * Checks if the given plugin is already applied.
-     */
-    boolean isApplied(GradlePlugin plugin);
+    private final PluginTarget delegate;
 
-    /**
-     * Checks if the given plugin is not applied yet.
-     */
-    default boolean isNotApplied(GradlePlugin plugin) {
-        return !isApplied(plugin);
+    public SpinePluginTarget(PluginTarget delegate) {
+        this.delegate = checkNotNull(delegate);
+    }
+
+    @Override
+    public void apply(GradlePlugin plugin) {
+        delegate.apply(plugin);
+    }
+
+    @Override
+    public void apply(PluginScript pluginScript) {
+        delegate.apply(pluginScript);
+    }
+
+    @Override
+    public boolean isApplied(GradlePlugin plugin) {
+        return delegate.isApplied(plugin);
     }
 
     /**
@@ -59,7 +59,7 @@ public interface PluginTarget {
      *
      * <p>The Protobuf plugin requires the Java plugin. Thus, the Java plugin is applied first.
      */
-    default void applyProtobufPlugin() {
+    public void applyProtobufPlugin() {
         GradlePlugin javaPlugin = GradlePlugin.implementedIn(JavaPlugin.class);
         apply(javaPlugin);
         GradlePlugin protoPlugin = GradlePlugin.implementedIn(ProtobufPlugin.class);
@@ -69,7 +69,7 @@ public interface PluginTarget {
     /**
      * Applies the {@link ModelCompilerPlugin}.
      */
-    default void applyModelCompiler() {
+    public void applyModelCompiler() {
         GradlePlugin plugin = GradlePlugin.implementedIn(ModelCompilerPlugin.class);
         apply(plugin);
     }
@@ -77,7 +77,7 @@ public interface PluginTarget {
     /**
      * Applies the {@link ProtoJsPlugin}.
      */
-    default void applyProtoJsPlugin() {
+    public void applyProtoJsPlugin() {
         GradlePlugin plugin = GradlePlugin.implementedIn(ProtoJsPlugin.class);
         apply(plugin);
     }
