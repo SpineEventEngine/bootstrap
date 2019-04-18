@@ -6,31 +6,15 @@ The Gradle plugin for bootstrapping projects built with Spine.
 
 ## Applying to the project
 
-In order to apply to a single-module project, reference the plugin in the `plugins` block 
-in `build.gralde`:
+In order to apply the plugin to a Gradle project, in `build.gralde` add the following config:
 ```gradle
 plugins {
     id 'io.spine.tools.gradle.bootstrap' version '0.15.3'
 }
 ```
 
-In order to apply to a multi-module project:
- 1. declare the plugin in the root module:
-```gradle
-plugins {
-    id 'io.spine.tools.gradle.bootstrap' version '0.15.3' apply false
-}
-```
- 2. apply the plugin in the `subprojects` section:
-```gradle
-subprojects {
-    apply plugin: 'io.spine.tools.gradle.bootstrap'
-}
-```
-Alternatively, apply the plugin only to some modules. In the `build.gradle` of the target module:
-```gradle
-apply plugin: 'io.spine.tools.gradle.bootstrap'
-```
+See [this Gradle doc](https://docs.gradle.org/current/userguide/plugins.html#sec:subprojects_plugins_dsl)
+on how to apply a plugin only to certain to subprojects.
 
 ## Java Projects
 
