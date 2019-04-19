@@ -92,8 +92,10 @@ public final class JavaExtension extends CodeGenExtension {
     public void withGrpcGeneration() {
         this.grpcGen = true;
         checkGrpcRequestValid();
-        protobufGenerator().enablePlugin(GRPC_PLUGIN);
-        addGrpcDependencies();
+        if (codegen) {
+            protobufGenerator().enablePlugin(GRPC_PLUGIN);
+            addGrpcDependencies();
+        }
     }
 
     /**

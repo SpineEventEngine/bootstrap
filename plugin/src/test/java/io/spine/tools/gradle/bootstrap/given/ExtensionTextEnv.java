@@ -21,6 +21,8 @@
 package io.spine.tools.gradle.bootstrap.given;
 
 import com.google.common.collect.ImmutableMap;
+import io.spine.tools.gradle.compiler.Extension;
+import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
 
@@ -53,5 +55,8 @@ public final class ExtensionTextEnv {
                                               .getExtraProperties();
         ext.set("spineVersion", spineVersion);
         ext.set("deps", deps);
+
+        project.getExtensions()
+               .add(ModelCompilerPlugin.extensionName(), new Extension());
     }
 }

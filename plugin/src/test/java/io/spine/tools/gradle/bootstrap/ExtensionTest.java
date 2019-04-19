@@ -191,12 +191,21 @@ class ExtensionTest {
         }
 
         @Test
-        @DisplayName("declare gRPC dependencies when code gen is required")
+        @DisplayName("declare gRPC dependencies when codegen is required")
         void grpcDeps() {
-            extension.enableJava().setGrpc(true);
+            extension.enableJava().withGrpcGeneration();
 
             assertApplied(JavaPlugin.class);
             assertThat(dependencyTarget.dependencies()).contains(GRPC_DEPENDENCY);
+        }
+
+        @Test
+        @DisplayName("disable Java code generation in Java projects")
+        void disableCodegen() {
+            JavaExtension javaExtension = ExtensionTest.this.extension.enableJava();
+            assertTrue(javaExtension.getCodegen());
+            javaExtension.withoutCodeGeneration();
+            assertFalse(javaExtension.getCodegen());
         }
 
         private String serverDependency() {
@@ -236,7 +245,7 @@ class ExtensionTest {
                     boolean defaultValue = javaExtension.getGrpc();
                     assertThat(defaultValue).isFalse();
 
-                    javaExtension.setGrpc(true);
+                    javaExtension.withGrpcGeneration();
 
                     boolean newValue = javaExtension.getGrpc();
                     assertThat(newValue).isTrue();
@@ -254,7 +263,7 @@ class ExtensionTest {
                     boolean defaultValue = javaExtension.getGrpc();
                     assertThat(defaultValue).isFalse();
 
-                    javaExtension.setGrpc(true);
+                    javaExtension.withGrpcGeneration();
 
                     boolean newValue = javaExtension.getGrpc();
                     assertThat(newValue).isTrue();
