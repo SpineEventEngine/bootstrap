@@ -31,6 +31,7 @@ import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
+import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.grpc;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 
@@ -40,12 +41,12 @@ import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 public final class JavaExtension extends CodeGenExtension {
 
     private static final ProtocPlugin JAVA_PLUGIN = called(java);
-    private static final ProtocPlugin GRPC_PLUGIN = called(ProtocPlugin.Name.grpc);
+    private static final ProtocPlugin GRPC_PLUGIN = called(grpc);
 
     private final Project project;
     private final SourceSuperset directoryStructure;
 
-    private boolean grpc = false;
+    private boolean grpcGen = false;
     private boolean codegen = true;
 
     private JavaExtension(Builder builder) {
@@ -73,7 +74,7 @@ public final class JavaExtension extends CodeGenExtension {
      * @see #withGrpcGeneration()
      */
     public boolean getGrpc() {
-        return grpc;
+        return grpcGen;
     }
 
     /**
@@ -89,7 +90,7 @@ public final class JavaExtension extends CodeGenExtension {
      * Enables the gRPC stub generation.
      */
     public void withGrpcGeneration() {
-        this.grpc = true;
+        this.grpcGen = true;
         checkGrpcRequestValid();
         protobufGenerator().enablePlugin(GRPC_PLUGIN);
         addGrpcDependencies();
@@ -105,13 +106,13 @@ public final class JavaExtension extends CodeGenExtension {
         protobufGenerator().disableBuiltIn(JAVA_PLUGIN);
         Extension modelCompilerExtension = project.getExtensions().getByType(Extension.class);
         modelCompilerExtension.generateValidatingBuilders = false;
-        if (grpc) {
+        if (grpcGen) {
             protobufGenerator().disablePlugin(GRPC_PLUGIN);
         }
     }
 
     private void checkGrpcRequestValid() {
-        if (!codegen && grpc) {
+        if (!codegen && grpcGen) {
             _warn("Requested gRPC code generation. " +
                           "However, Java code generation is disabled for this project. " +
                           "No Java code will be generated.");
