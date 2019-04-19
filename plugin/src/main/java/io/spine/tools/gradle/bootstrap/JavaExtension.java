@@ -90,11 +90,13 @@ public final class JavaExtension extends CodeGenExtension {
      * Enables the gRPC stub generation.
      */
     public void withGrpcGeneration() {
-        this.grpcGen = true;
+        grpcGen = true;
         checkGrpcRequestValid();
         if (codegen) {
             protobufGenerator().enablePlugin(GRPC_PLUGIN);
             addGrpcDependencies();
+        } else {
+            grpcGen = false;
         }
     }
 
@@ -110,6 +112,7 @@ public final class JavaExtension extends CodeGenExtension {
         modelCompilerExtension.generateValidatingBuilders = false;
         if (grpcGen) {
             protobufGenerator().disablePlugin(GRPC_PLUGIN);
+            grpcGen = false;
         }
     }
 
