@@ -66,7 +66,7 @@ the user would have to add all the gRPC-related dependencies on their own.
 Sometimes, the users might not want any Java code to be generated. For such cases, the plugin 
 provides following configuration opportunity:
 ```gradle
-spine.enableJava.withoutCodeGeneration()
+spine.enableJava().withoutCodeGeneration()
 ```
 This way, no Java code will be generated at all, including Protobuf messages, gRPC services, 
 and Validating Builders.
