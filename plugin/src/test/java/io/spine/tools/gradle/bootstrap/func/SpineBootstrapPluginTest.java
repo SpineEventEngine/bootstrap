@@ -264,6 +264,8 @@ class SpineBootstrapPluginTest {
         writeConfigGradle("spine.enableJava().codegen.protobuf = false");
     }
 
+    @SuppressWarnings("DuplicateStringLiteralInspection")
+        // Part of the file contents may be duplicated.
     private void configureJavaAndGrpcWithoutGen() {
         writeConfigGradle(
                 "spine.enableJava {",
@@ -274,6 +276,8 @@ class SpineBootstrapPluginTest {
                 "}");
     }
 
+    @SuppressWarnings("DuplicateStringLiteralInspection")
+        // Part of the file contents may be duplicated.
     private void configureJavaWithoutProtoOrSpine() {
         writeConfigGradle(
                 "spine.enableJava {",
