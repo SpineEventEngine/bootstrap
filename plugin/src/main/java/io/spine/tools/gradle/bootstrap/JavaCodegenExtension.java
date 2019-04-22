@@ -20,6 +20,8 @@
 
 package io.spine.tools.gradle.bootstrap;
 
+import io.spine.logging.Logging;
+import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.compiler.Extension;
 import io.spine.tools.gradle.config.Ext;
 import io.spine.tools.gradle.project.Dependant;
@@ -27,14 +29,19 @@ import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
 import io.spine.tools.gradle.protoc.ProtocPlugin.Name;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.gradle.TaskName.generateRejections;
+import static io.spine.tools.gradle.TaskName.generateTestRejections;
+import static io.spine.tools.gradle.TaskName.generateTestValidatingBuilders;
+import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 
 /**
  * A Gradle extension nested in {@link JavaExtension} which configures Java code generation.
  */
-public final class JavaCodegenExtension {
+public final class JavaCodegenExtension implements Logging {
 
     private static final ProtocPlugin JAVA_PLUGIN = called(Name.java);
     private static final ProtocPlugin GRPC_PLUGIN = called(Name.grpc);
@@ -132,6 +139,20 @@ public final class JavaCodegenExtension {
         Extension modelCompilerExtension = project.getExtensions()
                                                   .getByType(Extension.class);
         modelCompilerExtension.generateValidatingBuilders = spine;
+        updateModelCompilerTask(generateRejections);
+        updateModelCompilerTask(generateTestRejections);
+        updateModelCompilerTask(generateValidatingBuilders);
+        updateModelCompilerTask(generateTestValidatingBuilders);
+    }
+
+    private void updateModelCompilerTask(TaskName taskName) {
+        Task task = project.getTasks()
+                           .findByName(taskName.value());
+        if (task != null) {
+            task.setEnabled(spine);
+        } else {
+            _debug("Task `{}` not found in project `{}`.", taskName, project.getPath());
+        }
     }
 
     private void switchPlugin(ProtocPlugin plugin, boolean enabled) {
