@@ -205,6 +205,18 @@ class SpineBootstrapPluginTest {
         assertFalse(exists(compiledClasses));
     }
 
+    @Test
+    @DisplayName("disable rejection throwable generation")
+    void ignoreRejections() {
+        configureJavaWithoutProtoOrSpine();
+        GradleProject project = this.project
+                .addProtoFile("restaurant_rejections.proto")
+                .build();
+        project.executeTask(build);
+        Path compiledClasses = compiledJavaClasses();
+        assertFalse(exists(compiledClasses));
+    }
+
     private void noAdditionalConfig() {
         writeConfigGradle();
     }
@@ -249,7 +261,7 @@ class SpineBootstrapPluginTest {
     }
 
     private void configureJavaWithoutGen() {
-        writeConfigGradle("spine.enableJava().withoutCodeGeneration()");
+        writeConfigGradle("spine.enableJava().codegen.protobuf = false");
     }
 
     private void configureJavaAndGrpcWithoutGen() {
@@ -258,6 +270,16 @@ class SpineBootstrapPluginTest {
                 "    codegen {",
                 "        protobuf = false",
                 "        grpc = true",
+                "    }",
+                "}");
+    }
+
+    private void configureJavaWithoutProtoOrSpine() {
+        writeConfigGradle(
+                "spine.enableJava {",
+                "    codegen {",
+                "        protobuf = false",
+                "        spine = false",
                 "    }",
                 "}");
     }

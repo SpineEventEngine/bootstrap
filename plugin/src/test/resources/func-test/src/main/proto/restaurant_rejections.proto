@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package spine.tools.bootstrap.test;
+
+import "spine/options.proto";
+
+option (type_url_prefix) = "type.spine.io";
+option java_package = "io.spine.tools.bootstrap.test";
+option java_outer_classname = "RestaurantRejections";
+
+message RunOutOfIngredient {
+
+    string ingredient_name = 1;
+}
