@@ -31,6 +31,9 @@ import org.gradle.api.Project;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 
+/**
+ * A Gradle extension nested in {@link JavaExtension} which configures Java code generation.
+ */
 public final class JavaCodegenExtension {
 
     private static final ProtocPlugin JAVA_PLUGIN = called(Name.java);
@@ -53,6 +56,9 @@ public final class JavaCodegenExtension {
         this.dependant = dependant;
     }
 
+    /**
+     * Creates a new instance of the extension.
+     */
     public static JavaCodegenExtension of(Project project, Dependant dependant) {
         checkNotNull(project);
         checkNotNull(dependant);
@@ -72,6 +78,13 @@ public final class JavaCodegenExtension {
         return spine;
     }
 
+    /**
+     * Enables or disables Protobuf to Java code generation.
+     *
+     * <p>Enabled by default.
+     *
+     * @param protobuf {@code true} to enable, {@code false} to disable
+     */
     public void setProtobuf(boolean protobuf) {
         this.protobuf = protobuf;
         if (protobuf) {
@@ -81,6 +94,13 @@ public final class JavaCodegenExtension {
         }
     }
 
+    /**
+     * Enables or disables gRPC stub generation.
+     *
+     * <p>Disabled by default.
+     *
+     * @param grpc {@code true} to enable, {@code false} to disable
+     */
     public void setGrpc(boolean grpc) {
         this.grpc = grpc;
         switchPlugin(GRPC_PLUGIN, grpc);
@@ -96,6 +116,16 @@ public final class JavaCodegenExtension {
            .forEach(dependant::implementation);
     }
 
+    /**
+     * Enables or disables Spine-specific Java code generation.
+     *
+     * <p>Enabled by default.
+     *
+     * <p>If enabled, validating builders and rejections will be generated and the generated Java
+     * code will be tweaked by the Spine Protobuf compiler plugin.
+     *
+     * @param spine {@code true} to enable, {@code false} to disable
+     */
     public void setSpine(boolean spine) {
         this.spine = spine;
         switchPlugin(SPINE_PLUGIN, spine);
