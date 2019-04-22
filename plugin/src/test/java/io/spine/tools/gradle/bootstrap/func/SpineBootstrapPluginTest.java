@@ -241,7 +241,7 @@ class SpineBootstrapPluginTest {
         writeConfigGradle(
                 "spine {",
                 "    enableJava {",
-                "        withGrpcGeneration()",
+                "        codegen.grpc = true",
                 "    }",
                 "}"
         );
@@ -255,8 +255,10 @@ class SpineBootstrapPluginTest {
     private void configureJavaAndGrpcWithoutGen() {
         writeConfigGradle(
                 "spine.enableJava {",
-                "    withoutCodeGeneration()",
-                "    withGrpcGeneration()",
+                "    codegen {",
+                "        protobuf = false",
+                "        grpc = true",
+                "    }",
                 "}");
     }
 

@@ -24,8 +24,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
-import io.spine.logging.Logging;
-import io.spine.testing.logging.LogEventSubject;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -44,17 +42,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
-import org.slf4j.event.SubstituteLoggingEvent;
-import org.slf4j.helpers.SubstituteLogger;
 
 import java.nio.file.Path;
-import java.util.ArrayDeque;
-import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.google.common.collect.Iterables.getOnlyElement;
 import static com.google.common.truth.Truth.assertThat;
-import static io.spine.testing.logging.LogTruth.assertThat;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.GRPC_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.addExt;
@@ -62,7 +54,6 @@ import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.spineVersio
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.slf4j.event.Level.WARN;
 
 @ExtendWith(TempDirectory.class)
 @DisplayName("`spine` extension should")
@@ -202,7 +193,9 @@ class ExtensionTest {
         @Test
         @DisplayName("declare gRPC dependencies when codegen is required")
         void grpcDeps() {
-            extension.enableJava().withGrpcGeneration();
+            extension.enableJava()
+                     .getCodegen()
+                     .setGrpc(true);
 
             assertApplied(JavaPlugin.class);
             assertThat(dependencyTarget.dependencies()).contains(GRPC_DEPENDENCY);
@@ -212,48 +205,10 @@ class ExtensionTest {
         @DisplayName("disable Java code generation in Java projects")
         void disableCodegen() {
             JavaExtension javaExtension = ExtensionTest.this.extension.enableJava();
-            assertTrue(javaExtension.getCodegen());
-            javaExtension.withoutCodeGeneration();
-            assertFalse(javaExtension.getCodegen());
-        }
-
-        @Test
-        @DisplayName("disable Java code generation including gRPC in Java projects")
-        void disableGrpcCodegen() {
-            JavaExtension javaExtension = ExtensionTest.this.extension.enableJava();
-            assertTrue(javaExtension.getCodegen());
-
-            Queue<SubstituteLoggingEvent> log = new ArrayDeque<>();
-            Logging.redirect((SubstituteLogger) javaExtension.log(), log);
-
-            javaExtension.withGrpcGeneration();
-            javaExtension.withoutCodeGeneration();
-
-            checkLoggedError(log);
-            assertFalse(javaExtension.getCodegen());
-            assertFalse(javaExtension.getGrpc());
-        }
-
-        @Test
-        @DisplayName("if codegen disabled, not enable gRPC")
-        void notAllowGrpcOverrideCodegen() {
-            JavaExtension javaExtension = ExtensionTest.this.extension.enableJava();
-            assertTrue(javaExtension.getCodegen());
-
-            Queue<SubstituteLoggingEvent> log = new ArrayDeque<>();
-            Logging.redirect((SubstituteLogger) javaExtension.log(), log);
-
-            javaExtension.withoutCodeGeneration();
-            javaExtension.withGrpcGeneration();
-
-            checkLoggedError(log);
-            assertFalse(javaExtension.getCodegen());
-        }
-
-        private void checkLoggedError(Queue<SubstituteLoggingEvent> log) {
-            assertThat(log).hasSize(1);
-            LogEventSubject assertLoggedMessage = assertThat(getOnlyElement(log));
-            assertLoggedMessage.hasLevelThat().isEqualTo(WARN);
+            JavaCodegenExtension codegen = javaExtension.getCodegen();
+            assertTrue(codegen.getProtobuf());
+            codegen.setProtobuf(false);
+            assertFalse(codegen.getProtobuf());
         }
 
         private String serverDependency() {
@@ -290,12 +245,13 @@ class ExtensionTest {
             void action() {
                 AtomicBoolean executedAction = new AtomicBoolean(false);
                 extension.enableJava(javaExtension -> {
-                    boolean defaultValue = javaExtension.getGrpc();
+                    JavaCodegenExtension codegen = javaExtension.getCodegen();
+                    boolean defaultValue = codegen.getGrpc();
                     assertThat(defaultValue).isFalse();
 
-                    javaExtension.withGrpcGeneration();
+                    codegen.setGrpc(true);
 
-                    boolean newValue = javaExtension.getGrpc();
+                    boolean newValue = codegen.getGrpc();
                     assertThat(newValue).isTrue();
 
                     executedAction.set(true);
@@ -308,12 +264,13 @@ class ExtensionTest {
             void closure() {
                 AtomicBoolean executedClosure = new AtomicBoolean(false);
                 extension.enableJava(ConsumerClosure.<JavaExtension>closure(javaExtension -> {
-                    boolean defaultValue = javaExtension.getGrpc();
+                    JavaCodegenExtension codegen = javaExtension.getCodegen();
+                    boolean defaultValue = codegen.getGrpc();
                     assertThat(defaultValue).isFalse();
 
-                    javaExtension.withGrpcGeneration();
+                    codegen.setGrpc(true);
 
-                    boolean newValue = javaExtension.getGrpc();
+                    boolean newValue = codegen.getGrpc();
                     assertThat(newValue).isTrue();
 
                     executedClosure.set(true);
