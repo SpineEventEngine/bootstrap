@@ -236,12 +236,15 @@ class ExtensionTest {
     @DisplayName("allow to configure")
     class Configuration {
 
+        private static final String WITH_AN_ACTION = "with an action";
+        private static final String WITH_A_CLOSURE = "with a closure";
+
         @Nested
-        @DisplayName("gRPC code gen for Java")
-        class GrpcJava {
+        @DisplayName("Java")
+        class Java {
 
             @Test
-            @DisplayName("with an action")
+            @DisplayName(WITH_AN_ACTION)
             void action() {
                 AtomicBoolean executedAction = new AtomicBoolean(false);
                 extension.enableJava(javaExtension -> {
@@ -260,7 +263,7 @@ class ExtensionTest {
             }
 
             @Test
-            @DisplayName("with a closure")
+            @DisplayName(WITH_A_CLOSURE)
             void closure() {
                 AtomicBoolean executedClosure = new AtomicBoolean(false);
                 extension.enableJava(ConsumerClosure.<JavaExtension>closure(javaExtension -> {
@@ -275,6 +278,48 @@ class ExtensionTest {
 
                     executedClosure.set(true);
                 }));
+                assertTrue(executedClosure.get());
+            }
+        }
+
+        @Nested
+        @DisplayName("Java codegen")
+        class CodegenJava {
+            @Test
+            @DisplayName(WITH_AN_ACTION)
+            void action() {
+                AtomicBoolean executedAction = new AtomicBoolean(false);
+                JavaExtension javaExtension = ExtensionTest.this.extension.enableJava();
+                javaExtension.codegen(codegen -> {
+                    boolean defaultValue = codegen.getSpine();
+                    assertThat(defaultValue).isFalse();
+
+                    codegen.setSpine(true);
+
+                    boolean newValue = codegen.getSpine();
+                    assertThat(newValue).isTrue();
+
+                    executedAction.set(true);
+                });
+                assertTrue(executedAction.get());
+            }
+
+            @Test
+            @DisplayName(WITH_A_CLOSURE)
+            void closure() {
+                AtomicBoolean executedClosure = new AtomicBoolean(false);
+                extension.enableJava().codegen(ConsumerClosure.<JavaCodegenExtension>closure(
+                        codegen -> {
+                            boolean defaultValue = codegen.getSpine();
+                            assertThat(defaultValue).isFalse();
+
+                            codegen.setSpine(true);
+
+                            boolean newValue = codegen.getSpine();
+                            assertThat(newValue).isTrue();
+
+                            executedClosure.set(true);
+                        }));
                 assertTrue(executedClosure.get());
             }
         }
