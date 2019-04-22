@@ -53,7 +53,9 @@ However, if users would like to declare gRPC services of their own, they may use
 configuration to set up the generation seamlessly:
 ```gradle
 spine.enableJava {
-    withGrpcGeneration()
+    codegen {
+        grpc = true
+    }
     client() // or server()
 }
 ```
@@ -66,10 +68,25 @@ the user would have to add all the gRPC-related dependencies on their own.
 Sometimes, the users might not want any Java code to be generated. For such cases, the plugin 
 provides following configuration opportunity:
 ```gradle
-spine.enableJava().withoutCodeGeneration()
+spine.enableJava {
+    codegen {
+        protobuf = false
+        spine = false
+    }
+}
 ```
 This way, no Java code will be generated at all, including Protobuf messages, gRPC services, 
-and Validating Builders.
+validating builders, and rejections.
+
+A user also may leave the Java Protobuf codegen enabled, but only turn off Spine-specific code 
+generation:
+```gradle
+spine.enableJava {
+    codegen {
+        spine = false
+    }
+}
+```
 
 ## JavaScript Projects
 
