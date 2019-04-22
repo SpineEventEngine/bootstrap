@@ -20,39 +20,35 @@
 
 package io.spine.tools.gradle.bootstrap;
 
+import groovy.lang.Closure;
 import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.compiler.Extension;
 import io.spine.tools.gradle.config.Ext;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.SourceSuperset;
-import io.spine.tools.gradle.protoc.ProtocPlugin;
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
-import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.grpc;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
+import static org.gradle.util.ConfigureUtil.configure;
 
 /**
  * An extension which configures Java code generation.
  */
 public final class JavaExtension extends CodeGenExtension {
 
-    private static final ProtocPlugin JAVA_PLUGIN = called(java);
-    private static final ProtocPlugin GRPC_PLUGIN = called(grpc);
-
     private final Project project;
     private final SourceSuperset directoryStructure;
-
-    private boolean grpcGen = false;
-    private boolean codegen = true;
+    private final JavaCodegenExtension codegen;
 
     private JavaExtension(Builder builder) {
         super(builder);
         this.project = builder.project();
         this.directoryStructure = builder.sourceSuperset();
+        this.codegen = JavaCodegenExtension.of(project);
     }
 
     @Override
@@ -64,64 +60,29 @@ public final class JavaExtension extends CodeGenExtension {
         excludeProtobufLite();
     }
 
+    private void addGrpcDependencies() {
+        // TODO:2019-04-22:dmytro.dashenkov: Add dependencies when required.
+        Dependant dependencyTarget = dependencyTarget();
+        Ext.of(project)
+           .artifacts()
+           .grpc()
+           .forEach(dependencyTarget::implementation);
+    }
+
     private void excludeProtobufLite() {
         dependencyTarget().exclude(protobufLite());
     }
 
-    /**
-     * Indicates whether the gRPC stub generation is enabled or not.
-     *
-     * @see #withGrpcGeneration()
-     */
-    public boolean getGrpc() {
-        return grpcGen;
-    }
-
-    /**
-     * Indicates whether the Java code generation is enabled or not.
-     *
-     * @see #withoutCodeGeneration()
-     */
-    public boolean getCodegen() {
+    public JavaCodegenExtension getCodegen() {
         return codegen;
     }
 
-    /**
-     * Enables the gRPC stub generation.
-     */
-    public void withGrpcGeneration() {
-        grpcGen = true;
-        checkGrpcRequestValid();
-        if (codegen) {
-            protobufGenerator().enablePlugin(GRPC_PLUGIN);
-            addGrpcDependencies();
-        } else {
-            grpcGen = false;
-        }
+    public void codegen(Action<JavaCodegenExtension> config) {
+        config.execute(codegen);
     }
 
-    /**
-     * Disables any kind of Java code generation, including Protobuf messages, gRPC stubs,
-     * and validating builders.
-     */
-    public void withoutCodeGeneration() {
-        this.codegen = false;
-        checkGrpcRequestValid();
-        protobufGenerator().disableBuiltIn(JAVA_PLUGIN);
-        Extension modelCompilerExtension = project.getExtensions().getByType(Extension.class);
-        modelCompilerExtension.generateValidatingBuilders = false;
-        if (grpcGen) {
-            protobufGenerator().disablePlugin(GRPC_PLUGIN);
-            grpcGen = false;
-        }
-    }
-
-    private void checkGrpcRequestValid() {
-        if (!codegen && grpcGen) {
-            _warn("Requested gRPC code generation. " +
-                          "However, Java code generation is disabled for this project. " +
-                          "No Java code will be generated.");
-        }
+    public void codegen(Closure config) {
+        configure(config, codegen);
     }
 
     /**
@@ -151,14 +112,6 @@ public final class JavaExtension extends CodeGenExtension {
         directoryStructure.register(sourceRoot);
     }
 
-    private void addGrpcDependencies() {
-        Dependant dependencyTarget = dependencyTarget();
-        Ext.of(project)
-           .artifacts()
-           .grpc()
-           .forEach(dependencyTarget::implementation);
-    }
-
     static Builder newBuilder() {
         return new Builder();
     }
@@ -171,7 +124,7 @@ public final class JavaExtension extends CodeGenExtension {
          * Prevents direct instantiation.
          */
         private Builder() {
-            super(JAVA_PLUGIN);
+            super(called(java));
         }
 
         private SourceSuperset sourceSuperset() {

@@ -71,6 +71,7 @@ public final class ProtocPlugin {
     public enum Name {
         java,
         js,
-        grpc
+        grpc,
+        spineProtoc
     }
 }
