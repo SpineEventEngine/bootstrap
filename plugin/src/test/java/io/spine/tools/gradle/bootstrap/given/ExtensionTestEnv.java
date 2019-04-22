@@ -28,7 +28,7 @@ import org.gradle.api.plugins.ExtraPropertiesExtension;
 
 import java.util.Map;
 
-public final class ExtensionTextEnv {
+public final class ExtensionTestEnv {
 
     public static final String GRPC_DEPENDENCY = "io.foo.bar.grpc:fake-dependency:6.14";
 
@@ -47,7 +47,7 @@ public final class ExtensionTextEnv {
     /**
      * Prevents the utility class instantiation.
      */
-    private ExtensionTextEnv() {
+    private ExtensionTestEnv() {
     }
 
     public static void addExt(Project project) {

@@ -53,7 +53,7 @@ public final class JavaCodegenExtension implements Logging {
 
     private boolean protobuf = true;
     private boolean grpc = false;
-    private boolean spine = false;
+    private boolean spine = true;
 
     private JavaCodegenExtension(Project project,
                                  ProtobufGenerator protobufGenerator,

@@ -33,6 +33,7 @@ import io.spine.tools.gradle.testing.MemoizingSourceSuperset;
 import io.spine.tools.groovy.ConsumerClosure;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,9 +49,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
-import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.GRPC_DEPENDENCY;
-import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.addExt;
-import static io.spine.tools.gradle.bootstrap.given.ExtensionTextEnv.spineVersion;
+import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
+import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.GRPC_DEPENDENCY;
+import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.addExt;
+import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.spineVersion;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,10 +66,11 @@ class ExtensionTest {
     private MemoizingSourceSuperset codeLayout;
     private MemoizingDependant dependencyTarget;
     private Path projectDir;
+    private Project project;
 
     @BeforeEach
     void setUp(@TempDir Path projectDir) {
-        Project project = ProjectBuilder
+        project = ProjectBuilder
                 .builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
@@ -239,6 +242,50 @@ class ExtensionTest {
         private static final String WITH_AN_ACTION = "with an action";
         private static final String WITH_A_CLOSURE = "with a closure";
 
+        @Test
+        @DisplayName("Spine codegen")
+        void spine() {
+            Task task = project.getTasks()
+                               .create(generateValidatingBuilders.value());
+            JavaCodegenExtension codegen = extension.enableJava()
+                                                    .getCodegen();
+            assertTrue(codegen.getSpine());
+            codegen.setSpine(false);
+            assertFalse(codegen.getSpine());
+            assertFalse(task.getEnabled());
+
+            codegen.setSpine(true);
+            assertTrue(codegen.getSpine());
+            assertTrue(task.getEnabled());
+        }
+
+        @Test
+        @DisplayName("gRPC codegen")
+        void grpc() {
+            JavaCodegenExtension codegen = extension.enableJava()
+                                                    .getCodegen();
+            assertFalse(codegen.getGrpc());
+            codegen.setGrpc(true);
+            assertTrue(codegen.getGrpc());
+            assertThat(dependencyTarget.dependencies()).contains(GRPC_DEPENDENCY);
+
+            codegen.setGrpc(false);
+            assertFalse(codegen.getGrpc());
+        }
+
+        @Test
+        @DisplayName("Protobuf to Java codegen")
+        void protobufJava() {
+            JavaCodegenExtension codegen = extension.enableJava()
+                                                    .getCodegen();
+            assertTrue(codegen.getProtobuf());
+            codegen.setProtobuf(false);
+            assertFalse(codegen.getProtobuf());
+
+            codegen.setProtobuf(true);
+            assertTrue(codegen.getProtobuf());
+        }
+
         @Nested
         @DisplayName("Java")
         class Java {
@@ -285,6 +332,7 @@ class ExtensionTest {
         @Nested
         @DisplayName("Java codegen")
         class CodegenJava {
+
             @Test
             @DisplayName(WITH_AN_ACTION)
             void action() {
@@ -292,12 +340,12 @@ class ExtensionTest {
                 JavaExtension javaExtension = ExtensionTest.this.extension.enableJava();
                 javaExtension.codegen(codegen -> {
                     boolean defaultValue = codegen.getSpine();
-                    assertThat(defaultValue).isFalse();
+                    assertThat(defaultValue).isTrue();
 
-                    codegen.setSpine(true);
+                    codegen.setSpine(false);
 
                     boolean newValue = codegen.getSpine();
-                    assertThat(newValue).isTrue();
+                    assertThat(newValue).isFalse();
 
                     executedAction.set(true);
                 });
@@ -311,12 +359,12 @@ class ExtensionTest {
                 extension.enableJava().codegen(ConsumerClosure.<JavaCodegenExtension>closure(
                         codegen -> {
                             boolean defaultValue = codegen.getSpine();
-                            assertThat(defaultValue).isFalse();
+                            assertThat(defaultValue).isTrue();
 
-                            codegen.setSpine(true);
+                            codegen.setSpine(false);
 
                             boolean newValue = codegen.getSpine();
-                            assertThat(newValue).isTrue();
+                            assertThat(newValue).isFalse();
 
                             executedClosure.set(true);
                         }));
