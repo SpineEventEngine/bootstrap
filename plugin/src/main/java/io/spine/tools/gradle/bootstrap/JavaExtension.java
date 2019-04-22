@@ -22,9 +22,7 @@ package io.spine.tools.gradle.bootstrap;
 
 import groovy.lang.Closure;
 import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.config.Ext;
 import io.spine.tools.gradle.config.SpineDependency;
-import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.SourceSuperset;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -48,7 +46,7 @@ public final class JavaExtension extends CodeGenExtension {
         super(builder);
         this.project = builder.project();
         this.directoryStructure = builder.sourceSuperset();
-        this.codegen = JavaCodegenExtension.of(project);
+        this.codegen = JavaCodegenExtension.of(project, dependant());
     }
 
     @Override
@@ -60,17 +58,8 @@ public final class JavaExtension extends CodeGenExtension {
         excludeProtobufLite();
     }
 
-    private void addGrpcDependencies() {
-        // TODO:2019-04-22:dmytro.dashenkov: Add dependencies when required.
-        Dependant dependencyTarget = dependencyTarget();
-        Ext.of(project)
-           .artifacts()
-           .grpc()
-           .forEach(dependencyTarget::implementation);
-    }
-
     private void excludeProtobufLite() {
-        dependencyTarget().exclude(protobufLite());
+        dependant().exclude(protobufLite());
     }
 
     public JavaCodegenExtension getCodegen() {
@@ -104,7 +93,7 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     private void dependOn(SpineDependency module) {
-        dependencyTarget().compile(module.ofVersion(spineVersion()));
+        dependant().compile(module.ofVersion(spineVersion()));
     }
 
     private void addSourceSets() {

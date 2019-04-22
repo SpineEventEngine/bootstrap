@@ -83,7 +83,7 @@ abstract class CodeGenExtension implements Logging {
     /**
      * Obtains the dependency container associated with this extension.
      */
-    final Dependant dependencyTarget() {
+    final Dependant dependant() {
         return dependant;
     }
 
