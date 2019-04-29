@@ -30,7 +30,12 @@ import org.gradle.api.plugins.JavaPlugin;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-
+/**
+ * A {@link PluginTarget} which applies Spine Gradle plugins.
+ *
+ * <p>Provides convenience methods for the Model Compiler plugin, Proto JS plugin, and the Protobuf
+ * Gradle plugin.
+ */
 public final class SpinePluginTarget implements PluginTarget {
 
     private final PluginTarget delegate;
