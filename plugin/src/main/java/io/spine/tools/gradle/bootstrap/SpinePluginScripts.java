@@ -23,7 +23,19 @@ package io.spine.tools.gradle.bootstrap;
 import io.spine.io.Resource;
 import io.spine.tools.gradle.PluginScript;
 
-public class SpinePluginScripts {
+/**
+ * A factory of Spine-specific {@link PluginScript}s.
+ *
+ * <p>These scripts are read from the plugin resources at runtime. When building the plugin,
+ * the script files are copied from the {@code config} submodule.
+ */
+public final class SpinePluginScripts {
+
+    /**
+     * Prevents the utility class instantiation.
+     */
+    private SpinePluginScripts() {
+    }
 
     /**
      * Obtains the {@code dependencies.gradle} script.
