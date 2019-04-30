@@ -33,7 +33,6 @@ import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
@@ -42,8 +41,10 @@ import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.TaskName.build;
 import static io.spine.tools.gradle.TaskName.generateJsonParsers;
 import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
+import static java.nio.file.Files.exists;
 import static java.util.Collections.emptySet;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -83,7 +84,7 @@ class SpineBootstrapPluginTest {
         project.build()
                .executeTask(build);
         Path compiledClasses = compiledJavaClasses();
-        if (Files.exists(compiledClasses)) {
+        if (exists(compiledClasses)) {
             File compiledClassesDirectory = compiledClasses.toFile();
             assertThat(compiledClassesDirectory.list()).isEmpty();
         }
@@ -188,6 +189,34 @@ class SpineBootstrapPluginTest {
         assertThat(resourceFiles).contains(resourceName);
     }
 
+    @Test
+    @DisplayName("disable Java codegen")
+    void disableJava() {
+        configureJavaWithoutGen();
+        Path compiledClasses = compiledJavaClasses();
+        assertFalse(exists(compiledClasses));
+    }
+
+    @Test
+    @DisplayName("disable Java codegen and ignore gRPC settings")
+    void disableJavaAndGrpc() {
+        configureJavaAndGrpcWithoutGen();
+        Path compiledClasses = compiledJavaClasses();
+        assertFalse(exists(compiledClasses));
+    }
+
+    @Test
+    @DisplayName("disable rejection throwable generation")
+    void ignoreRejections() {
+        configureJavaWithoutProtoOrSpine();
+        GradleProject project = this.project
+                .addProtoFile("restaurant_rejections.proto")
+                .build();
+        project.executeTask(build);
+        Path compiledClasses = compiledJavaClasses();
+        assertFalse(exists(compiledClasses));
+    }
+
     private void noAdditionalConfig() {
         writeConfigGradle();
     }
@@ -224,11 +253,39 @@ class SpineBootstrapPluginTest {
         writeConfigGradle(
                 "spine {",
                 "    enableJava {",
-                "        grpc = true",
+                "        codegen.grpc = true",
                 "    }",
                 "}"
         );
         project.addProtoFile("restaurant.proto");
+    }
+
+    private void configureJavaWithoutGen() {
+        writeConfigGradle("spine.enableJava().codegen.protobuf = false");
+    }
+
+    @SuppressWarnings("DuplicateStringLiteralInspection")
+        // Part of the file contents may be duplicated.
+    private void configureJavaAndGrpcWithoutGen() {
+        writeConfigGradle(
+                "spine.enableJava {",
+                "    codegen {",
+                "        protobuf = false",
+                "        grpc = true",
+                "    }",
+                "}");
+    }
+
+    @SuppressWarnings("DuplicateStringLiteralInspection")
+        // Part of the file contents may be duplicated.
+    private void configureJavaWithoutProtoOrSpine() {
+        writeConfigGradle(
+                "spine.enableJava {",
+                "    codegen {",
+                "        protobuf = false",
+                "        spine = false",
+                "    }",
+                "}");
     }
 
     @SuppressWarnings("CheckReturnValue")

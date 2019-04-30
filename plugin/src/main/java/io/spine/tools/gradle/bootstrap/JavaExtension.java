@@ -20,18 +20,18 @@
 
 package io.spine.tools.gradle.bootstrap;
 
+import groovy.lang.Closure;
 import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.config.Ext;
 import io.spine.tools.gradle.config.SpineDependency;
-import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.SourceSuperset;
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
-import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.grpc;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
+import static org.gradle.util.ConfigureUtil.configure;
 
 /**
  * An extension which configures Java code generation.
@@ -40,13 +40,13 @@ public final class JavaExtension extends CodeGenExtension {
 
     private final Project project;
     private final SourceSuperset directoryStructure;
-
-    private boolean generateGrpc = false;
+    private final JavaCodegenExtension codegen;
 
     private JavaExtension(Builder builder) {
         super(builder);
         this.project = builder.project();
         this.directoryStructure = builder.sourceSuperset();
+        this.codegen = JavaCodegenExtension.of(project, dependant());
     }
 
     @Override
@@ -59,27 +59,19 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     private void excludeProtobufLite() {
-        dependencyTarget().exclude(protobufLite());
+        dependant().exclude(protobufLite());
     }
 
-    /**
-     * Indicates whether the gRPC stub generation is enabled or not.
-     */
-    public boolean getGrpc() {
-        return generateGrpc;
+    public JavaCodegenExtension getCodegen() {
+        return codegen;
     }
 
-    /**
-     * Enables or disables the gRPC stub generation.
-     */
-    public void setGrpc(boolean generateGrpc) {
-        this.generateGrpc = generateGrpc;
-        if (generateGrpc) {
-            protobufGenerator().enablePlugin(called(grpc));
-            addGrpcDependencies();
-        } else {
-            protobufGenerator().disablePlugin(called(grpc));
-        }
+    public void codegen(Action<JavaCodegenExtension> config) {
+        config.execute(codegen);
+    }
+
+    public void codegen(Closure config) {
+        configure(config, codegen);
     }
 
     /**
@@ -101,20 +93,12 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     private void dependOn(SpineDependency module) {
-        dependencyTarget().compile(module.ofVersion(spineVersion()));
+        dependant().compile(module.ofVersion(spineVersion()));
     }
 
     private void addSourceSets() {
         GeneratedSourceRoot sourceRoot = GeneratedSourceRoot.of(project);
         directoryStructure.register(sourceRoot);
-    }
-
-    private void addGrpcDependencies() {
-        Dependant dependencyTarget = dependencyTarget();
-        Ext.of(project)
-           .artifacts()
-           .grpc()
-           .forEach(dependencyTarget::implementation);
     }
 
     static Builder newBuilder() {
