@@ -32,6 +32,7 @@ public final class SpineDependency implements Dependency {
     private static final SpineDependency base = new SpineDependency("base");
     private static final SpineDependency client = new SpineDependency("client");
     private static final SpineDependency server = new SpineDependency("server");
+    private static final SpineDependency testUtilServer = new SpineDependency("testutil-server");
 
     private final String shortName;
 
@@ -60,8 +61,15 @@ public final class SpineDependency implements Dependency {
         return server;
     }
 
+    /**
+     * Obtains a dependency on the {@code io.spine:testutil-server} module.
+     */
+    public static SpineDependency testUtilServer() {
+        return testUtilServer;
+    }
+
     @Override
-    public  String name() {
+    public String name() {
         return SPINE_PREFIX + shortName;
     }
 

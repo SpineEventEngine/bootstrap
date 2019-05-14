@@ -194,6 +194,22 @@ class ExtensionTest {
         }
 
         @Test
+        @DisplayName("not contain `testutil-server` for enableJava() declaring modules")
+        void notContainTestUtil() {
+            extension.enableJava();
+            assertThat(dependencyTarget.dependencies())
+                    .doesNotContain(testUtilDependency());
+        }
+
+        @Test
+        @DisplayName("add `testutil-server` dependency for enableJava().server() declaring modules")
+        void testUtilDependencyAdded() {
+            extension.enableJava().server();
+            assertThat(dependencyTarget.dependencies())
+                    .contains(testUtilDependency());
+        }
+
+        @Test
         @DisplayName("declare gRPC dependencies when codegen is required")
         void grpcDeps() {
             extension.enableJava()
@@ -216,6 +232,10 @@ class ExtensionTest {
 
         private String serverDependency() {
             return "io.spine:spine-server:" + spineVersion;
+        }
+
+        private String testUtilDependency() {
+            return "io.spine:spine-testutil-server:" + spineVersion;
         }
 
         private String clientDependency() {

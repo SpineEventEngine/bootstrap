@@ -90,6 +90,7 @@ public final class JavaExtension extends CodeGenExtension {
      */
     public void server() {
         dependOn(SpineDependency.server());
+        dependOn(SpineDependency.testUtilServer());
     }
 
     private void dependOn(SpineDependency module) {
