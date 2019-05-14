@@ -111,6 +111,14 @@ class ExtensionTest {
         }
 
         @Test
+        @DisplayName("add `testlib` dependency to a Java project")
+        void addTestlibDependecy() {
+            extension.enableJava();
+            assertThat(dependencyTarget.dependencies())
+                    .contains(testlibDependency());
+        }
+
+        @Test
         @DisplayName("apply `com.google.protobuf` plugin to a Java project")
         void applyProtoForJava() {
             extension.enableJava();
@@ -135,6 +143,15 @@ class ExtensionTest {
 
             assertApplied(ProtoJsPlugin.class);
             assertNotApplied(ModelCompilerPlugin.class);
+        }
+
+        @Test
+        @DisplayName("not add a `testlib` dependency to a JS project")
+        void noTestLibForJs() {
+            extension.enableJavaScript();
+
+            assertThat(dependencyTarget.dependencies())
+                    .doesNotContain(testlibDependency());
         }
 
         @Test
@@ -166,6 +183,24 @@ class ExtensionTest {
         }
 
         @Test
+        @DisplayName("not contain `testutil-server` for enableJava() declaring modules")
+        void notContainTestUtil() {
+            extension.enableJava();
+
+            assertThat(dependencyTarget.dependencies())
+                    .doesNotContain(testUtilServerDependency());
+        }
+
+        @Test
+        @DisplayName("add `testutil-server` dependency for enableJava().server() declaring modules")
+        void testUtilDependencyAdded() {
+            extension.enableJava().server();
+
+            assertThat(dependencyTarget.dependencies())
+                    .contains(testUtilServerDependency());
+        }
+
+        @Test
         @DisplayName("add client dependencies if required")
         void client() {
             extension.enableJava().client();
@@ -173,6 +208,17 @@ class ExtensionTest {
             IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
             assertDependencies.contains(clientDependency());
             assertDependencies.doesNotContain(serverDependency());
+        }
+
+        @Test
+        @DisplayName("add `testutil-server` dependencies together with server dependencies")
+        void testUtilServer() {
+            extension.enableJava()
+                     .client();
+
+            IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
+            assertDependencies.contains(testUtilClientDependency());
+            assertDependencies.doesNotContain(testUtilServerDependency());
         }
 
         @Test
@@ -218,8 +264,20 @@ class ExtensionTest {
             return "io.spine:spine-server:" + spineVersion;
         }
 
+        private String testUtilServerDependency() {
+            return "io.spine:spine-testutil-server:" + spineVersion;
+        }
+
         private String clientDependency() {
             return "io.spine:spine-client:" + spineVersion;
+        }
+
+        private String testUtilClientDependency() {
+            return "io.spine:spine-testutil-client:" + spineVersion;
+        }
+
+        private String testlibDependency() {
+            return "io.spine:spine-testlib:" + spineVersion;
         }
 
         private void assertApplied(Class<? extends Plugin<? extends Project>> pluginClass) {
@@ -356,18 +414,19 @@ class ExtensionTest {
             @DisplayName(WITH_A_CLOSURE)
             void closure() {
                 AtomicBoolean executedClosure = new AtomicBoolean(false);
-                extension.enableJava().codegen(ConsumerClosure.<JavaCodegenExtension>closure(
-                        codegen -> {
-                            boolean defaultValue = codegen.getSpine();
-                            assertThat(defaultValue).isTrue();
+                extension.enableJava()
+                         .codegen(ConsumerClosure.<JavaCodegenExtension>closure(
+                                 codegen -> {
+                                     boolean defaultValue = codegen.getSpine();
+                                     assertThat(defaultValue).isTrue();
 
-                            codegen.setSpine(false);
+                                     codegen.setSpine(false);
 
-                            boolean newValue = codegen.getSpine();
-                            assertThat(newValue).isFalse();
+                                     boolean newValue = codegen.getSpine();
+                                     assertThat(newValue).isFalse();
 
-                            executedClosure.set(true);
-                        }));
+                                     executedClosure.set(true);
+                                 }));
                 assertTrue(executedClosure.get());
             }
         }

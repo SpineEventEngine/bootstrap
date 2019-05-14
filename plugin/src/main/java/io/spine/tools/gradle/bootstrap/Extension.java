@@ -22,6 +22,8 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
+import io.spine.tools.gradle.Artifact;
+import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.project.SourceSuperset;
@@ -30,6 +32,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.gradle.ConfigurationName.TEST_IMPLEMENTATION;
 import static org.gradle.util.ConfigureUtil.configure;
 
 /**
@@ -81,11 +84,15 @@ public final class Extension {
      * Marks this project as a Java project and configures the Java code generation.
      *
      * <p>Enables the Java code generation from Protobuf. If the {@code spine-model-compiler} plugin
-     * is not applied to this project, applies it immediately.
+     * is not applied to this project, applies it immediately. Also adds the
+     * {@code io.spine:spine-testlib}
      */
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {
         java.enableGeneration();
+        String spineVersion = java.spineVersion();
+        Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
+        java.dependant().depend(TEST_IMPLEMENTATION, testlib.notation());
         return java;
     }
 
