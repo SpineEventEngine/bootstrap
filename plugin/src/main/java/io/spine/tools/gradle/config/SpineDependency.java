@@ -77,7 +77,6 @@ public final class SpineDependency implements Dependency {
         return TEST_UTIL_CLIENT;
     }
 
-
     public static SpineDependency testlib() {
         return TESTLIB;
     }

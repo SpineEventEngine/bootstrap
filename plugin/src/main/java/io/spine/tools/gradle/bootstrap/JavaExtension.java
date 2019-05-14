@@ -21,6 +21,7 @@
 package io.spine.tools.gradle.bootstrap;
 
 import groovy.lang.Closure;
+import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.GeneratedSourceRoot;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.SourceSuperset;
@@ -28,6 +29,8 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.gradle.ConfigurationName.COMPILE;
+import static io.spine.tools.gradle.ConfigurationName.TEST_IMPLEMENTATION;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
@@ -81,8 +84,8 @@ public final class JavaExtension extends CodeGenExtension {
      * dependencies to the project.
      */
     public void client() {
-        dependOn(SpineDependency.client());
-        dependOn(SpineDependency.testUtilClient());
+        dependOn(SpineDependency.client(), COMPILE);
+        dependOn(SpineDependency.testUtilClient(), TEST_IMPLEMENTATION);
     }
 
     /**
@@ -92,12 +95,12 @@ public final class JavaExtension extends CodeGenExtension {
      * dependencies to the project.
      */
     public void server() {
-        dependOn(SpineDependency.server());
-        dependOn(SpineDependency.testUtilServer());
+        dependOn(SpineDependency.server(), COMPILE);
+        dependOn(SpineDependency.testUtilServer(), TEST_IMPLEMENTATION);
     }
 
-    private void dependOn(SpineDependency module) {
-        dependant().compile(module.ofVersion(spineVersion()));
+    private void dependOn(SpineDependency module, ConfigurationName configurationName) {
+        dependant().depend(configurationName, module.ofVersion(spineVersion()).notation());
     }
 
     private void addSourceSets() {

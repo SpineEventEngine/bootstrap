@@ -32,6 +32,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.gradle.ConfigurationName.TEST_IMPLEMENTATION;
 import static org.gradle.util.ConfigureUtil.configure;
 
 /**
@@ -91,7 +92,7 @@ public final class Extension {
         java.enableGeneration();
         String spineVersion = java.spineVersion();
         Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
-        java.dependant().compile(testlib);
+        java.dependant().depend(TEST_IMPLEMENTATION, testlib.notation());
         return java;
     }
 
