@@ -29,10 +29,12 @@ public final class SpineDependency implements Dependency {
 
     private static final String SPINE_PREFIX = "spine-";
 
-    private static final SpineDependency base = new SpineDependency("base");
-    private static final SpineDependency client = new SpineDependency("client");
-    private static final SpineDependency server = new SpineDependency("server");
-    private static final SpineDependency testUtilServer = new SpineDependency("testutil-server");
+    private static final SpineDependency BASE = new SpineDependency("base");
+    private static final SpineDependency CLIENT = new SpineDependency("client");
+    private static final SpineDependency SERVER = new SpineDependency("server");
+    private static final SpineDependency TEST_UTIL_SERVER = new SpineDependency("testutil-server");
+    private static final SpineDependency TEST_UTIL_CLIENT = new SpineDependency("testutil-client");
+    private static final SpineDependency TESTLIB = new SpineDependency("testlib");
 
     private final String shortName;
 
@@ -44,28 +46,40 @@ public final class SpineDependency implements Dependency {
      * Obtains a dependency on the {@code io.spine:spine-base} module.
      */
     public static SpineDependency base() {
-        return base;
+        return BASE;
     }
 
     /**
      * Obtains a dependency on the {@code io.spine:spine-client} module.
      */
     public static SpineDependency client() {
-        return client;
+        return CLIENT;
     }
 
     /**
      * Obtains a dependency on the {@code io.spine:spine-server} module.
      */
     public static SpineDependency server() {
-        return server;
+        return SERVER;
     }
 
     /**
      * Obtains a dependency on the {@code io.spine:testutil-server} module.
      */
     public static SpineDependency testUtilServer() {
-        return testUtilServer;
+        return TEST_UTIL_SERVER;
+    }
+
+    /**
+     * Obtains a dependency on the {@code io.spine:testutil-client} module.
+     */
+    public static SpineDependency testUtilClient() {
+        return TEST_UTIL_CLIENT;
+    }
+
+
+    public static SpineDependency testlib() {
+        return TESTLIB;
     }
 
     @Override

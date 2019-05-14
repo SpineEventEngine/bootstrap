@@ -77,16 +77,19 @@ public final class JavaExtension extends CodeGenExtension {
     /**
      * Marks this project as a Java client of the system.
      *
-     * <p>Adds the {@code io.spine:spine-client} dependency to the project.
+     * <p>Adds the {@code io.spine:spine-client} and {@code io.spine:spine-testuil-client}
+     * dependencies to the project.
      */
     public void client() {
         dependOn(SpineDependency.client());
+        dependOn(SpineDependency.testUtilClient());
     }
 
     /**
      * Marks this project as a part of a Java server.
      *
-     * <p>Adds the {@code io.spine:spine-server} dependency to the project.
+     * <p>Adds the {@code io.spine:spine-server} and {@code io.spine:spine-testutil-server}
+     * dependencies to the project.
      */
     public void server() {
         dependOn(SpineDependency.server());
