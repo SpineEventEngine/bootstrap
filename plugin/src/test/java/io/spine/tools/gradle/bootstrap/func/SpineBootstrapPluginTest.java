@@ -99,7 +99,7 @@ class SpineBootstrapPluginTest {
 
         Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
-        assertPackageContents.containsAllOf("LunaParkProto.class",
+        assertPackageContents.containsAtLeast("LunaParkProto.class",
                                             "RollerCoaster.class",
                                             "Wagon.class",
                                             "Altitude.class");
@@ -117,7 +117,7 @@ class SpineBootstrapPluginTest {
 
         Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
-        assertPackageContents.containsAllOf("RollerCoasterVBuilder.class",
+        assertPackageContents.containsAtLeast("RollerCoasterVBuilder.class",
                                             "WagonVBuilder.class",
                                             "AltitudeVBuilder.class");
     }
@@ -130,7 +130,18 @@ class SpineBootstrapPluginTest {
         project.executeTask(build);
 
         Collection<String> jsFileNames = generatedJsFileNames();
-        assertThat(jsFileNames).containsExactly("roller_coaster_pb.js");
+        assertThat(jsFileNames).contains("roller_coaster_pb.js");
+    }
+
+    @Test
+    @DisplayName("generate an `index.js` file")
+    void generateIndexJs(){
+        configureJsGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+
+        Collection<String> jsFileNames = generatedJsFileNames();
+        assertThat(jsFileNames).contains("index.js");
     }
 
     @Test
@@ -170,7 +181,7 @@ class SpineBootstrapPluginTest {
         GradleProject project = this.project.build();
         project.executeTask(build);
         assertThat(generatedClassFileNames())
-                .containsAllOf("OrderServiceGrpc.class",
+                .containsAtLeast("OrderServiceGrpc.class",
                                "OrderServiceGrpc$OrderServiceStub.class",
                                "OrderServiceGrpc$OrderServiceImplBase.class");
     }
@@ -340,10 +351,7 @@ class SpineBootstrapPluginTest {
     }
 
     private Collection<String> generatedJsFileNames() {
-        Path compiledJsFiles = projectDir.resolve("build")
-                                         .resolve("generated")
-                                         .resolve("source")
-                                         .resolve("proto")
+        Path compiledJsFiles = projectDir.resolve("generated")
                                          .resolve("main")
                                          .resolve("js");
         File compiledJsDir = compiledJsFiles.toFile();

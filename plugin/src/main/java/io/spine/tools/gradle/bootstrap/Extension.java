@@ -30,6 +30,9 @@ import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.TaskContainer;
+
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ConfigurationName.TEST_IMPLEMENTATION;
@@ -46,12 +49,18 @@ public final class Extension {
     @SuppressWarnings("DuplicateStringLiteralInspection") // Used in tests and with other meanings.
     static final String NAME = "spine";
 
+    static final String COMPILE_JAVA = "compileJava";
+    private static final String COMPILE_TEST_JAVA = "compileTestJava";
+
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
+    private final Project project;
 
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
         this.javaScript = builder.buildJavaScriptExtension();
+        this.project = builder.project;
+        this.toggleJavaTasks(false);
     }
 
     /**
@@ -89,10 +98,13 @@ public final class Extension {
      */
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {
+        toggleJavaTasks(true);
         java.enableGeneration();
         String spineVersion = java.spineVersion();
-        Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
-        java.dependant().depend(TEST_IMPLEMENTATION, testlib.notation());
+        Artifact testlib = SpineDependency.testlib()
+                                          .ofVersion(spineVersion);
+        java.dependant()
+            .depend(TEST_IMPLEMENTATION, testlib.notation());
         return java;
     }
 
@@ -116,7 +128,16 @@ public final class Extension {
      * if required.
      */
     void disableJavaGeneration() {
+        toggleJavaTasks(false);
         java.disableGeneration();
+    }
+
+    private void toggleJavaTasks(boolean shouldRun) {
+        TaskContainer tasks = project.getTasks();
+        Optional.ofNullable(tasks.findByPath(COMPILE_JAVA))
+                .ifPresent(task -> task.setEnabled(shouldRun));
+        Optional.ofNullable(tasks.findByPath(COMPILE_TEST_JAVA))
+                .ifPresent(task -> task.setEnabled(shouldRun));
     }
 
     /**
