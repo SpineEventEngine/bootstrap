@@ -23,6 +23,7 @@ package io.spine.tools.gradle.bootstrap.func;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
+import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.testing.GradleProject;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -100,9 +101,9 @@ class SpineBootstrapPluginTest {
         Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
         assertPackageContents.containsAtLeast("LunaParkProto.class",
-                                            "RollerCoaster.class",
-                                            "Wagon.class",
-                                            "Altitude.class");
+                                              "RollerCoaster.class",
+                                              "Wagon.class",
+                                              "Altitude.class");
     }
 
     @Test
@@ -118,8 +119,8 @@ class SpineBootstrapPluginTest {
         Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
         assertPackageContents.containsAtLeast("RollerCoasterVBuilder.class",
-                                            "WagonVBuilder.class",
-                                            "AltitudeVBuilder.class");
+                                              "WagonVBuilder.class",
+                                              "AltitudeVBuilder.class");
     }
 
     @Test
@@ -135,7 +136,7 @@ class SpineBootstrapPluginTest {
 
     @Test
     @DisplayName("generate an `index.js` file")
-    void generateIndexJs(){
+    void generateIndexJs() {
         configureJsGeneration();
         GradleProject project = this.project.build();
         project.executeTask(build);
@@ -145,13 +146,25 @@ class SpineBootstrapPluginTest {
     }
 
     @Test
+    @DisplayName("not generate transitive Spine dependencies for pure JS projects")
+    void skipTransitiveProtos() {
+        configureJsGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(TaskName.build);
+
+        Collection<String> jsFileNames = generatedJsFileNames();
+        assertThat(jsFileNames).doesNotContain("any_pb.js");
+    }
+
+    @Test
     @DisplayName("apply 'spine-proto-js-plugin'")
     void applyJsPlugin() {
         configureJsGeneration();
         GradleProject project = this.project.build();
         BuildResult result = project.executeTask(build);
 
-        assertThat(result.task(generateJsonParsers.path()).getOutcome()).isEqualTo(SUCCESS);
+        assertThat(result.task(generateJsonParsers.path())
+                         .getOutcome()).isEqualTo(SUCCESS);
     }
 
     @Test
@@ -182,8 +195,8 @@ class SpineBootstrapPluginTest {
         project.executeTask(build);
         assertThat(generatedClassFileNames())
                 .containsAtLeast("OrderServiceGrpc.class",
-                               "OrderServiceGrpc$OrderServiceStub.class",
-                               "OrderServiceGrpc$OrderServiceImplBase.class");
+                                 "OrderServiceGrpc$OrderServiceStub.class",
+                                 "OrderServiceGrpc$OrderServiceImplBase.class");
     }
 
     @Test

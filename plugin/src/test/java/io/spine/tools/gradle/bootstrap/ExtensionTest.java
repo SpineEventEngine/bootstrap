@@ -50,7 +50,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
-import static io.spine.tools.gradle.bootstrap.Extension.COMPILE_JAVA;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.GRPC_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.addExt;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.spineVersion;
@@ -259,30 +258,6 @@ class ExtensionTest {
             assertTrue(codegen.getProtobuf());
             codegen.setProtobuf(false);
             assertFalse(codegen.getProtobuf());
-        }
-
-        @Test
-        @DisplayName("not create a `compileJava` task for JavaScript-only projects")
-        void notCreateCompileJava() {
-            extension.enableJavaScript();
-
-            assertThat(project.getTasks().findByPath(COMPILE_JAVA)).isNull();
-        }
-
-        @Test
-        @DisplayName("enable `compileJava` task for mixed projects")
-        void enableCompileJava() {
-            extension.enableJavaScript();
-            extension.enableJava();
-
-            assertThat(project.getTasks().findByPath(COMPILE_JAVA).getEnabled()).isTrue();
-        }
-
-        @Test
-        @DisplayName("disable `compilerJava` for projects that used to be mixed")
-        void disableCompileJava() {
-            extension.enableJavaScript();
-
         }
 
         private String serverDependency() {
