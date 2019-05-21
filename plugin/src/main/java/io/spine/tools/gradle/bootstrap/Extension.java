@@ -30,12 +30,18 @@ import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.UnknownConfigurationException;
 import org.gradle.api.tasks.TaskContainer;
 
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ConfigurationName.TEST_IMPLEMENTATION;
+import static io.spine.tools.gradle.TaskName.compileJava;
+import static io.spine.tools.gradle.TaskName.compileTestJava;
+import static io.spine.tools.groovy.ConsumerClosure.closure;
 import static org.gradle.util.ConfigureUtil.configure;
 
 /**
@@ -49,18 +55,18 @@ public final class Extension {
     @SuppressWarnings("DuplicateStringLiteralInspection") // Used in tests and with other meanings.
     static final String NAME = "spine";
 
-    static final String COMPILE_JAVA = "compileJava";
-    private static final String COMPILE_TEST_JAVA = "compileTestJava";
+    static final String COMPILE_JAVA = compileJava.value();
+    private static final String COMPILE_TEST_JAVA = compileTestJava.value();
 
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
     private final Project project;
+    private boolean javaEnabled = false;
 
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
         this.javaScript = builder.buildJavaScriptExtension();
         this.project = builder.project;
-        this.toggleJavaTasks(false);
     }
 
     /**
@@ -98,13 +104,11 @@ public final class Extension {
      */
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {
-        toggleJavaTasks(true);
         java.enableGeneration();
         String spineVersion = java.spineVersion();
-        Artifact testlib = SpineDependency.testlib()
-                                          .ofVersion(spineVersion);
-        java.dependant()
-            .depend(TEST_IMPLEMENTATION, testlib.notation());
+        Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
+        java.dependant().depend(TEST_IMPLEMENTATION, testlib.notation());
+        toggleJavaTasks(true);
         return java;
     }
 
@@ -117,6 +121,9 @@ public final class Extension {
     @CanIgnoreReturnValue
     public JavaScriptExtension enableJavaScript() {
         javaScript.enableGeneration();
+        if (!this.javaEnabled) {
+            toggleJavaTasks(false);
+        }
         return javaScript;
     }
 
@@ -128,16 +135,52 @@ public final class Extension {
      * if required.
      */
     void disableJavaGeneration() {
-        toggleJavaTasks(false);
         java.disableGeneration();
+        toggleJavaTasks(false);
     }
 
-    private void toggleJavaTasks(boolean shouldRun) {
+    private void toggleJavaTasks(boolean shouldEnable) {
+        this.javaEnabled = shouldEnable;
+        toggleCompileJavaTasks(shouldEnable);
+        toggleTransitiveProtos(shouldEnable);
+    }
+
+    /**
+     * If the {@code protobuf} configuration is present, toggles the transitivity according to the
+     * specified parameter.
+     *
+     * <p>Disabling transitivity leads to exclusion of {@code spine} and
+     * {@code com.google.protobuf} dependencies.
+     *
+     * @param shouldEnable whether the transitivity should be enabled
+     */
+    private void toggleTransitiveProtos(boolean shouldEnable) {
+        project.configurations(closure((ConfigurationContainer container) -> {
+            try {
+                @SuppressWarnings("DuplicateStringLiteralInspection" /* Different context. */)
+                Configuration protobuf = container.getByName("protobuf");
+                protobuf.setTransitive(shouldEnable);
+            } catch (UnknownConfigurationException ignored) {
+                /*
+                 * If the configuration could not be found then transitive dependencies can be
+                 * considered disabled.
+                 */
+            }
+        }));
+    }
+
+    /**
+     * Attempts to find and change the {@code enabled} flag of
+     * {@code compileJava} and {@code compileTestJava} tasks in the current project.
+     *
+     * <p>If such tasks could not be found in the project, performs no action.
+     */
+    private void toggleCompileJavaTasks(boolean shouldEnable) {
         TaskContainer tasks = project.getTasks();
         Optional.ofNullable(tasks.findByPath(COMPILE_JAVA))
-                .ifPresent(task -> task.setEnabled(shouldRun));
+                .ifPresent(task -> task.setEnabled(shouldEnable));
         Optional.ofNullable(tasks.findByPath(COMPILE_TEST_JAVA))
-                .ifPresent(task -> task.setEnabled(shouldRun));
+                .ifPresent(task -> task.setEnabled(shouldEnable));
     }
 
     /**
