@@ -100,22 +100,3 @@ This configuration:
  - configures JS code generation from Protobuf.
  
 If only JS generation is configured, the Java code will not be generated (and the other way around).
-
-### Known issues of JS generation
-
-Since the `java` plugin is required in order to generate JS from Protobuf, the `compileJava` task is
-created. There may be a case when the build fails because the `compileJava` and `compileTestJava` 
-tasks cannot discover any `.java` files to compile. In such cases, disable those tasks:
-```gradle
-spine {
-    // Disable tasks inside the `spine` block in order to be sure that the `java` plugin is applied.
-    
-    compileJava.enabled = false
-    compileTestJava.enabled = false 
-}
-```
-
-This unlucky edge case affects only the Gradle projects which do not work with Java at all, only 
-with JavaScript. 
-
-This configuration will be automated in future releases.
