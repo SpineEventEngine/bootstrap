@@ -23,6 +23,7 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
+import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -30,15 +31,13 @@ import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.artifacts.UnknownConfigurationException;
 import org.gradle.api.tasks.TaskContainer;
 
-import java.util.Optional;
-
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ConfigurationName.TEST_IMPLEMENTATION;
+import static io.spine.tools.gradle.ConfigurationName.testImplementation;
 import static io.spine.tools.gradle.TaskName.compileJava;
 import static io.spine.tools.gradle.TaskName.compileTestJava;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
@@ -104,10 +103,11 @@ public final class Extension {
      */
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {
+        disableTransitiveProtos();
         java.enableGeneration();
         String spineVersion = java.spineVersion();
         Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
-        java.dependant().depend(TEST_IMPLEMENTATION, testlib.notation());
+        java.dependant().depend(testImplementation, testlib.notation());
         toggleJavaTasks(true);
         return java;
     }
@@ -120,6 +120,7 @@ public final class Extension {
      */
     @CanIgnoreReturnValue
     public JavaScriptExtension enableJavaScript() {
+        disableJavaGeneration();
         javaScript.enableGeneration();
         if (!this.javaEnabled) {
             toggleJavaTasks(false);
@@ -146,25 +147,16 @@ public final class Extension {
     }
 
     /**
-     * If the {@code protobuf} configuration is present, toggles the transitivity according to the
-     * specified parameter.
+     * If the {@code protobuf} configuration is present, disables its transitibity.
      *
      * <p>Disabling transitivity leads to exclusion of {@code spine} and
      * {@code com.google.protobuf} dependencies.
-     *
-     * @param shouldEnable whether the transitivity should be enabled
      */
-    private void toggleTransitiveProtos(boolean shouldEnable) {
+    private void disableTransitiveProtos() {
         project.configurations(closure((ConfigurationContainer container) -> {
-            try {
-                @SuppressWarnings("DuplicateStringLiteralInspection" /* Different context. */)
-                Configuration protobuf = container.getByName("protobuf");
-                protobuf.setTransitive(shouldEnable);
-            } catch (UnknownConfigurationException ignored) {
-                /*
-                 * If the configuration could not be found then transitive dependencies can be
-                 * considered disabled.
-                 */
+            Configuration protobuf = container.findByName(ConfigurationName.protobuf.name());
+            if (protobuf != null) {
+                protobuf.setTransitive(false);
             }
         }));
     }
