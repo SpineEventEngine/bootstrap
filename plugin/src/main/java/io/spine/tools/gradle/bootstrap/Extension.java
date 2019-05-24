@@ -120,7 +120,7 @@ public final class Extension {
      */
     @CanIgnoreReturnValue
     public JavaScriptExtension enableJavaScript() {
-        disableJavaGeneration();
+        disableTransitiveProtos();
         javaScript.enableGeneration();
         if (!this.javaEnabled) {
             toggleJavaTasks(false);
