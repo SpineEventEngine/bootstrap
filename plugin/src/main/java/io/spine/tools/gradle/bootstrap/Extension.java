@@ -23,6 +23,8 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
+import io.spine.tools.gradle.GradlePlugin;
+import io.spine.tools.gradle.ProtocConfigurationPlugin;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -58,6 +60,7 @@ public final class Extension {
     static final String COMPILE_JAVA = compileJava.value();
     private static final String COMPILE_TEST_JAVA = compileTestJava.value();
 
+    private final ModelExtension model;
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
     private final Project project;
@@ -66,6 +69,7 @@ public final class Extension {
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
         this.javaScript = builder.buildJavaScriptExtension();
+        this.model = builder.buildModelExtension();
         this.project = builder.project;
     }
 
@@ -127,6 +131,14 @@ public final class Extension {
         return javaScript;
     }
 
+    /** Marks this project as the one that contains Protobuf model description. */
+    public void assembleModel() {
+        model.enableGeneration();
+        GradlePlugin plugin = GradlePlugin.implementedIn(ProtocConfigurationPlugin.class);
+        model.pluginTarget().apply(plugin);
+        this.model.addSourceSets();
+    }
+
     /**
      * Disables the Java code generation.
      *
@@ -152,7 +164,8 @@ public final class Extension {
      * <p>Disabling transitivity leads to exclusion of {@code spine} and
      * {@code com.google.protobuf} dependencies.
      *
-     * @param shouldEnable whether the transitivity should be enabled
+     * @param shouldEnable
+     *         whether the transitivity should be enabled
      */
     private void toggleTransitiveProtos(boolean shouldEnable) {
         project.configurations(closure((ConfigurationContainer container) -> {
@@ -240,6 +253,18 @@ public final class Extension {
                     .setSourceSuperset(layout)
                     .build();
             return javaExtension;
+        }
+
+        private ModelExtension buildModelExtension() {
+            ModelExtension modelExtension = ModelExtension
+                    .newBuilder()
+                    .setProject(project)
+                    .setDependant(dependencyTarget)
+                    .setPluginTarget(pluginTarget)
+                    .setProtobufGenerator(generator)
+                    .setSourceSuperset(layout)
+                    .build();
+            return modelExtension;
         }
 
         private JavaScriptExtension buildJavaScriptExtension() {
