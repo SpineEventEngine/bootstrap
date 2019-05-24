@@ -140,10 +140,9 @@ public final class Extension {
         toggleJavaTasks(false);
     }
 
-    private void toggleJavaTasks(boolean shouldEnable) {
-        this.javaEnabled = shouldEnable;
-        toggleCompileJavaTasks(shouldEnable);
-        toggleTransitiveProtos(shouldEnable);
+    private void toggleJavaTasks(boolean enabled) {
+        this.javaEnabled = enabled;
+        toggleCompileJavaTasks(enabled);
     }
 
     /**
@@ -167,12 +166,16 @@ public final class Extension {
      *
      * <p>If such tasks could not be found in the project, performs no action.
      */
-    private void toggleCompileJavaTasks(boolean shouldEnable) {
+    private void toggleCompileJavaTasks(boolean enabled) {
         TaskContainer tasks = project.getTasks();
-        Optional.ofNullable(tasks.findByPath(COMPILE_JAVA))
-                .ifPresent(task -> task.setEnabled(shouldEnable));
-        Optional.ofNullable(tasks.findByPath(COMPILE_TEST_JAVA))
-                .ifPresent(task -> task.setEnabled(shouldEnable));
+        Task compileJava = tasks.findByPath(COMPILE_JAVA);
+        Task compileTestJava = tasks.findByPath(COMPILE_TEST_JAVA);
+        if (compileJava != null) {
+            compileJava.setEnabled(enabled);
+        }
+        if (compileTestJava != null) {
+            compileTestJava.setEnabled(enabled);
+        }
     }
 
     /**
