@@ -103,12 +103,12 @@ public final class Extension {
      */
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {
-        disableTransitiveProtos();
         java.enableGeneration();
         String spineVersion = java.spineVersion();
         Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
         java.dependant().depend(testImplementation, testlib.notation());
         toggleJavaTasks(true);
+        disableTransitiveProtos();
         return java;
     }
 
@@ -120,11 +120,11 @@ public final class Extension {
      */
     @CanIgnoreReturnValue
     public JavaScriptExtension enableJavaScript() {
-        disableTransitiveProtos();
         javaScript.enableGeneration();
         if (!this.javaEnabled) {
             toggleJavaTasks(false);
         }
+        disableTransitiveProtos();
         return javaScript;
     }
 
