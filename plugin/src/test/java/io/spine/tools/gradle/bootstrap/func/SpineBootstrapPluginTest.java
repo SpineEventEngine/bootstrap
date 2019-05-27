@@ -23,6 +23,7 @@ package io.spine.tools.gradle.bootstrap.func;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
+import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.testing.GradleProject;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SpineBootstrapPluginTest {
 
     private static final String ADDITIONAL_CONFIG_SCRIPT = "config.gradle";
+    private static final String TRANSITIVE_JS_DEPENDENCY = "any_pb.js";
 
     private GradleProject.Builder project;
     private Path projectDir;
@@ -99,10 +101,10 @@ class SpineBootstrapPluginTest {
 
         Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
-        assertPackageContents.containsAllOf("LunaParkProto.class",
-                                            "RollerCoaster.class",
-                                            "Wagon.class",
-                                            "Altitude.class");
+        assertPackageContents.containsAtLeast("LunaParkProto.class",
+                                              "RollerCoaster.class",
+                                              "Wagon.class",
+                                              "Altitude.class");
     }
 
     @Test
@@ -117,9 +119,9 @@ class SpineBootstrapPluginTest {
 
         Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
-        assertPackageContents.containsAllOf("RollerCoasterVBuilder.class",
-                                            "WagonVBuilder.class",
-                                            "AltitudeVBuilder.class");
+        assertPackageContents.containsAtLeast("RollerCoasterVBuilder.class",
+                                              "WagonVBuilder.class",
+                                              "AltitudeVBuilder.class");
     }
 
     @Test
@@ -130,7 +132,39 @@ class SpineBootstrapPluginTest {
         project.executeTask(build);
 
         Collection<String> jsFileNames = generatedJsFileNames();
-        assertThat(jsFileNames).containsExactly("roller_coaster_pb.js");
+        assertThat(jsFileNames).contains("roller_coaster_pb.js");
+    }
+
+    @Test
+    @DisplayName("generate an `index.js` file")
+    void generateIndexJs() {
+        configureJsGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+
+        Collection<String> jsFileNames = generatedJsFileNames();
+        assertThat(jsFileNames).contains("index.js");
+    }
+
+    @Test
+    @DisplayName("not generate transitive Spine dependencies for pure JS projects")
+    void skipTransitiveProtos() {
+        configureJsGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(TaskName.build);
+
+        Collection<String> jsFileNames = generatedJsFileNames();
+        assertThat(jsFileNames).doesNotContain(TRANSITIVE_JS_DEPENDENCY);
+    }
+
+    @Test
+    @DisplayName("not generate transitive Spine dependencies for mixed projects")
+    void skipTransitiveProtosForMixed() {
+        configureJavaAndJs();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+        assertThat(generatedJsFileNames()).doesNotContain(TRANSITIVE_JS_DEPENDENCY);
+        assertThat(generatedClassFileNames()).doesNotContain("Any.class");
     }
 
     @Test
@@ -140,7 +174,8 @@ class SpineBootstrapPluginTest {
         GradleProject project = this.project.build();
         BuildResult result = project.executeTask(build);
 
-        assertThat(result.task(generateJsonParsers.path()).getOutcome()).isEqualTo(SUCCESS);
+        assertThat(result.task(generateJsonParsers.path())
+                         .getOutcome()).isEqualTo(SUCCESS);
     }
 
     @Test
@@ -170,9 +205,9 @@ class SpineBootstrapPluginTest {
         GradleProject project = this.project.build();
         project.executeTask(build);
         assertThat(generatedClassFileNames())
-                .containsAllOf("OrderServiceGrpc.class",
-                               "OrderServiceGrpc$OrderServiceStub.class",
-                               "OrderServiceGrpc$OrderServiceImplBase.class");
+                .containsAtLeast("OrderServiceGrpc.class",
+                                 "OrderServiceGrpc$OrderServiceStub.class",
+                                 "OrderServiceGrpc$OrderServiceImplBase.class");
     }
 
     @Test
@@ -225,6 +260,11 @@ class SpineBootstrapPluginTest {
         writeConfigGradle("spine.enableJava()");
     }
 
+    private void configureJavaAndJs() {
+        writeConfigGradle("spine.enableJava()",
+                          "spine.enableJavaScript()");
+    }
+
     private void configureJsGeneration() {
         writeConfigGradle(
                 "spine.enableJavaScript()",
@@ -265,7 +305,7 @@ class SpineBootstrapPluginTest {
     }
 
     @SuppressWarnings("DuplicateStringLiteralInspection")
-        // Part of the file contents may be duplicated.
+    // Part of the file contents may be duplicated.
     private void configureJavaAndGrpcWithoutGen() {
         writeConfigGradle(
                 "spine.enableJava {",
@@ -277,7 +317,7 @@ class SpineBootstrapPluginTest {
     }
 
     @SuppressWarnings("DuplicateStringLiteralInspection")
-        // Part of the file contents may be duplicated.
+    // Part of the file contents may be duplicated.
     private void configureJavaWithoutProtoOrSpine() {
         writeConfigGradle(
                 "spine.enableJava {",
@@ -340,10 +380,7 @@ class SpineBootstrapPluginTest {
     }
 
     private Collection<String> generatedJsFileNames() {
-        Path compiledJsFiles = projectDir.resolve("build")
-                                         .resolve("generated")
-                                         .resolve("source")
-                                         .resolve("proto")
+        Path compiledJsFiles = projectDir.resolve("generated")
                                          .resolve("main")
                                          .resolve("js");
         File compiledJsDir = compiledJsFiles.toFile();

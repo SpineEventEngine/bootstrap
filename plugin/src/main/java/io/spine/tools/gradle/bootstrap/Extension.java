@@ -23,6 +23,7 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
+import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -30,9 +31,16 @@ import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.tasks.TaskContainer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ConfigurationName.TEST_IMPLEMENTATION;
+import static io.spine.tools.gradle.ConfigurationName.testImplementation;
+import static io.spine.tools.gradle.TaskName.compileJava;
+import static io.spine.tools.gradle.TaskName.compileTestJava;
+import static io.spine.tools.groovy.ConsumerClosure.closure;
 import static org.gradle.util.ConfigureUtil.configure;
 
 /**
@@ -46,12 +54,18 @@ public final class Extension {
     @SuppressWarnings("DuplicateStringLiteralInspection") // Used in tests and with other meanings.
     static final String NAME = "spine";
 
+    static final String COMPILE_JAVA = compileJava.value();
+    private static final String COMPILE_TEST_JAVA = compileTestJava.value();
+
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
+    private final Project project;
+    private boolean javaEnabled = false;
 
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
         this.javaScript = builder.buildJavaScriptExtension();
+        this.project = builder.project;
     }
 
     /**
@@ -92,7 +106,9 @@ public final class Extension {
         java.enableGeneration();
         String spineVersion = java.spineVersion();
         Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
-        java.dependant().depend(TEST_IMPLEMENTATION, testlib.notation());
+        java.dependant().depend(testImplementation, testlib.notation());
+        toggleJavaTasks(true);
+        disableTransitiveProtos();
         return java;
     }
 
@@ -105,6 +121,10 @@ public final class Extension {
     @CanIgnoreReturnValue
     public JavaScriptExtension enableJavaScript() {
         javaScript.enableGeneration();
+        if (!this.javaEnabled) {
+            toggleJavaTasks(false);
+        }
+        disableTransitiveProtos();
         return javaScript;
     }
 
@@ -117,6 +137,45 @@ public final class Extension {
      */
     void disableJavaGeneration() {
         java.disableGeneration();
+        toggleJavaTasks(false);
+    }
+
+    private void toggleJavaTasks(boolean enabled) {
+        this.javaEnabled = enabled;
+        toggleCompileJavaTasks(enabled);
+    }
+
+    /**
+     * If the {@code protobuf} configuration is present, disables its transitibity.
+     *
+     * <p>Disabling transitivity leads to exclusion of {@code spine} and
+     * {@code com.google.protobuf} dependencies.
+     */
+    private void disableTransitiveProtos() {
+        project.configurations(closure((ConfigurationContainer container) -> {
+            Configuration protobuf = container.findByName(ConfigurationName.protobuf.name());
+            if (protobuf != null) {
+                protobuf.setTransitive(false);
+            }
+        }));
+    }
+
+    /**
+     * Attempts to find and change the {@code enabled} flag of
+     * {@code compileJava} and {@code compileTestJava} tasks in the current project.
+     *
+     * <p>If such tasks could not be found in the project, performs no action.
+     */
+    private void toggleCompileJavaTasks(boolean enabled) {
+        TaskContainer tasks = project.getTasks();
+        Task compileJava = tasks.findByPath(COMPILE_JAVA);
+        Task compileTestJava = tasks.findByPath(COMPILE_TEST_JAVA);
+        if (compileJava != null) {
+            compileJava.setEnabled(enabled);
+        }
+        if (compileTestJava != null) {
+            compileTestJava.setEnabled(enabled);
+        }
     }
 
     /**
