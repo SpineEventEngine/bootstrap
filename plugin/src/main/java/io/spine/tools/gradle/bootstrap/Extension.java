@@ -23,8 +23,7 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
-import io.spine.tools.gradle.GradlePlugin;
-import io.spine.tools.gradle.ProtocConfigurationPlugin;
+import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -32,15 +31,13 @@ import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.artifacts.UnknownConfigurationException;
 import org.gradle.api.tasks.TaskContainer;
 
-import java.util.Optional;
-
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ConfigurationName.TEST_IMPLEMENTATION;
+import static io.spine.tools.gradle.ConfigurationName.testImplementation;
 import static io.spine.tools.gradle.TaskName.compileJava;
 import static io.spine.tools.gradle.TaskName.compileTestJava;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
@@ -60,7 +57,6 @@ public final class Extension {
     static final String COMPILE_JAVA = compileJava.value();
     private static final String COMPILE_TEST_JAVA = compileTestJava.value();
 
-    private final ModelExtension model;
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
     private final Project project;
@@ -69,7 +65,6 @@ public final class Extension {
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
         this.javaScript = builder.buildJavaScriptExtension();
-        this.model = builder.buildModelExtension();
         this.project = builder.project;
     }
 
@@ -111,8 +106,9 @@ public final class Extension {
         java.enableGeneration();
         String spineVersion = java.spineVersion();
         Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
-        java.dependant().depend(TEST_IMPLEMENTATION, testlib.notation());
+        java.dependant().depend(testImplementation, testlib.notation());
         toggleJavaTasks(true);
+        disableTransitiveProtos();
         return java;
     }
 
@@ -128,15 +124,8 @@ public final class Extension {
         if (!this.javaEnabled) {
             toggleJavaTasks(false);
         }
+        disableTransitiveProtos();
         return javaScript;
-    }
-
-    /** Marks this project as the one that contains Protobuf model description. */
-    public void assembleModel() {
-        model.enableGeneration();
-        GradlePlugin plugin = GradlePlugin.implementedIn(ProtocConfigurationPlugin.class);
-        model.pluginTarget().apply(plugin);
-        this.model.addSourceSets();
     }
 
     /**
@@ -151,33 +140,22 @@ public final class Extension {
         toggleJavaTasks(false);
     }
 
-    private void toggleJavaTasks(boolean shouldEnable) {
-        this.javaEnabled = shouldEnable;
-        toggleCompileJavaTasks(shouldEnable);
-        toggleTransitiveProtos(shouldEnable);
+    private void toggleJavaTasks(boolean enabled) {
+        this.javaEnabled = enabled;
+        toggleCompileJavaTasks(enabled);
     }
 
     /**
-     * If the {@code protobuf} configuration is present, toggles the transitivity according to the
-     * specified parameter.
+     * If the {@code protobuf} configuration is present, disables its transitibity.
      *
      * <p>Disabling transitivity leads to exclusion of {@code spine} and
      * {@code com.google.protobuf} dependencies.
-     *
-     * @param shouldEnable
-     *         whether the transitivity should be enabled
      */
-    private void toggleTransitiveProtos(boolean shouldEnable) {
+    private void disableTransitiveProtos() {
         project.configurations(closure((ConfigurationContainer container) -> {
-            try {
-                @SuppressWarnings("DuplicateStringLiteralInspection" /* Different context. */)
-                Configuration protobuf = container.getByName("protobuf");
-                protobuf.setTransitive(shouldEnable);
-            } catch (UnknownConfigurationException ignored) {
-                /*
-                 * If the configuration could not be found then transitive dependencies can be
-                 * considered disabled.
-                 */
+            Configuration protobuf = container.findByName(ConfigurationName.protobuf.name());
+            if (protobuf != null) {
+                protobuf.setTransitive(false);
             }
         }));
     }
@@ -188,12 +166,16 @@ public final class Extension {
      *
      * <p>If such tasks could not be found in the project, performs no action.
      */
-    private void toggleCompileJavaTasks(boolean shouldEnable) {
+    private void toggleCompileJavaTasks(boolean enabled) {
         TaskContainer tasks = project.getTasks();
-        Optional.ofNullable(tasks.findByPath(COMPILE_JAVA))
-                .ifPresent(task -> task.setEnabled(shouldEnable));
-        Optional.ofNullable(tasks.findByPath(COMPILE_TEST_JAVA))
-                .ifPresent(task -> task.setEnabled(shouldEnable));
+        Task compileJava = tasks.findByPath(COMPILE_JAVA);
+        Task compileTestJava = tasks.findByPath(COMPILE_TEST_JAVA);
+        if (compileJava != null) {
+            compileJava.setEnabled(enabled);
+        }
+        if (compileTestJava != null) {
+            compileTestJava.setEnabled(enabled);
+        }
     }
 
     /**
@@ -253,18 +235,6 @@ public final class Extension {
                     .setSourceSuperset(layout)
                     .build();
             return javaExtension;
-        }
-
-        private ModelExtension buildModelExtension() {
-            ModelExtension modelExtension = ModelExtension
-                    .newBuilder()
-                    .setProject(project)
-                    .setDependant(dependencyTarget)
-                    .setPluginTarget(pluginTarget)
-                    .setProtobufGenerator(generator)
-                    .setSourceSuperset(layout)
-                    .build();
-            return modelExtension;
         }
 
         private JavaScriptExtension buildJavaScriptExtension() {

@@ -29,8 +29,8 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ConfigurationName.COMPILE;
-import static io.spine.tools.gradle.ConfigurationName.TEST_IMPLEMENTATION;
+import static io.spine.tools.gradle.ConfigurationName.implementation;
+import static io.spine.tools.gradle.ConfigurationName.testImplementation;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
@@ -84,8 +84,8 @@ public final class JavaExtension extends CodeGenExtension {
      * dependencies to the project.
      */
     public void client() {
-        dependOn(SpineDependency.client(), COMPILE);
-        dependOn(SpineDependency.testUtilClient(), TEST_IMPLEMENTATION);
+        dependOn(SpineDependency.client(), implementation);
+        dependOn(SpineDependency.testUtilClient(), testImplementation);
     }
 
     /**
@@ -95,8 +95,8 @@ public final class JavaExtension extends CodeGenExtension {
      * dependencies to the project.
      */
     public void server() {
-        dependOn(SpineDependency.server(), COMPILE);
-        dependOn(SpineDependency.testUtilServer(), TEST_IMPLEMENTATION);
+        dependOn(SpineDependency.server(), implementation);
+        dependOn(SpineDependency.testUtilServer(), testImplementation);
     }
 
     private void dependOn(SpineDependency module, ConfigurationName configurationName) {
