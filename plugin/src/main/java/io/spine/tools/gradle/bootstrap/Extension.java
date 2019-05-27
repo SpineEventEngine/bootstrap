@@ -59,12 +59,15 @@ public final class Extension {
 
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
+    private final ModelExtension modelExtension;
+
     private final Project project;
     private boolean javaEnabled = false;
 
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
         this.javaScript = builder.buildJavaScriptExtension();
+        this.modelExtension = builder.buildModelExtension();
         this.project = builder.project;
     }
 
@@ -126,6 +129,16 @@ public final class Extension {
         }
         disableTransitiveProtos();
         return javaScript;
+    }
+
+    /**
+     * Marks this project as a project that contains the Protobuf model definition.
+     *
+     * <p>Enables the {@code protobuf} and {@code java} plugins. Also adds the generated source
+     * sets.
+     */
+    public void assembleModel() {
+        this.modelExtension.enableGeneration();
     }
 
     /**
@@ -246,6 +259,18 @@ public final class Extension {
                     .setProtobufGenerator(generator)
                     .build();
             return javaScriptExtension;
+        }
+
+        private ModelExtension buildModelExtension() {
+            ModelExtension modelExtension = ModelExtension
+                    .newBuilder()
+                    .setProject(project)
+                    .setDependant(dependencyTarget)
+                    .setPluginTarget(pluginTarget)
+                    .setProtobufGenerator(generator)
+                    .setSourceSuperset(layout)
+                    .build();
+            return modelExtension;
         }
 
         /**

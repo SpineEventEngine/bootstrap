@@ -250,6 +250,21 @@ class ExtensionTest {
             assertThat(dependencyTarget.dependencies()).contains(GRPC_DEPENDENCY);
         }
 
+        /** Applying {@code Java} plugin is necessary to apply the {@code protobuf} plugin. */
+        @Test
+        @DisplayName("apply Java plugin to projects that contain only the model definition")
+        void javaPluginToModelProjects() {
+            extension.assembleModel();
+            assertApplied(JavaPlugin.class);
+        }
+
+        @Test
+        @DisplayName("apply Protobuf plugin to projects that contain only the model definition")
+        void protobufPluginToModelProjects() {
+            extension.assembleModel();
+            assertApplied(ProtobufPlugin.class);
+        }
+
         @Test
         @DisplayName("disable Java code generation in Java projects")
         void disableCodegen() {
