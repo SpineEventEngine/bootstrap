@@ -159,9 +159,8 @@ class SpineBootstrapPluginTest {
 
     @Test
     @DisplayName("not generate transitive Spine dependencies for mixed projects")
-    void skipTransitiveProtosForMixed(){
-        configureJsGeneration();
-        configureJavaGeneration();
+    void skipTransitiveProtosForMixed() {
+        configureJavaAndJs();
         GradleProject project = this.project.build();
         project.executeTask(build);
         assertThat(generatedJsFileNames()).doesNotContain(TRANSITIVE_JS_DEPENDENCY);
@@ -261,6 +260,11 @@ class SpineBootstrapPluginTest {
         writeConfigGradle("spine.enableJava()");
     }
 
+    private void configureJavaAndJs() {
+        writeConfigGradle("spine.enableJava()",
+                          "spine.enableJavaScript()");
+    }
+
     private void configureJsGeneration() {
         writeConfigGradle(
                 "spine.enableJavaScript()",
@@ -301,7 +305,7 @@ class SpineBootstrapPluginTest {
     }
 
     @SuppressWarnings("DuplicateStringLiteralInspection")
-        // Part of the file contents may be duplicated.
+    // Part of the file contents may be duplicated.
     private void configureJavaAndGrpcWithoutGen() {
         writeConfigGradle(
                 "spine.enableJava {",
@@ -313,7 +317,7 @@ class SpineBootstrapPluginTest {
     }
 
     @SuppressWarnings("DuplicateStringLiteralInspection")
-        // Part of the file contents may be duplicated.
+    // Part of the file contents may be duplicated.
     private void configureJavaWithoutProtoOrSpine() {
         writeConfigGradle(
                 "spine.enableJava {",
