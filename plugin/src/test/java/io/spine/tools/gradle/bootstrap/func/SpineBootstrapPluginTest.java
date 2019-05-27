@@ -252,6 +252,16 @@ class SpineBootstrapPluginTest {
         assertFalse(exists(compiledClasses));
     }
 
+    @Test
+    @DisplayName("generate no code for projects that only define the model")
+    void noJsForModelProjects() {
+        configureModelProject();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+
+        assertThat(generatedFiles().toFile().exists()).isFalse();
+    }
+
     private void noAdditionalConfig() {
         writeConfigGradle();
     }
@@ -328,6 +338,10 @@ class SpineBootstrapPluginTest {
                 "}");
     }
 
+    private void configureModelProject() {
+        writeConfigGradle("spine.assembleModel()");
+    }
+
     @SuppressWarnings("CheckReturnValue")
     private void writeConfigGradle(String... lines) {
         project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.copyOf(lines));
@@ -371,6 +385,18 @@ class SpineBootstrapPluginTest {
         return compiledClasses;
     }
 
+    private Path generatedFiles() {
+        Path generated = projectDir.resolve("generated");
+        return generated;
+    }
+
+    private Path generatedJsFiles() {
+        Path compiledJsFiles = generatedFiles()
+                .resolve("main")
+                .resolve("js");
+        return compiledJsFiles;
+    }
+
     private static Path resolveClassesInPackage(Path compiledJavaClasses) {
         return compiledJavaClasses.resolve("io")
                                   .resolve("spine")
@@ -380,9 +406,7 @@ class SpineBootstrapPluginTest {
     }
 
     private Collection<String> generatedJsFileNames() {
-        Path compiledJsFiles = projectDir.resolve("generated")
-                                         .resolve("main")
-                                         .resolve("js");
+        Path compiledJsFiles = generatedJsFiles();
         File compiledJsDir = compiledJsFiles.toFile();
         assertTrue(compiledJsDir.exists());
         assertTrue(compiledJsDir.isDirectory());
