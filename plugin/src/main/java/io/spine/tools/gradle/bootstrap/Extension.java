@@ -131,6 +131,12 @@ public final class Extension {
         return javaScript;
     }
 
+    /**
+     * Marks this project as a project that contains the Protobuf model definition.
+     *
+     * <p>Enables the {@code protobuf} and {@code java} plugins. Also adds the generated source
+     * sets.
+     */
     public void assembleModel() {
         this.modelExtension.enableGeneration();
     }
