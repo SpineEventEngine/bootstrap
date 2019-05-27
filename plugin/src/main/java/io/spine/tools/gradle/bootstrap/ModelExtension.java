@@ -28,7 +28,9 @@ import org.gradle.api.Project;
 
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 
-/** An extension which declares a module as one that contains the Protobuf model definition. */
+/**
+ * An extension which declares a module as one that contains the Protobuf model definition.
+ */
 public final class ModelExtension extends CodeGenExtension {
 
     private final Project project;
@@ -59,7 +61,9 @@ public final class ModelExtension extends CodeGenExtension {
         sourceSuperset.register(GeneratedSourceRoot.of(project));
     }
 
-    /** Builder of {@code ModelExtension}s. */
+    /**
+     * Builder of {@code ModelExtension}s.
+     */
     static final class Builder extends CodeGenExtension.Builder<ModelExtension, Builder> {
 
         private SourceSuperset sourceSuperset;
@@ -83,5 +87,4 @@ public final class ModelExtension extends CodeGenExtension {
             return new ModelExtension(this);
         }
     }
-
 }
