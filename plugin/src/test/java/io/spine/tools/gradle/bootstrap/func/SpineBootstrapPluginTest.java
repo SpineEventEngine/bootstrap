@@ -55,6 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SpineBootstrapPluginTest {
 
     private static final String ADDITIONAL_CONFIG_SCRIPT = "config.gradle";
+    private static final String TRANSITIVE_JS_DEPENDENCY = "any_pb.js";
 
     private GradleProject.Builder project;
     private Path projectDir;
@@ -153,7 +154,18 @@ class SpineBootstrapPluginTest {
         project.executeTask(TaskName.build);
 
         Collection<String> jsFileNames = generatedJsFileNames();
-        assertThat(jsFileNames).doesNotContain("any_pb.js");
+        assertThat(jsFileNames).doesNotContain(TRANSITIVE_JS_DEPENDENCY);
+    }
+
+    @Test
+    @DisplayName("not generate transitive Spine dependencies for mixed projects")
+    void skipTransitiveProtosForMixed(){
+        configureJsGeneration();
+        configureJavaGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+        assertThat(generatedJsFileNames()).doesNotContain(TRANSITIVE_JS_DEPENDENCY);
+        assertThat(generatedClassFileNames()).doesNotContain("Any.class");
     }
 
     @Test
