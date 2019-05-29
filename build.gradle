@@ -130,3 +130,4 @@ rootProject.afterEvaluate {
 
 apply from: deps.scripts.jacoco
 apply from: deps.scripts.repoLicenseReport
+apply from: deps.scripts.generatePom
