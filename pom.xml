@@ -10,8 +10,9 @@ all modules and does not describe the project structure per-subproject.
  
  -->
 
-<artifactId>bootstrap</artifactId>
-<version>unspecified</version>
+<groupId>io.spine</groupId>
+<artifactId>spine-bootstrap</artifactId>
+<version>1.0.0-SNAPSHOT</version>
 
 <inceptionYear>2015</inceptionYear>
 
