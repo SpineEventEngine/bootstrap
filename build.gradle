@@ -39,6 +39,9 @@ ext {
 allprojects {
     apply plugin: 'java'
     apply plugin: 'jacoco'
+    
+    group = 'io.spine'
+    version = spineVersion
 }
 
 subprojects {
@@ -130,3 +133,4 @@ rootProject.afterEvaluate {
 
 apply from: deps.scripts.jacoco
 apply from: deps.scripts.repoLicenseReport
+apply from: deps.scripts.generatePom
