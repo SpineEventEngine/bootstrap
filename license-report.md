@@ -18,6 +18,9 @@
 1. **Group:** com.google.errorprone **Name:** error_prone_annotations **Version:** 2.3.3
      * **POM License: Apache 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
+1. **Group:** com.google.errorprone **Name:** error_prone_type_annotations **Version:** 2.3.3
+     * **POM License: Apache 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
+
 1. **Group:** com.google.gradle **Name:** osdetector-gradle-plugin **Version:** 1.4.0
      * **POM Project URL:** [https://github.com/google/osdetector-gradle-plugin](https://github.com/google/osdetector-gradle-plugin)
      * **POM License: Apache License 2.0** - [http://opensource.org/licenses/Apache-2.0](http://opensource.org/licenses/Apache-2.0)
@@ -27,28 +30,28 @@
      * **Manifest license URL:** [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.guava **Name:** guava **Version:** 27.1-jre
+1. **Group:** com.google.guava **Name:** guava **Version:** 28.0-jre
      * **Manifest Project URL:** [https://github.com/google/guava/](https://github.com/google/guava/)
      * **Manifest license URL:** [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
-     * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
+     * **POM License: Apache License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 1. **Group:** com.google.guava **Name:** listenablefuture **Version:** 9999.0-empty-to-avoid-conflict-with-guava
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.j2objc **Name:** j2objc-annotations **Version:** 1.1
+1. **Group:** com.google.j2objc **Name:** j2objc-annotations **Version:** 1.3
      * **POM Project URL:** [https://github.com/google/j2objc/](https://github.com/google/j2objc/)
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.protobuf **Name:** protobuf-gradle-plugin **Version:** 0.8.8
+1. **Group:** com.google.protobuf **Name:** protobuf-gradle-plugin **Version:** 0.8.9
      * **POM Project URL:** [https://github.com/google/protobuf-gradle-plugin](https://github.com/google/protobuf-gradle-plugin)
      * **POM License: BSD 3-Clause** - [http://opensource.org/licenses/BSD-3-Clause](http://opensource.org/licenses/BSD-3-Clause)
 
-1. **Group:** com.google.protobuf **Name:** protobuf-java **Version:** 3.7.1
+1. **Group:** com.google.protobuf **Name:** protobuf-java **Version:** 3.8.0
      * **Manifest Project URL:** [https://developers.google.com/protocol-buffers/](https://developers.google.com/protocol-buffers/)
      * **Manifest license URL:** [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
      * **POM License: 3-Clause BSD License** - [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
 
-1. **Group:** com.google.protobuf **Name:** protobuf-java-util **Version:** 3.7.1
+1. **Group:** com.google.protobuf **Name:** protobuf-java-util **Version:** 3.8.0
      * **Manifest Project URL:** [https://developers.google.com/protocol-buffers/](https://developers.google.com/protocol-buffers/)
      * **Manifest license URL:** [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
      * **POM License: 3-Clause BSD License** - [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
@@ -86,7 +89,7 @@
 1. **Group:** org.apache.maven **Name:** maven-plugin-api **Version:** 3.2.1
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** org.checkerframework **Name:** checker-qual **Version:** 2.8.0
+1. **Group:** org.checkerframework **Name:** checker-qual **Version:** 2.8.2
      * **POM Project URL:** [https://checkerframework.org](https://checkerframework.org)
      * **POM License: The MIT License** - [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT)
 
@@ -115,11 +118,11 @@
      * **Manifest license URL:** [http://www.eclipse.org/legal/epl-v10.html](http://www.eclipse.org/legal/epl-v10.html)
      * **POM License: Eclipse Public License, Version 1.0** - [http://www.eclipse.org/legal/epl-v10.html](http://www.eclipse.org/legal/epl-v10.html)
 
-1. **Group:** org.jboss.forge.roaster **Name:** roaster-api **Version:** 2.20.1.Final
+1. **Group:** org.jboss.forge.roaster **Name:** roaster-api **Version:** 2.20.8.Final
      * **POM License: Eclipse Public License version 1.0** - [http://www.eclipse.org/legal/epl-v10.html](http://www.eclipse.org/legal/epl-v10.html)
      * **POM License: Public Domain** - [http://repository.jboss.org/licenses/cc0-1.0.txt](http://repository.jboss.org/licenses/cc0-1.0.txt)
 
-1. **Group:** org.jboss.forge.roaster **Name:** roaster-jdt **Version:** 2.20.1.Final
+1. **Group:** org.jboss.forge.roaster **Name:** roaster-jdt **Version:** 2.20.8.Final
      * **POM License: Eclipse Public License version 1.0** - [http://www.eclipse.org/legal/epl-v10.html](http://www.eclipse.org/legal/epl-v10.html)
      * **POM License: Public Domain** - [http://repository.jboss.org/licenses/cc0-1.0.txt](http://repository.jboss.org/licenses/cc0-1.0.txt)
 
@@ -199,31 +202,31 @@
      * **Manifest license URL:** [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.guava **Name:** guava **Version:** 27.1-jre
+1. **Group:** com.google.guava **Name:** guava **Version:** 28.0-jre
      * **Manifest Project URL:** [https://github.com/google/guava/](https://github.com/google/guava/)
      * **Manifest license URL:** [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
-     * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
+     * **POM License: Apache License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.guava **Name:** guava-testlib **Version:** 27.1-jre
-     * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
+1. **Group:** com.google.guava **Name:** guava-testlib **Version:** 28.0-jre
+     * **POM License: Apache License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 1. **Group:** com.google.guava **Name:** listenablefuture **Version:** 9999.0-empty-to-avoid-conflict-with-guava
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.j2objc **Name:** j2objc-annotations **Version:** 1.1
+1. **Group:** com.google.j2objc **Name:** j2objc-annotations **Version:** 1.3
      * **POM Project URL:** [https://github.com/google/j2objc/](https://github.com/google/j2objc/)
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.protobuf **Name:** protobuf-gradle-plugin **Version:** 0.8.8
+1. **Group:** com.google.protobuf **Name:** protobuf-gradle-plugin **Version:** 0.8.9
      * **POM Project URL:** [https://github.com/google/protobuf-gradle-plugin](https://github.com/google/protobuf-gradle-plugin)
      * **POM License: BSD 3-Clause** - [http://opensource.org/licenses/BSD-3-Clause](http://opensource.org/licenses/BSD-3-Clause)
 
-1. **Group:** com.google.protobuf **Name:** protobuf-java **Version:** 3.7.1
+1. **Group:** com.google.protobuf **Name:** protobuf-java **Version:** 3.8.0
      * **Manifest Project URL:** [https://developers.google.com/protocol-buffers/](https://developers.google.com/protocol-buffers/)
      * **Manifest license URL:** [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
      * **POM License: 3-Clause BSD License** - [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
 
-1. **Group:** com.google.protobuf **Name:** protobuf-java-util **Version:** 3.7.1
+1. **Group:** com.google.protobuf **Name:** protobuf-java-util **Version:** 3.8.0
      * **Manifest Project URL:** [https://developers.google.com/protocol-buffers/](https://developers.google.com/protocol-buffers/)
      * **Manifest license URL:** [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
      * **POM License: 3-Clause BSD License** - [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
@@ -328,7 +331,7 @@
      * **POM License: GNU General Public License, version 2 (GPL2), with the classpath exception** - [http://www.gnu.org/software/classpath/license.html](http://www.gnu.org/software/classpath/license.html)
      * **POM License: The MIT License** - [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT)
 
-1. **Group:** org.checkerframework **Name:** checker-qual **Version:** 2.8.0
+1. **Group:** org.checkerframework **Name:** checker-qual **Version:** 2.8.2
      * **POM Project URL:** [https://checkerframework.org](https://checkerframework.org)
      * **POM License: The MIT License** - [http://opensource.org/licenses/MIT](http://opensource.org/licenses/MIT)
 
@@ -389,11 +392,11 @@
      * **Manifest license URL:** [http://www.eclipse.org/legal/epl-v10.html](http://www.eclipse.org/legal/epl-v10.html)
      * **POM License: Eclipse Public License v1.0** - [http://www.eclipse.org/legal/epl-v10.html](http://www.eclipse.org/legal/epl-v10.html)
 
-1. **Group:** org.jboss.forge.roaster **Name:** roaster-api **Version:** 2.20.1.Final
+1. **Group:** org.jboss.forge.roaster **Name:** roaster-api **Version:** 2.20.8.Final
      * **POM License: Eclipse Public License version 1.0** - [http://www.eclipse.org/legal/epl-v10.html](http://www.eclipse.org/legal/epl-v10.html)
      * **POM License: Public Domain** - [http://repository.jboss.org/licenses/cc0-1.0.txt](http://repository.jboss.org/licenses/cc0-1.0.txt)
 
-1. **Group:** org.jboss.forge.roaster **Name:** roaster-jdt **Version:** 2.20.1.Final
+1. **Group:** org.jboss.forge.roaster **Name:** roaster-jdt **Version:** 2.20.8.Final
      * **POM License: Eclipse Public License version 1.0** - [http://www.eclipse.org/legal/epl-v10.html](http://www.eclipse.org/legal/epl-v10.html)
      * **POM License: Public Domain** - [http://repository.jboss.org/licenses/cc0-1.0.txt](http://repository.jboss.org/licenses/cc0-1.0.txt)
 
@@ -482,4 +485,4 @@
  The dependencies distributed under several licenses, are used according their commercial-use-friendly license.
 
 
-This report was generated on **Tue May 21 16:52:54 EEST 2019** using [Gradle-License-Report plugin](https://github.com/jk1/Gradle-License-Report) by Evgeny Naumenko, licensed under [Apache 2.0 License](https://github.com/jk1/Gradle-License-Report/blob/master/LICENSE).
+This report was generated on **Tue Jun 25 16:27:38 EEST 2019** using [Gradle-License-Report plugin](https://github.com/jk1/Gradle-License-Report) by Evgeny Naumenko, licensed under [Apache 2.0 License](https://github.com/jk1/Gradle-License-Report/blob/master/LICENSE).
