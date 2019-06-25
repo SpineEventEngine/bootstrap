@@ -103,13 +103,6 @@ abstract class CodeGenExtension implements Logging {
     }
 
     /**
-     * Obtains the configurator of the Protobuf code generation.
-     */
-    final ProtobufGenerator protobufGenerator() {
-        return protobufGenerator;
-    }
-
-    /**
      * An abstract builder for the {@code CodeGenExtension} subtypes.
      */
     abstract static class Builder<E extends CodeGenExtension, B extends Builder<E, B>> {
