@@ -42,11 +42,6 @@ public final class ModelExtension extends CodeGenExtension {
         this.sourceSuperset = builder.sourceSuperset;
     }
 
-    /** Obtains a new builder of {@code ModelExtension}s. */
-    static Builder newBuilder() {
-        return new Builder();
-    }
-
     @OverridingMethodsMustInvokeSuper
     @Override
     void enableGeneration() {
@@ -59,6 +54,11 @@ public final class ModelExtension extends CodeGenExtension {
      */
     private void addSourceSets() {
         sourceSuperset.register(GeneratedSourceRoot.of(project));
+    }
+
+    /** Obtains a new builder of {@code ModelExtension}s. */
+    static Builder newBuilder() {
+        return new Builder();
     }
 
     /**
