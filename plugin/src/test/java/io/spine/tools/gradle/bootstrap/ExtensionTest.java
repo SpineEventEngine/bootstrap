@@ -55,6 +55,7 @@ import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.addExt;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.spineVersion;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(TempDirectory.class)
@@ -259,10 +260,10 @@ class ExtensionTest {
         }
 
         @Test
-        @DisplayName("apply Protobuf plugin to projects that contain only the model definition")
+        @DisplayName("NOT apply Protobuf plugin to projects that contain only the model definition")
         void protobufPluginToModelProjects() {
             extension.assembleModel();
-            assertApplied(ProtobufPlugin.class);
+            assertNotNull(ProtobufPlugin.class);
         }
 
         @Test

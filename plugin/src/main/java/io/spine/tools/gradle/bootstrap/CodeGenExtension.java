@@ -27,6 +27,7 @@ import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -40,7 +41,7 @@ import static io.spine.tools.gradle.config.SpineDependency.base;
 abstract class CodeGenExtension implements Logging {
 
     private final ProtobufGenerator protobufGenerator;
-    private final ProtocPlugin codeGenJob;
+    private final @Nullable ProtocPlugin codeGenJob;
     private final SpinePluginTarget pluginTarget;
     private final Dependant dependant;
     private final String spineVersion;
@@ -60,9 +61,12 @@ abstract class CodeGenExtension implements Logging {
      */
     @OverridingMethodsMustInvokeSuper
     void enableGeneration() {
-        pluginTarget.applyProtobufPlugin();
-        protobufGenerator.enableBuiltIn(codeGenJob);
+        pluginTarget.applyJavaPlugin();
         dependant.compile(base().ofVersion(spineVersion));
+        if (codeGenJob != null) {
+            pluginTarget.applyProtobufPlugin();
+            protobufGenerator.enableBuiltIn(codeGenJob);
+        }
     }
 
     /**
@@ -70,7 +74,9 @@ abstract class CodeGenExtension implements Logging {
      */
     @OverridingMethodsMustInvokeSuper
     void disableGeneration() {
-        protobufGenerator.disableBuiltIn(codeGenJob);
+        if (codeGenJob != null) {
+            protobufGenerator.disableBuiltIn(codeGenJob);
+        }
     }
 
     /**
@@ -108,18 +114,22 @@ abstract class CodeGenExtension implements Logging {
      */
     abstract static class Builder<E extends CodeGenExtension, B extends Builder<E, B>> {
 
-        private final ProtocPlugin codeGenJob;
+        private final @Nullable ProtocPlugin codeGenJob;
 
         private ProtobufGenerator protobufGenerator;
         private PluginTarget pluginTarget;
         private Dependant dependant;
         private Project project;
 
-        Builder(ProtocPlugin codeGenJob) {
+        Builder(@Nullable ProtocPlugin codeGenJob) {
             this.codeGenJob = codeGenJob;
         }
 
-        private ProtocPlugin codeGenJob() {
+        Builder() {
+            this(null);
+        }
+
+        private @Nullable ProtocPlugin codeGenJob() {
             return codeGenJob;
         }
 
@@ -161,7 +171,6 @@ abstract class CodeGenExtension implements Logging {
 
         E build() {
             checkNotNull(protobufGenerator);
-            checkNotNull(codeGenJob);
             checkNotNull(pluginTarget);
             checkNotNull(dependant);
             return doBuild();
