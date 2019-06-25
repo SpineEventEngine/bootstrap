@@ -41,6 +41,14 @@ import static io.spine.tools.gradle.config.SpineDependency.base;
 abstract class CodeGenExtension implements Logging {
 
     private final ProtobufGenerator protobufGenerator;
+
+    /**
+     * The {@code protoc} plugin to be enabled if the extension is applied.
+     *
+     * <p>The value may be {@code null} to indicate that no code generation is required. In such
+     * cases, Protobuf code generation should not be enabled unless specified otherwise by other
+     * extensions.
+     */
     private final @Nullable ProtocPlugin codeGenJob;
     private final SpinePluginTarget pluginTarget;
     private final Dependant dependant;
