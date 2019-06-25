@@ -60,13 +60,20 @@ public final class SpinePluginTarget implements PluginTarget {
     }
 
     /**
+     * Applies the standard {@link JavaPlugin}.
+     */
+    public void applyJavaPlugin() {
+        GradlePlugin javaPlugin = GradlePlugin.implementedIn(JavaPlugin.class);
+        apply(javaPlugin);
+    }
+
+    /**
      * Applies the {@link ProtobufPlugin} and the {@link JavaPlugin}.
      *
      * <p>The Protobuf plugin requires the Java plugin. Thus, the Java plugin is applied first.
      */
     public void applyProtobufPlugin() {
-        GradlePlugin javaPlugin = GradlePlugin.implementedIn(JavaPlugin.class);
-        apply(javaPlugin);
+        applyJavaPlugin();
         GradlePlugin protoPlugin = GradlePlugin.implementedIn(ProtobufPlugin.class);
         apply(protoPlugin);
     }

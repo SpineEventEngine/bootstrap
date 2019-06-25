@@ -18,7 +18,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-ext.pluginVersion = '0.15.4'
+ext.pluginVersion = '0.15.5'
 
 project.gradlePlugin {
     it.plugins {

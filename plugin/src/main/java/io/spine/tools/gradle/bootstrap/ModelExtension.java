@@ -23,10 +23,7 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.tools.gradle.GeneratedSourceRoot;
 import io.spine.tools.gradle.project.SourceSuperset;
-import io.spine.tools.gradle.protoc.ProtocPlugin;
 import org.gradle.api.Project;
-
-import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 
 /**
  * An extension which declares a module as one that contains the Protobuf model definition.
@@ -40,11 +37,6 @@ public final class ModelExtension extends CodeGenExtension {
         super(builder);
         this.project = builder.project();
         this.sourceSuperset = builder.sourceSuperset;
-    }
-
-    /** Obtains a new builder of {@code ModelExtension}s. */
-    static Builder newBuilder() {
-        return new Builder();
     }
 
     @OverridingMethodsMustInvokeSuper
@@ -61,6 +53,11 @@ public final class ModelExtension extends CodeGenExtension {
         sourceSuperset.register(GeneratedSourceRoot.of(project));
     }
 
+    /** Obtains a new builder of {@code ModelExtension}s. */
+    static Builder newBuilder() {
+        return new Builder();
+    }
+
     /**
      * Builder of {@code ModelExtension}s.
      */
@@ -69,7 +66,7 @@ public final class ModelExtension extends CodeGenExtension {
         private SourceSuperset sourceSuperset;
 
         private Builder() {
-            super(ProtocPlugin.called(java));
+            super();
         }
 
         Builder setSourceSuperset(SourceSuperset sourceSuperset) {
