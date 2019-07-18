@@ -34,8 +34,6 @@ import org.gradle.api.Task;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.TaskName.generateRejections;
 import static io.spine.tools.gradle.TaskName.generateTestRejections;
-import static io.spine.tools.gradle.TaskName.generateTestValidatingBuilders;
-import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 
 /**
@@ -141,8 +139,6 @@ public final class JavaCodegenExtension implements Logging {
         modelCompilerExtension.generateValidatingBuilders = spine;
         updateModelCompilerTask(generateRejections);
         updateModelCompilerTask(generateTestRejections);
-        updateModelCompilerTask(generateValidatingBuilders);
-        updateModelCompilerTask(generateTestValidatingBuilders);
     }
 
     private void updateModelCompilerTask(TaskName taskName) {
@@ -151,7 +147,7 @@ public final class JavaCodegenExtension implements Logging {
         if (task != null) {
             task.setEnabled(spine);
         } else {
-            _debug("Task `{}` not found in project `{}`.", taskName, project.getPath());
+            _debug().log("Task `%s` not found in project `%s`.", taskName, project.getPath());
         }
     }
 

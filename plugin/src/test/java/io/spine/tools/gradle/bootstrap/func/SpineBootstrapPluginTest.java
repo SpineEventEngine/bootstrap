@@ -41,7 +41,6 @@ import java.util.Set;
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.TaskName.build;
 import static io.spine.tools.gradle.TaskName.generateJsonParsers;
-import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
 import static java.nio.file.Files.exists;
 import static java.util.Collections.emptySet;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
@@ -112,16 +111,13 @@ class SpineBootstrapPluginTest {
     void applyModelCompiler() {
         configureJavaGeneration();
         GradleProject project = this.project.build();
-        BuildResult result = project.executeTask(build);
-
-        assertThat(result.task(generateValidatingBuilders.path())
-                         .getOutcome()).isEqualTo(SUCCESS);
+        project.executeTask(build);
 
         Collection<String> packageContents = generatedClassFileNames();
         IterableSubject assertPackageContents = assertThat(packageContents);
-        assertPackageContents.containsAtLeast("RollerCoasterVBuilder.class",
-                                              "WagonVBuilder.class",
-                                              "AltitudeVBuilder.class");
+        assertPackageContents.containsAtLeast("RollerCoaster.class",
+                                              "Wagon.class",
+                                              "Altitude.class");
     }
 
     @Test
