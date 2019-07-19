@@ -33,7 +33,6 @@ import io.spine.tools.gradle.testing.MemoizingSourceSuperset;
 import io.spine.tools.groovy.ConsumerClosure;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +48,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
-import static io.spine.tools.gradle.TaskName.generateValidatingBuilders;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.GRPC_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.addExt;
 import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.spineVersion;
@@ -315,23 +313,6 @@ class ExtensionTest {
 
         private static final String WITH_AN_ACTION = "with an action";
         private static final String WITH_A_CLOSURE = "with a closure";
-
-        @Test
-        @DisplayName("Spine codegen")
-        void spine() {
-            Task task = project.getTasks()
-                               .create(generateValidatingBuilders.value());
-            JavaCodegenExtension codegen = extension.enableJava()
-                                                    .getCodegen();
-            assertTrue(codegen.getSpine());
-            codegen.setSpine(false);
-            assertFalse(codegen.getSpine());
-            assertFalse(task.getEnabled());
-
-            codegen.setSpine(true);
-            assertTrue(codegen.getSpine());
-            assertTrue(task.getEnabled());
-        }
 
         @Test
         @DisplayName("gRPC codegen")
