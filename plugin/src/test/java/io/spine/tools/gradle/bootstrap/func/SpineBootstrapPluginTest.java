@@ -23,6 +23,7 @@ package io.spine.tools.gradle.bootstrap.func;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
+import io.spine.code.proto.FileDescriptors;
 import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.testing.GradleProject;
 import org.gradle.testkit.runner.BuildResult;
@@ -117,7 +118,7 @@ class SpineBootstrapPluginTest {
         String projectDir = this.projectDir.getFileName().toString();
         boolean containsDescriptorSetFile =
                 resourceFiles.stream()
-                             .filter(f -> f.endsWith(".desc"))
+                             .filter(f -> f.endsWith(FileDescriptors.DESC_EXTENSION))
                              .anyMatch(f -> f.contains(projectDir));
         assertThat(containsDescriptorSetFile)
                 .isTrue();
