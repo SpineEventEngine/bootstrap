@@ -107,17 +107,22 @@ class SpineBootstrapPluginTest {
     }
 
     @Test
-    @DisplayName("apply 'spine-model-compiler' plugin")
+    @DisplayName("apply 'spine-model-compiler' plugin, generating descriptor set files")
     void applyModelCompiler() {
         configureJavaGeneration();
         GradleProject project = this.project.build();
         project.executeTask(build);
 
-        Collection<String> packageContents = generatedClassFileNames();
-        IterableSubject assertPackageContents = assertThat(packageContents);
-        assertPackageContents.containsAtLeast("RollerCoaster.class",
-                                              "Wagon.class",
-                                              "Altitude.class");
+        Collection<String> resourceFiles = assembledResources();
+        String projectDir = this.projectDir.getFileName().toString();
+        boolean containsDescriptorSetFile =
+                resourceFiles.stream()
+                             .filter(f -> f.endsWith(".desc"))
+                             .anyMatch(f -> f.contains(projectDir));
+        assertThat(containsDescriptorSetFile)
+                .isTrue();
+        assertThat(resourceFiles)
+                .contains("desc.ref");
     }
 
     @Test
