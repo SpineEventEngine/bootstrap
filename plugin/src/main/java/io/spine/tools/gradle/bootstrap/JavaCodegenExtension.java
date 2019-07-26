@@ -23,7 +23,7 @@ package io.spine.tools.gradle.bootstrap;
 import io.spine.logging.Logging;
 import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.compiler.Extension;
-import io.spine.tools.gradle.config.Ext;
+import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
@@ -48,6 +48,7 @@ public final class JavaCodegenExtension implements Logging {
     private final Project project;
     private final ProtobufGenerator protobufGenerator;
     private final Dependant dependant;
+    private final ArtifactSnapshot artifacts;
 
     private boolean protobuf = true;
     private boolean grpc = false;
@@ -55,20 +56,24 @@ public final class JavaCodegenExtension implements Logging {
 
     private JavaCodegenExtension(Project project,
                                  ProtobufGenerator protobufGenerator,
-                                 Dependant dependant) {
+                                 Dependant dependant,
+                                 ArtifactSnapshot artifacts) {
         this.project = project;
         this.protobufGenerator = protobufGenerator;
         this.dependant = dependant;
+        this.artifacts = artifacts;
     }
 
     /**
      * Creates a new instance of the extension.
      */
-    public static JavaCodegenExtension of(Project project, Dependant dependant) {
+    public static JavaCodegenExtension of(Project project,
+                                          Dependant dependant,
+                                          ArtifactSnapshot artifacts) {
         checkNotNull(project);
         checkNotNull(dependant);
         ProtobufGenerator generator = new ProtobufGenerator(project);
-        return new JavaCodegenExtension(project, generator, dependant);
+        return new JavaCodegenExtension(project, generator, dependant, artifacts);
     }
 
     public boolean getProtobuf() {
@@ -115,10 +120,8 @@ public final class JavaCodegenExtension implements Logging {
     }
 
     private void addGrpcDependencies() {
-        Ext.of(project)
-           .artifacts()
-           .grpc()
-           .forEach(dependant::implementation);
+        artifacts.grpcDependencies()
+                 .forEach(dependant::implementation);
     }
 
     /**

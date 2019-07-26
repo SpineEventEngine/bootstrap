@@ -25,6 +25,7 @@ import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
+import io.spine.tools.gradle.bootstrap.given.FakeArtifacts;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.testing.MemoizingDependant;
@@ -48,9 +49,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
-import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.GRPC_DEPENDENCY;
-import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.addExt;
-import static io.spine.tools.gradle.bootstrap.given.ExtensionTestEnv.spineVersion;
+import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.GRPC_PROTO_DEPENDENCY;
+import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.GRPC_STUB_DEPENDENCY;
+import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.spineVersion;
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -65,17 +66,15 @@ class ExtensionTest {
     private MemoizingSourceSuperset codeLayout;
     private MemoizingDependant dependencyTarget;
     private Path projectDir;
-    private Project project;
 
     @BeforeEach
     void setUp(@TempDir Path projectDir) {
-        project = ProjectBuilder
+        Project project = ProjectBuilder
                 .builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
         this.projectDir = project.getProjectDir().toPath();
-        addExt(project);
         pluginTarget = new MemoizingPluginRegistry();
         dependencyTarget = new MemoizingDependant();
         codeLayout = new MemoizingSourceSuperset();
@@ -85,7 +84,11 @@ class ExtensionTest {
                 .setLayout(codeLayout)
                 .setPluginTarget(pluginTarget)
                 .setDependencyTarget(dependencyTarget)
+                .setArtifactSnapshot(FakeArtifacts.snapshot())
                 .build();
+        project.getExtensions()
+               .add(ModelCompilerPlugin.extensionName(),
+                    new io.spine.tools.gradle.compiler.Extension());
     }
 
     @Nested
@@ -246,7 +249,8 @@ class ExtensionTest {
                      .setGrpc(true);
 
             assertApplied(JavaPlugin.class);
-            assertThat(dependencyTarget.dependencies()).contains(GRPC_DEPENDENCY);
+            assertThat(dependencyTarget.dependencies())
+                    .containsAtLeast(GRPC_PROTO_DEPENDENCY, GRPC_STUB_DEPENDENCY);
         }
 
         /** Applying {@code Java} plugin is necessary to apply the {@code protobuf} plugin. */
@@ -322,7 +326,8 @@ class ExtensionTest {
             assertFalse(codegen.getGrpc());
             codegen.setGrpc(true);
             assertTrue(codegen.getGrpc());
-            assertThat(dependencyTarget.dependencies()).contains(GRPC_DEPENDENCY);
+            assertThat(dependencyTarget.dependencies())
+                    .containsAtLeast(GRPC_PROTO_DEPENDENCY, GRPC_STUB_DEPENDENCY);
 
             codegen.setGrpc(false);
             assertFalse(codegen.getGrpc());
@@ -392,7 +397,7 @@ class ExtensionTest {
             @DisplayName(WITH_AN_ACTION)
             void action() {
                 AtomicBoolean executedAction = new AtomicBoolean(false);
-                JavaExtension javaExtension = ExtensionTest.this.extension.enableJava();
+                JavaExtension javaExtension = extension.enableJava();
                 javaExtension.codegen(codegen -> {
                     boolean defaultValue = codegen.getSpine();
                     assertThat(defaultValue).isTrue();

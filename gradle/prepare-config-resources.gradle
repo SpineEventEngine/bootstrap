@@ -18,29 +18,56 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-final File depsDir = "$buildDir/deps" as File
-sourceSets.main.resources.srcDir(depsDir)
+final File bootstrapDir = "$buildDir/bootstrap" as File
+final File versionSnapshot = "$bootstrapDir/artifact-snapshot.properties" as File
+final File configDir = "$rootDir/config" as File
 
-task('writeDependencies') {
-    final Collection<File> configResources = [
-            "$rootDir/version.gradle" as File,
-            "$rootDir/config/gradle/dependencies.gradle" as File,
-            "$rootDir/config/gradle/model-compiler.gradle" as File
-    ]
+sourceSets.main.resources.srcDir(bootstrapDir)
 
-    inputs.files(configResources)
-    outputs.dir(depsDir)
+final String taskGroup = 'Spine bootstrapping'
 
-    doLast {
-        depsDir.mkdirs()
+task copyModelCompilerConfig(type: Copy) {
+    it.group = taskGroup
+    
+    from file("$configDir/gradle/model-compiler.gradle")
+    into file(bootstrapDir)
 
-        configResources.each { final File resource ->
-            copy {
-                from resource
-                into depsDir
-            }
-        }
+    processResources.dependsOn it
+
+    doFirst {
+        bootstrapDir.mkdirs()
     }
 }
 
-processResources.dependsOn writeDependencies
+task writeDependencies {
+    it.group = taskGroup
+    
+    inputs.dir(configDir)
+    inputs.property('version', spineVersion)
+    outputs.file(versionSnapshot)
+
+    processResources.dependsOn it
+
+    doFirst {
+        bootstrapDir.mkdirs()
+        if (!versionSnapshot.exists()) {
+            versionSnapshot.createNewFile()
+        }
+    }
+
+    doLast {
+        final Properties artifacts = new Properties()
+        
+        artifacts.setProperty('spine.version', spineVersion)
+        artifacts.setProperty('protobuf.compiler', deps.build.protoc)
+        artifacts.setProperty('grpc.stub', deps.grpc.grpcStub)
+        artifacts.setProperty('grpc.protobuf', deps.grpc.grpcProtobuf)
+        artifacts.setProperty('repository.spine.release', repos.spine)
+        artifacts.setProperty('repository.spine.snapshot', repos.spineSnapshots)
+        
+        artifacts.store(
+                versionSnapshot.newWriter('UTF-8'),
+                'Dependencies and versions required by Spine.'
+        )
+    }
+}

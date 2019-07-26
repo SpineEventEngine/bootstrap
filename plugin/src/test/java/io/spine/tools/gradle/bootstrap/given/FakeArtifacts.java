@@ -20,43 +20,30 @@
 
 package io.spine.tools.gradle.bootstrap.given;
 
-import com.google.common.collect.ImmutableMap;
-import io.spine.tools.gradle.compiler.Extension;
-import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
-import org.gradle.api.Project;
-import org.gradle.api.plugins.ExtraPropertiesExtension;
+import io.spine.tools.gradle.config.ArtifactSnapshot;
 
-import java.util.Map;
+public final class FakeArtifacts {
 
-public final class ExtensionTestEnv {
-
-    public static final String GRPC_DEPENDENCY = "io.foo.bar.grpc:fake-dependency:6.14";
+    public static final String GRPC_PROTO_DEPENDENCY = "io.foo.bar.grpc:fake-pb-dependency:6.14";
+    public static final String GRPC_STUB_DEPENDENCY = "io.foo.bar.grpc:stub-dependency:6.14";
 
     public static final String spineVersion = "42.3.14-AVOCADO";
-    private static final Map<String, ?> deps = ImmutableMap.of(
-            "versions", ImmutableMap.of(
-                    "grpc", "1.18",
-                    "protobuf", "3.6.1"
-            ),
-            "build", ImmutableMap.of(
-                    "protoc", "com.google.protobuf:protoc:3.6.1"
-            ),
-            "grpc", ImmutableMap.of("grpcTest", GRPC_DEPENDENCY)
-    );
 
     /**
      * Prevents the utility class instantiation.
      */
-    private ExtensionTestEnv() {
+    private FakeArtifacts() {
     }
 
-    public static void addExt(Project project) {
-        ExtraPropertiesExtension ext = project.getExtensions()
-                                              .getExtraProperties();
-        ext.set("spineVersion", spineVersion);
-        ext.set("deps", deps);
-
-        project.getExtensions()
-               .add(ModelCompilerPlugin.extensionName(), new Extension());
+    public static ArtifactSnapshot snapshot() {
+        return ArtifactSnapshot
+                .newBuilder()
+                .setSpineVersion(spineVersion)
+                .setGrpcProtobuf(GRPC_PROTO_DEPENDENCY)
+                .setGrpcStub(GRPC_STUB_DEPENDENCY)
+                .setProtoc("com.google.protobuf:protoc:3.6.1")
+                .setSpineRepository("http://fake.maven.repo.org/releases")
+                .setSpineSnapshotRepository("http://fake.maven.repo.org/snapshots")
+                .build();
     }
 }

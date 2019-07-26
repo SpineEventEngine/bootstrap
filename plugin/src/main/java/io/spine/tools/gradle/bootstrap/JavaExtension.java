@@ -23,6 +23,7 @@ package io.spine.tools.gradle.bootstrap;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.GeneratedSourceRoot;
+import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.SourceSuperset;
 import org.gradle.api.Action;
@@ -44,12 +45,14 @@ public final class JavaExtension extends CodeGenExtension {
     private final Project project;
     private final SourceSuperset directoryStructure;
     private final JavaCodegenExtension codegen;
+    private final ArtifactSnapshot artifacts;
 
     private JavaExtension(Builder builder) {
         super(builder);
         this.project = builder.project();
         this.directoryStructure = builder.sourceSuperset();
-        this.codegen = JavaCodegenExtension.of(project, dependant());
+        this.artifacts = builder.artifactSnapshot();
+        this.codegen = JavaCodegenExtension.of(project, dependant(), artifacts);
     }
 
     @Override
@@ -100,7 +103,8 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     private void dependOn(SpineDependency module, ConfigurationName configurationName) {
-        dependant().depend(configurationName, module.ofVersion(spineVersion()).notation());
+        String spineVersion = artifacts.spineVersion();
+        dependant().depend(configurationName, module.ofVersion(spineVersion).notation());
     }
 
     private void addSourceSets() {

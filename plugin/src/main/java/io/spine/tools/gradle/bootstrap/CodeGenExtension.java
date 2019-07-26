@@ -22,7 +22,7 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
-import io.spine.tools.gradle.config.Ext;
+import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
@@ -52,16 +52,14 @@ abstract class CodeGenExtension implements Logging {
     private final @Nullable ProtocPlugin codeGenJob;
     private final SpinePluginTarget pluginTarget;
     private final Dependant dependant;
-    private final String spineVersion;
+    private final ArtifactSnapshot artifactSnapshot;
 
     CodeGenExtension(Builder<?, ?> builder) {
         this.protobufGenerator = builder.protobufGenerator();
         this.codeGenJob = builder.codeGenJob();
         this.pluginTarget = new SpinePluginTarget(builder.pluginTarget());
         this.dependant = builder.dependant();
-        this.spineVersion = Ext.of(builder.project())
-                               .versions()
-                               .spine();
+        this.artifactSnapshot = builder.artifactSnapshot();
     }
 
     /**
@@ -70,6 +68,7 @@ abstract class CodeGenExtension implements Logging {
     @OverridingMethodsMustInvokeSuper
     void enableGeneration() {
         pluginTarget.applyJavaPlugin();
+        String spineVersion = artifactSnapshot.spineVersion();
         dependant.compile(base().ofVersion(spineVersion));
         if (codeGenJob != null) {
             pluginTarget.applyProtobufPlugin();
@@ -102,15 +101,6 @@ abstract class CodeGenExtension implements Logging {
     }
 
     /**
-     * Obtains the version of Spine framework used in this project.
-     *
-     * <p>This is also the version of the Bootstrap plugin itself.
-     */
-    final String spineVersion() {
-        return spineVersion;
-    }
-
-    /**
      * An abstract builder for the {@code CodeGenExtension} subtypes.
      */
     abstract static class Builder<E extends CodeGenExtension, B extends Builder<E, B>> {
@@ -121,6 +111,7 @@ abstract class CodeGenExtension implements Logging {
         private PluginTarget pluginTarget;
         private Dependant dependant;
         private Project project;
+        private ArtifactSnapshot artifactSnapshot;
 
         Builder(@Nullable ProtocPlugin codeGenJob) {
             this.codeGenJob = codeGenJob;
@@ -170,10 +161,20 @@ abstract class CodeGenExtension implements Logging {
             return self();
         }
 
+        ArtifactSnapshot artifactSnapshot() {
+            return artifactSnapshot;
+        }
+
+        B setArtifactSnapshot(ArtifactSnapshot artifactSnapshot) {
+            this.artifactSnapshot = artifactSnapshot;
+            return self();
+        }
+
         E build() {
             checkNotNull(protobufGenerator);
             checkNotNull(pluginTarget);
             checkNotNull(dependant);
+            checkNotNull(artifactSnapshot);
             return doBuild();
         }
 

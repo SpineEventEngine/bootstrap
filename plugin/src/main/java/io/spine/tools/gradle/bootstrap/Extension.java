@@ -24,6 +24,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
+import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -60,6 +61,7 @@ public final class Extension {
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
     private final ModelExtension modelExtension;
+    private final ArtifactSnapshot artifacts;
 
     private final Project project;
     private boolean javaEnabled = false;
@@ -69,6 +71,19 @@ public final class Extension {
         this.javaScript = builder.buildJavaScriptExtension();
         this.modelExtension = builder.buildModelExtension();
         this.project = builder.project;
+        this.artifacts = builder.artifacts;
+    }
+
+    /**
+     * Obtains the version of the framework.
+     *
+     * <p>In a Gradle plugin, reference {@code spine.version()} in order to obtain the current Spine
+     * version.
+     *
+     * @return the currently used version of Spine as a string
+     */
+    public String version() {
+        return artifacts.spineVersion();
     }
 
     /**
@@ -107,8 +122,7 @@ public final class Extension {
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {
         java.enableGeneration();
-        String spineVersion = java.spineVersion();
-        Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
+        Artifact testlib = SpineDependency.testlib().ofVersion(version());
         java.dependant().depend(testImplementation, testlib.notation());
         toggleJavaTasks(true);
         disableTransitiveProtos();
@@ -210,6 +224,7 @@ public final class Extension {
         private PluginTarget pluginTarget;
         private SourceSuperset layout;
         private Dependant dependencyTarget;
+        private ArtifactSnapshot artifacts;
 
         /**
          * Prevents direct instantiation.
@@ -238,6 +253,11 @@ public final class Extension {
             return this;
         }
 
+        Builder setArtifactSnapshot(ArtifactSnapshot artifacts) {
+            this.artifacts = checkNotNull(artifacts);
+            return this;
+        }
+
         private JavaExtension buildJavaExtension() {
             JavaExtension javaExtension = JavaExtension
                     .newBuilder()
@@ -246,6 +266,7 @@ public final class Extension {
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
                     .setSourceSuperset(layout)
+                    .setArtifactSnapshot(artifacts)
                     .build();
             return javaExtension;
         }
@@ -257,6 +278,7 @@ public final class Extension {
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
+                    .setArtifactSnapshot(artifacts)
                     .build();
             return javaScriptExtension;
         }
@@ -269,6 +291,7 @@ public final class Extension {
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
                     .setSourceSuperset(layout)
+                    .setArtifactSnapshot(artifacts)
                     .build();
             return modelExtension;
         }
@@ -284,6 +307,7 @@ public final class Extension {
             checkNotNull(pluginTarget);
             checkNotNull(layout);
             checkNotNull(dependencyTarget);
+            checkNotNull(artifacts);
 
             return new Extension(this);
         }
