@@ -29,7 +29,7 @@ import io.spine.tools.gradle.PluginScript;
  * <p>These scripts are read from the plugin resources at runtime. When building the plugin,
  * the script files are copied from the {@code config} submodule.
  */
-public final class SpinePluginScripts {
+final class SpinePluginScripts {
 
     /**
      * Prevents the utility class instantiation.
@@ -43,7 +43,7 @@ public final class SpinePluginScripts {
      * <p>The script configures the {@link io.spine.tools.gradle.compiler.ModelCompilerPlugin} to
      * the recommended settings.
      */
-    public static PluginScript modelCompilerConfig() {
+    static PluginScript modelCompilerConfig() {
         return PluginScript.declaredIn(Name.MODEL_COMPILER.resourceFile());
     }
 

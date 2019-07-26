@@ -45,12 +45,14 @@ public final class JavaExtension extends CodeGenExtension {
     private final Project project;
     private final SourceSuperset directoryStructure;
     private final JavaCodegenExtension codegen;
+    private final ArtifactSnapshot artifacts;
 
     private JavaExtension(Builder builder) {
         super(builder);
         this.project = builder.project();
         this.directoryStructure = builder.sourceSuperset();
-        this.codegen = JavaCodegenExtension.of(project, dependant());
+        this.artifacts = builder.artifactSnapshot();
+        this.codegen = JavaCodegenExtension.of(project, dependant(), artifacts);
     }
 
     @Override
@@ -101,7 +103,7 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     private void dependOn(SpineDependency module, ConfigurationName configurationName) {
-        String spineVersion = ArtifactSnapshot.fromResources().spineVersion();
+        String spineVersion = artifacts.spineVersion();
         dependant().depend(configurationName, module.ofVersion(spineVersion).notation());
     }
 

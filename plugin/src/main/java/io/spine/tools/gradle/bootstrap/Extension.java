@@ -61,6 +61,7 @@ public final class Extension {
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
     private final ModelExtension modelExtension;
+    private final ArtifactSnapshot artifacts;
 
     private final Project project;
     private boolean javaEnabled = false;
@@ -70,6 +71,7 @@ public final class Extension {
         this.javaScript = builder.buildJavaScriptExtension();
         this.modelExtension = builder.buildModelExtension();
         this.project = builder.project;
+        this.artifacts = builder.artifacts;
     }
 
     /**
@@ -81,8 +83,7 @@ public final class Extension {
      * @return the currently used version of Spine as a string
      */
     public String version() {
-        ArtifactSnapshot artifact = ArtifactSnapshot.fromResources();
-        return artifact.spineVersion();
+        return artifacts.spineVersion();
     }
 
     /**
@@ -223,6 +224,7 @@ public final class Extension {
         private PluginTarget pluginTarget;
         private SourceSuperset layout;
         private Dependant dependencyTarget;
+        private ArtifactSnapshot artifacts;
 
         /**
          * Prevents direct instantiation.
@@ -251,6 +253,11 @@ public final class Extension {
             return this;
         }
 
+        Builder setArtifactSnapshot(ArtifactSnapshot artifacts) {
+            this.artifacts = checkNotNull(artifacts);
+            return this;
+        }
+
         private JavaExtension buildJavaExtension() {
             JavaExtension javaExtension = JavaExtension
                     .newBuilder()
@@ -259,6 +266,7 @@ public final class Extension {
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
                     .setSourceSuperset(layout)
+                    .setArtifactSnapshot(artifacts)
                     .build();
             return javaExtension;
         }
@@ -270,6 +278,7 @@ public final class Extension {
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
+                    .setArtifactSnapshot(artifacts)
                     .build();
             return javaScriptExtension;
         }
@@ -282,6 +291,7 @@ public final class Extension {
                     .setPluginTarget(pluginTarget)
                     .setProtobufGenerator(generator)
                     .setSourceSuperset(layout)
+                    .setArtifactSnapshot(artifacts)
                     .build();
             return modelExtension;
         }
@@ -297,6 +307,7 @@ public final class Extension {
             checkNotNull(pluginTarget);
             checkNotNull(layout);
             checkNotNull(dependencyTarget);
+            checkNotNull(artifacts);
 
             return new Extension(this);
         }

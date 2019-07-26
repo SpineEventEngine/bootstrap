@@ -52,12 +52,14 @@ abstract class CodeGenExtension implements Logging {
     private final @Nullable ProtocPlugin codeGenJob;
     private final SpinePluginTarget pluginTarget;
     private final Dependant dependant;
+    private final ArtifactSnapshot artifactSnapshot;
 
     CodeGenExtension(Builder<?, ?> builder) {
         this.protobufGenerator = builder.protobufGenerator();
         this.codeGenJob = builder.codeGenJob();
         this.pluginTarget = new SpinePluginTarget(builder.pluginTarget());
         this.dependant = builder.dependant();
+        this.artifactSnapshot = builder.artifactSnapshot();
     }
 
     /**
@@ -66,7 +68,7 @@ abstract class CodeGenExtension implements Logging {
     @OverridingMethodsMustInvokeSuper
     void enableGeneration() {
         pluginTarget.applyJavaPlugin();
-        String spineVersion = ArtifactSnapshot.fromResources().spineVersion();
+        String spineVersion = artifactSnapshot.spineVersion();
         dependant.compile(base().ofVersion(spineVersion));
         if (codeGenJob != null) {
             pluginTarget.applyProtobufPlugin();
@@ -109,6 +111,7 @@ abstract class CodeGenExtension implements Logging {
         private PluginTarget pluginTarget;
         private Dependant dependant;
         private Project project;
+        private ArtifactSnapshot artifactSnapshot;
 
         Builder(@Nullable ProtocPlugin codeGenJob) {
             this.codeGenJob = codeGenJob;
@@ -158,10 +161,20 @@ abstract class CodeGenExtension implements Logging {
             return self();
         }
 
+        ArtifactSnapshot artifactSnapshot() {
+            return artifactSnapshot;
+        }
+
+        B setArtifactSnapshot(ArtifactSnapshot artifactSnapshot) {
+            this.artifactSnapshot = artifactSnapshot;
+            return self();
+        }
+
         E build() {
             checkNotNull(protobufGenerator);
             checkNotNull(pluginTarget);
             checkNotNull(dependant);
+            checkNotNull(artifactSnapshot);
             return doBuild();
         }
 

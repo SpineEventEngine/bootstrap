@@ -65,30 +65,31 @@ public final class BootstrapPlugin extends SpinePlugin {
 
     @Override
     public void apply(Project project) {
-        applyExtension(project);
-        configureProtocArtifact(project);
+        ArtifactSnapshot artifacts = ArtifactSnapshot.fromResources();
+        applyExtension(project, artifacts);
+        configureProtocArtifact(project, artifacts);
     }
 
-    private static void applyExtension(Project project) {
+    private static void applyExtension(Project project, ArtifactSnapshot artifacts) {
         PluginTarget plugableProject = new PlugableProject(project);
         SourceSuperset layout = ProjectSourceSuperset.of(project);
         SpineBasedProject dependant = SpineBasedProject.from(project);
-        dependant.prepareRepositories(ArtifactSnapshot.fromResources());
+        dependant.prepareRepositories(artifacts);
         Extension extension = Extension
                 .newBuilder()
                 .setProject(project)
                 .setDependencyTarget(dependant)
                 .setPluginTarget(plugableProject)
                 .setLayout(layout)
+                .setArtifactSnapshot(artifacts)
                 .build();
         project.getExtensions()
                .add(Extension.NAME, extension);
         extension.disableJavaGeneration();
     }
 
-    private static void configureProtocArtifact(Project project) {
+    private static void configureProtocArtifact(Project project, ArtifactSnapshot artifacts) {
         ProtobufGenerator generator = new ProtobufGenerator(project);
-        ArtifactSnapshot snapshot = ArtifactSnapshot.fromResources();
-        generator.useCompiler(snapshot.protoc());
+        generator.useCompiler(artifacts.protoc());
     }
 }

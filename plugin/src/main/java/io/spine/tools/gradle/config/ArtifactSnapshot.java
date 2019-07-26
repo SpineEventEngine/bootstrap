@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 
 public final class ArtifactSnapshot {
@@ -46,12 +47,12 @@ public final class ArtifactSnapshot {
      * Prevents direct instantiation.
      */
     private ArtifactSnapshot(Builder builder) {
-        this.spineVersion = builder.spineVersion;
-        this.protoc = builder.protoc;
-        this.grpcProtobuf = builder.grpcProtobuf;
-        this.grpcStub = builder.grpcStub;
-        this.spineRepository = builder.spineRepository;
-        this.spineSnapshotRepository = builder.spineSnapshotRepository;
+        this.spineVersion = checkNotNull(builder.spineVersion);
+        this.protoc = checkNotNull(builder.protoc);
+        this.grpcProtobuf = checkNotNull(builder.grpcProtobuf);
+        this.grpcStub = checkNotNull(builder.grpcStub);
+        this.spineRepository = checkNotNull(builder.spineRepository);
+        this.spineSnapshotRepository = checkNotNull(builder.spineSnapshotRepository);
     }
 
     private static ArtifactSnapshot load() {
@@ -62,7 +63,7 @@ public final class ArtifactSnapshot {
         } catch (IOException e) {
             throw illegalStateWithCauseOf(e);
         }
-        ArtifactSnapshot snapshot = new Builder()
+        ArtifactSnapshot snapshot = newBuilder()
                 .setSpineVersion(properties.getProperty("spine.version"))
                 .setProtoc(properties.getProperty("protobuf.compiler"))
                 .setGrpcProtobuf(properties.getProperty("grpc.protobuf"))
@@ -97,10 +98,14 @@ public final class ArtifactSnapshot {
         return ImmutableList.of(grpcProtobuf, grpcStub);
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
     /**
      * A builder for the {@code ArtifactsSnapshot} instances.
      */
-    private static final class Builder {
+    public static final class Builder {
 
         private String spineVersion;
         private String protoc;
@@ -115,7 +120,7 @@ public final class ArtifactSnapshot {
         private Builder() {
         }
 
-        private Builder setSpineVersion(String version) {
+        public Builder setSpineVersion(String version) {
             this.spineVersion = version;
             return this;
         }
@@ -125,17 +130,17 @@ public final class ArtifactSnapshot {
             return this;
         }
 
-        private Builder setGrpcProtobuf(String artifact) {
+        public Builder setGrpcProtobuf(String artifact) {
             this.grpcProtobuf = artifact;
             return this;
         }
 
-        private Builder setGrpcStub(String artifact) {
+        public Builder setGrpcStub(String artifact) {
             this.grpcStub = artifact;
             return this;
         }
 
-        private Builder setSpineRepository(String repositoryUrl) {
+        public Builder setSpineRepository(String repositoryUrl) {
             this.spineRepository = Url
                     .newBuilder()
                     .setSpec(repositoryUrl)
@@ -143,8 +148,8 @@ public final class ArtifactSnapshot {
             return this;
         }
 
-        private Builder setSpineSnapshotRepository(String repositoryUrl) {
-            this.spineRepository = Url
+        public Builder setSpineSnapshotRepository(String repositoryUrl) {
+            this.spineSnapshotRepository = Url
                     .newBuilder()
                     .setSpec(repositoryUrl)
                     .build();
