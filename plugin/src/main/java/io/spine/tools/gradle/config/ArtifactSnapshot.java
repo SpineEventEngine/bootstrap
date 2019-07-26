@@ -31,6 +31,12 @@ import java.util.Properties;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 
+/**
+ * A snapshot of Spine-related dependencies which may be used in the client projects.
+ *
+ * <p>In order to guarantee absence of collisions, the plugin uses the same versions, repositories,
+ * artifacts, etc. as does the Spine core code.
+ */
 public final class ArtifactSnapshot {
 
     private static final ArtifactSnapshot instance = load();
@@ -74,26 +80,50 @@ public final class ArtifactSnapshot {
         return snapshot;
     }
 
+    /**
+     * Loads the snapshot from the {@code artifact-snapshot.properties} resource of the plugin.
+     *
+     * <p>The resource is generated on the plugin build time.
+     */
     public static ArtifactSnapshot fromResources() {
         return instance;
     }
 
+    /**
+     * Obtains the current version of Spine.
+     */
     public String spineVersion() {
         return spineVersion;
     }
 
+    /**
+     * Obtains the Maven repository which hosts Spine artifacts with release versions.
+     */
     public Url spineRepository() {
         return spineRepository;
     }
 
+    /**
+     * Obtains the Maven repository which hosts Spine artifacts with {@code -SNAPSHOT} versions.
+     */
     public Url spineSnapshotRepository() {
         return spineSnapshotRepository;
     }
 
+    /**
+     * Obtains the artifact spec for the Protobuf compiler.
+     *
+     * <p>The value may be something similar to {@code com.google.protobuf:protoc:3.8.0}.
+     */
     public String protoc() {
         return protoc;
     }
 
+    /**
+     * Obtains the artifacts required to generate and compile gRPC stubs successfully.
+     *
+     * <p>Note that gRPC may require some additional dependencies at runtime.
+     */
     public ImmutableList<String> grpcDependencies() {
         return ImmutableList.of(grpcProtobuf, grpcStub);
     }
