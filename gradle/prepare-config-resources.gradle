@@ -26,19 +26,27 @@ sourceSets.main.resources.srcDir(bootstrapDir)
 
 final String taskGroup = 'Spine bootstrapping'
 
-task(name: 'copyModelCompilerConfig', type: Copy) {
+task copyModelCompilerConfig(type: Copy) {
     it.group = taskGroup
     
-    from "$configDir/gradle/model-compiler.gradle"
-    into bootstrapDir
+    from file("$configDir/gradle/model-compiler.gradle")
+    into file(bootstrapDir)
+
+    processResources.dependsOn it
+
+    doFirst {
+        bootstrapDir.mkdirs()
+    }
 }
 
-task('writeDependencies') {
+task writeDependencies {
     it.group = taskGroup
     
     inputs.dir(configDir)
     inputs.property('version', spineVersion)
     outputs.file(versionSnapshot)
+
+    processResources.dependsOn it
 
     doFirst {
         bootstrapDir.mkdirs()
@@ -63,5 +71,3 @@ task('writeDependencies') {
         )
     }
 }
-
-processResources.dependsOn writeDependencies
