@@ -1,0 +1,85 @@
+/*
+ * Copyright 2019, TeamDev. All rights reserved.
+ *
+ * Redistribution and use in source and/or binary forms, with or without
+ * modification, must retain the above copyright notice and the following
+ * disclaimer.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package io.spine.tools.gradle.bootstrap;
+
+import io.spine.net.Url;
+import io.spine.tools.gradle.ConfigurationName;
+import io.spine.tools.gradle.Dependency;
+import io.spine.tools.gradle.config.ArtifactSnapshot;
+import io.spine.tools.gradle.project.Dependant;
+import io.spine.tools.gradle.project.DependantProject;
+import org.checkerframework.checker.regex.qual.Regex;
+import org.gradle.api.Project;
+import org.gradle.api.artifacts.dsl.RepositoryHandler;
+import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor;
+
+import java.util.function.Consumer;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+final class SpineBasedProject implements Dependant {
+
+    private static final @Regex String SPINE_GROUP_PATTERN = "io\\.spine\\b.*";
+
+    private final Dependant dependencies;
+    private final Project project;
+
+    private SpineBasedProject(Dependant dependencies, Project project) {
+        this.dependencies = checkNotNull(dependencies);
+        this.project = checkNotNull(project);
+    }
+
+    static SpineBasedProject from(Project project) {
+        checkNotNull(project);
+        DependantProject dependantProject = DependantProject.from(project);
+        return new SpineBasedProject(dependantProject, project);
+    }
+
+    @Override
+    public void depend(ConfigurationName configurationName, String notation) {
+        dependencies.depend(configurationName, notation);
+    }
+
+    @Override
+    public void exclude(Dependency dependency) {
+        dependencies.exclude(dependency);
+    }
+
+    void prepareRepositories(ArtifactSnapshot artifacts) {
+        RepositoryHandler repositories = project.getRepositories();
+        repositories.jcenter();
+        addSpineRepository(artifacts.spineRepository(),
+                           MavenRepositoryContentDescriptor::releasesOnly);
+        addSpineRepository(artifacts.spineSnapshotRepository(),
+                           MavenRepositoryContentDescriptor::snapshotsOnly);
+    }
+
+    @SuppressWarnings("UnstableApiUsage")
+        // Usage of the advanced repository configuration API.
+    private void addSpineRepository(Url repositoryUrl,
+                                    Consumer<MavenRepositoryContentDescriptor> contentConfig) {
+        project.getRepositories().maven(repo -> {
+            repo.setUrl(repositoryUrl.getSpec());
+            repo.mavenContent(contentConfig::accept);
+            repo.content(descriptor -> descriptor.includeGroupByRegex(SPINE_GROUP_PATTERN));
+        });
+    }
+}

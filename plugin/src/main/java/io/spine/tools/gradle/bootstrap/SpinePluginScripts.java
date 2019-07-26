@@ -38,24 +38,6 @@ public final class SpinePluginScripts {
     }
 
     /**
-     * Obtains the {@code dependencies.gradle} script.
-     *
-     * <p>The script adds several dependency-related properties to the project.
-     */
-    public static PluginScript dependencies() {
-        return PluginScript.declaredIn(Name.DEPENDENCIES.resourceFile());
-    }
-
-    /**
-     * Obtains the {@code version.gradle} script.
-     *
-     * <p>The script adds the {@code spineVersion} property to the project.
-     */
-    public static PluginScript version() {
-        return PluginScript.declaredIn(Name.VERSION.resourceFile());
-    }
-
-    /**
      * Obtains the {@code model-compiler.gradle} script.
      *
      * <p>The script configures the {@link io.spine.tools.gradle.compiler.ModelCompilerPlugin} to
@@ -70,8 +52,6 @@ public final class SpinePluginScripts {
      */
     enum Name {
 
-        DEPENDENCIES("dependencies"),
-        VERSION("version"),
         MODEL_COMPILER("model-compiler");
 
         private static final String SCRIPT_EXTENSION = ".gradle";

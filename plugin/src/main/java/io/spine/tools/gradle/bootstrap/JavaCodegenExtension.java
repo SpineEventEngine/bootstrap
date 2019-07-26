@@ -23,7 +23,7 @@ package io.spine.tools.gradle.bootstrap;
 import io.spine.logging.Logging;
 import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.compiler.Extension;
-import io.spine.tools.gradle.config.Ext;
+import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
@@ -115,10 +115,9 @@ public final class JavaCodegenExtension implements Logging {
     }
 
     private void addGrpcDependencies() {
-        Ext.of(project)
-           .artifacts()
-           .grpc()
-           .forEach(dependant::implementation);
+        ArtifactSnapshot snapshot = ArtifactSnapshot.fromResources();
+        snapshot.grpcDependencies()
+                .forEach(dependant::implementation);
     }
 
     /**

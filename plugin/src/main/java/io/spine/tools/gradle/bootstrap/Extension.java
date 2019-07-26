@@ -24,6 +24,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
+import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -72,6 +73,19 @@ public final class Extension {
     }
 
     /**
+     * Obtains the version of the framework.
+     *
+     * <p>In a Gradle plugin, reference {@code spine.version()} in order to obtain the current Spine
+     * version.
+     *
+     * @return the currently used version of Spine as a string
+     */
+    public String version() {
+        ArtifactSnapshot artifact = ArtifactSnapshot.fromResources();
+        return artifact.spineVersion();
+    }
+
+    /**
      * Marks this project as a Java project and configures the Java code generation.
      *
      * @param configuration
@@ -107,8 +121,7 @@ public final class Extension {
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {
         java.enableGeneration();
-        String spineVersion = java.spineVersion();
-        Artifact testlib = SpineDependency.testlib().ofVersion(spineVersion);
+        Artifact testlib = SpineDependency.testlib().ofVersion(version());
         java.dependant().depend(testImplementation, testlib.notation());
         toggleJavaTasks(true);
         disableTransitiveProtos();

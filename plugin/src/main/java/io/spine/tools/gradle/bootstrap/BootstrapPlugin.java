@@ -21,9 +21,7 @@
 package io.spine.tools.gradle.bootstrap;
 
 import io.spine.tools.gradle.SpinePlugin;
-import io.spine.tools.gradle.config.Ext;
-import io.spine.tools.gradle.project.Dependant;
-import io.spine.tools.gradle.project.DependantProject;
+import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.PlugableProject;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.project.ProjectSourceSuperset;
@@ -67,7 +65,6 @@ public final class BootstrapPlugin extends SpinePlugin {
 
     @Override
     public void apply(Project project) {
-        applyScriptPlugins(project);
         applyExtension(project);
         configureProtocArtifact(project);
     }
@@ -75,11 +72,12 @@ public final class BootstrapPlugin extends SpinePlugin {
     private static void applyExtension(Project project) {
         PluginTarget plugableProject = new PlugableProject(project);
         SourceSuperset layout = ProjectSourceSuperset.of(project);
-        Dependant dependencyTarget = DependantProject.from(project);
+        SpineBasedProject dependant = SpineBasedProject.from(project);
+        dependant.prepareRepositories(ArtifactSnapshot.fromResources());
         Extension extension = Extension
                 .newBuilder()
                 .setProject(project)
-                .setDependencyTarget(dependencyTarget)
+                .setDependencyTarget(dependant)
                 .setPluginTarget(plugableProject)
                 .setLayout(layout)
                 .build();
@@ -88,19 +86,9 @@ public final class BootstrapPlugin extends SpinePlugin {
         extension.disableJavaGeneration();
     }
 
-    private static void applyScriptPlugins(Project project) {
-        SpinePluginScripts.dependencies().apply(project);
-        Ext.of(project)
-           .defaultRepositories()
-           .accept(project);
-        SpinePluginScripts.version().apply(project);
-    }
-
     private static void configureProtocArtifact(Project project) {
         ProtobufGenerator generator = new ProtobufGenerator(project);
-        String protocSpec = Ext.of(project)
-                               .artifacts()
-                               .protoc();
-        generator.useCompiler(protocSpec);
+        ArtifactSnapshot snapshot = ArtifactSnapshot.fromResources();
+        generator.useCompiler(snapshot.protoc());
     }
 }
