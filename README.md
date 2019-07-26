@@ -9,7 +9,7 @@ The Gradle plugin for bootstrapping projects built with Spine.
 In order to apply the plugin to a Gradle project, in `build.gralde` add the following config:
 ```gradle
 plugins {
-    id 'io.spine.tools.gradle.bootstrap' version '0.15.6'
+    id 'io.spine.tools.gradle.bootstrap' version '0.15.7'
 }
 ```
 
@@ -60,8 +60,11 @@ spine.enableJava {
 }
 ```
 
-Note that it is required to enable mark the module as either `client()` or `server()`. Otherwise, 
-the user would have to add all the gRPC-related dependencies on their own.
+Note that it is required to mark the module as either `client()` or `server()`. Otherwise, the user
+would have to add all the gRPC-related dependencies on their own.
+
+Also, gRPC may require additional dependencies at runtime. For example, the `grpc-netty` dependency
+is not added by default in order not to cause clashes in the user projects.
 
 ### Disable code generation
 
