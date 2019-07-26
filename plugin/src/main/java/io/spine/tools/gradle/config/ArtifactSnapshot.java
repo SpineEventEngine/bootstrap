@@ -32,7 +32,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 
 /**
- * A snapshot of Spine-related dependencies which may be used in the client projects.
+ * A snapshot of Spine-related dependencies which may be used in Spine-based projects.
  *
  * <p>In order to guarantee absence of collisions, the plugin uses the same versions, repositories,
  * artifacts, etc. as does the Spine core code.
