@@ -125,7 +125,7 @@ public final class ArtifactSnapshot {
      * <p>Note that gRPC may require some additional dependencies at runtime.
      */
     public ImmutableList<String> grpcDependencies() {
-        return ImmutableList.of(grpcProtobuf, grpcStub, "io.grpc:grpc-core:1.22.0");
+        return ImmutableList.of(grpcProtobuf, grpcStub);
     }
 
     public static Builder newBuilder() {
