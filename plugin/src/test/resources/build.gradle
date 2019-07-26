@@ -19,7 +19,7 @@
  */
 
 plugins {
-    id 'io.spine.tools.gradle.bootstrap' version '0.15.6'
+    id 'io.spine.tools.gradle.bootstrap' version '0.15.8'
 }
 
 // This script file is created at a test runtime by the `GradleProject`.
