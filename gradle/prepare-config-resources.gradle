@@ -24,7 +24,18 @@ final File configDir = "$rootDir/config" as File
 
 sourceSets.main.resources.srcDir(bootstrapDir)
 
+final String taskGroup = 'Spine bootstrapping'
+
+task(name: 'copyModelCompilerConfig', type: Copy) {
+    it.group = taskGroup
+    
+    from "$configDir/gradle/model-compiler.gradle"
+    into bootstrapDir
+}
+
 task('writeDependencies') {
+    it.group = taskGroup
+    
     inputs.dir(configDir)
     inputs.property('version', spineVersion)
     outputs.file(versionSnapshot)
@@ -37,7 +48,7 @@ task('writeDependencies') {
     }
 
     doLast {
-        Properties artifacts = new Properties()
+        final Properties artifacts = new Properties()
         
         artifacts.setProperty('spine.version', spineVersion)
         artifacts.setProperty('protobuf.compiler', deps.build.protoc)
