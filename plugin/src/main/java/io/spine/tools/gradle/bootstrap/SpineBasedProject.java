@@ -35,6 +35,9 @@ import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * A {@link Dependant} Gradle project which uses Spine.
+ */
 final class SpineBasedProject implements Dependant {
 
     private static final @Regex String SPINE_GROUP_PATTERN = "io\\.spine\\b.*";
@@ -47,6 +50,9 @@ final class SpineBasedProject implements Dependant {
         this.project = checkNotNull(project);
     }
 
+    /**
+     * Wraps the given Gradle project.
+     */
     static SpineBasedProject from(Project project) {
         checkNotNull(project);
         DependantProject dependantProject = DependantProject.from(project);
@@ -63,13 +69,23 @@ final class SpineBasedProject implements Dependant {
         dependencies.exclude(dependency);
     }
 
+    /**
+     * Sets up Maven repositories required by Spine.
+     *
+     * <p>Adds the following repositories:
+     * <ol>
+     *     <li>Spine releases repository for Spine artifacts;
+     *     <li>Spine snapshots repository for Spine artifacts;
+     *     <li>JCenter repository for third-party artifacts.
+     * </ol>
+     */
     void prepareRepositories(ArtifactSnapshot artifacts) {
         RepositoryHandler repositories = project.getRepositories();
-        repositories.jcenter();
         addSpineRepository(artifacts.spineRepository(),
                            MavenRepositoryContentDescriptor::releasesOnly);
         addSpineRepository(artifacts.spineSnapshotRepository(),
                            MavenRepositoryContentDescriptor::snapshotsOnly);
+        repositories.jcenter();
     }
 
     @SuppressWarnings("UnstableApiUsage")
