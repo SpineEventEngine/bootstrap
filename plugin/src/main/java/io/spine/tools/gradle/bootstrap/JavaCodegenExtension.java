@@ -22,7 +22,6 @@ package io.spine.tools.gradle.bootstrap;
 
 import io.spine.logging.Logging;
 import io.spine.tools.gradle.TaskName;
-import io.spine.tools.gradle.compiler.Extension;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
@@ -129,17 +128,14 @@ public final class JavaCodegenExtension implements Logging {
      *
      * <p>Enabled by default.
      *
-     * <p>If enabled, validating builders and rejections will be generated and the generated Java
-     * code will be tweaked by the Spine Protobuf compiler plugin.
+     * <p>If enabled, marker interfaces and rejections will be generated.
+     * The Protobuf-generated Java code will also be tweaked by the Spine Protobuf compiler plugin.
      *
      * @param spine {@code true} to enable, {@code false} to disable
      */
     public void setSpine(boolean spine) {
         this.spine = spine;
         switchPlugin(SPINE_PLUGIN, spine);
-        Extension modelCompilerExtension = project.getExtensions()
-                                                  .getByType(Extension.class);
-        modelCompilerExtension.generateValidatingBuilders = spine;
         updateModelCompilerTask(generateRejections);
         updateModelCompilerTask(generateTestRejections);
     }
