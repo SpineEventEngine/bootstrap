@@ -158,7 +158,7 @@ public final class Extension implements ConfigurationSensitive {
     }
 
     /**
-     * Returns {@code true} if configuration enforcement is enabled for the current project.
+     * Returns {@code true} if the configuration enforcement is enabled for the current project.
      *
      * <p>Enabled configuration enforcement means certain dependencies will be forced to resolve
      * to particular versions needed by the Spine Bootstrap plugin.
@@ -170,7 +170,7 @@ public final class Extension implements ConfigurationSensitive {
     /**
      * Enables or disables the configuration enforcement for the current project.
      *
-     * <p>A convenience wrapper for {@link #forceConfiguration()} and
+     * <p>A convenience wrapper for the {@link #forceConfiguration()} and
      * {@link #disableConfigurationEnforcement()}.
      *
      * <p>In Gradle build script may be used as follows:

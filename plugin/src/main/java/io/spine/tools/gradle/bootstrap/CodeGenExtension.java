@@ -116,8 +116,8 @@ abstract class CodeGenExtension implements ConfigurationSensitive, Logging {
     /**
      * Returns a {@code Map} of forced dependency versions.
      *
-     * <p>The implementors may override this method to specify the minimum versions of dependencies
-     * that are critical for their work.
+     * <p>The implementors may override this method to specify the dependencies that are critical
+     * for their work and whose versions should be forced.
      */
     protected ImmutableMap<Dependency, String> forcedDependencies() {
         return ImmutableMap.of();
