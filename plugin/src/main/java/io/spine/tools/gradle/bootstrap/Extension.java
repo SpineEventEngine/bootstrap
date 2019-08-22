@@ -157,19 +157,46 @@ public final class Extension implements ConfigurationSensitive {
         this.modelExtension.enableGeneration();
     }
 
+    /**
+     * Returns {@code true} if configuration enforcement is enabled for the current project.
+     *
+     * <p>Enabled configuration enforcement means certain dependencies will be forced to resolve
+     * to particular versions needed by the Spine Bootstrap plugin.
+     */
     public boolean getForceConfiguration() {
         return forceConfiguration;
     }
 
+    /**
+     * Enables or disables the configuration enforcement for the current project.
+     *
+     * <p>A convenience wrapper for {@link #forceConfiguration()} and
+     * {@link #disableConfigurationEnforcement()}.
+     *
+     * <p>In Gradle build script may be used as follows:
+     * <pre>
+     *     {@code
+     *     spine {
+     *         forceConfiguration = true
+     *     }
+     *     }
+     * </pre>
+     *
+     */
     public void setForceConfiguration(boolean forceConfiguration) {
         this.forceConfiguration = forceConfiguration;
         if (forceConfiguration) {
             forceConfiguration();
         } else {
-            disableConfigurationEnforcing();
+            disableConfigurationEnforcement();
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Enforces a configuration needed for all child extensions.
+     */
     @Override
     public void forceConfiguration() {
         java.forceConfiguration();
@@ -177,11 +204,16 @@ public final class Extension implements ConfigurationSensitive {
         modelExtension.forceConfiguration();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Disables configuration enforcement for all child extensions.
+     */
     @Override
-    public void disableConfigurationEnforcing() {
-        java.disableConfigurationEnforcing();
-        javaScript.disableConfigurationEnforcing();
-        modelExtension.disableConfigurationEnforcing();
+    public void disableConfigurationEnforcement() {
+        java.disableConfigurationEnforcement();
+        javaScript.disableConfigurationEnforcement();
+        modelExtension.disableConfigurationEnforcement();
     }
 
     /**

@@ -122,6 +122,9 @@ public final class JavaExtension extends CodeGenExtension {
                                ForcedDependency.PROTOBUF_JAVA.version());
     }
 
+    /**
+     * The dependencies whose particular versions are required by the {@code JavaExtension}.
+     */
     @VisibleForTesting
     enum ForcedDependency {
         PROTOBUF_JAVA("com.google.protobuf", "protobuf-java", "3.9.0");

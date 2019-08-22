@@ -108,11 +108,17 @@ abstract class CodeGenExtension implements ConfigurationSensitive, Logging {
     }
 
     @Override
-    public final void disableConfigurationEnforcing() {
+    public final void disableConfigurationEnforcement() {
         forcedDependencies().keySet()
                             .forEach(dependant::removeForcedDependency);
     }
 
+    /**
+     * Returns a {@code Map} of forced dependency versions.
+     *
+     * <p>The implementors may override this method to specify the dependency versions that are
+     * critical for their work and thus need to be forced.
+     */
     protected ImmutableMap<Dependency, String> forcedDependencies() {
         return ImmutableMap.of();
     }
