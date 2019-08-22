@@ -1,6 +1,6 @@
 
     
-# Dependencies of `io.spine.tools:spine-plugin:1.0.1`
+# Dependencies of `io.spine.tools:spine-plugin:1.0.2`
 
 ## Runtime
 1. **Group:** aopalliance **Name:** aopalliance **Version:** 1.0
@@ -488,4 +488,4 @@
  The dependencies distributed under several licenses, are used according their commercial-use-friendly license.
 
 
-This report was generated on **Sat Aug 10 18:46:29 EEST 2019** using [Gradle-License-Report plugin](https://github.com/jk1/Gradle-License-Report) by Evgeny Naumenko, licensed under [Apache 2.0 License](https://github.com/jk1/Gradle-License-Report/blob/master/LICENSE).
+This report was generated on **Thu Aug 22 17:22:26 EEST 2019** using [Gradle-License-Report plugin](https://github.com/jk1/Gradle-License-Report) by Evgeny Naumenko, licensed under [Apache 2.0 License](https://github.com/jk1/Gradle-License-Report/blob/master/LICENSE).
