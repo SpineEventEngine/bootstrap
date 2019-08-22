@@ -21,15 +21,15 @@
 package io.spine.tools.gradle.bootstrap;
 
 /**
- * A Gradle build script element that requires a particular Gradle configuration enforced.
+ * A Gradle configuration element which depends on a particular project configuration enforced.
  */
 interface ConfigurationSensitive {
 
     /**
-     * Enforces the Gradle configuration needed by this build script element.
+     * Enforces the project configuration needed by this element.
      *
-     * <p>The example of this could be forcing the particular dependencies to resolve to the
-     * specific versions needed by this element.
+     * <p>The example of this could be forcing some dependencies to resolve to the specific
+     * versions needed by this element.
      */
     void forceConfiguration();
 
