@@ -21,15 +21,19 @@
 package io.spine.tools.gradle.bootstrap;
 
 /**
- * A Gradle configuration element which depends on a particular project configuration enforced.
+ * A configuration element which may enforce particular dependencies necessary for their work.
+ *
+ * <p>In Spine Bootstrap plugin, for some elements, it's necessary to have the particular
+ * dependency version no lower than {@code X} in a project.
+ *
+ * <p>Such elements are represented by this interface and may force the necessary project
+ * configuration to make sure the correct dependency version is used regardless of the other
+ * project environment.
  */
 interface ConfigurationSensitive {
 
     /**
      * Enforces the project configuration needed by this element.
-     *
-     * <p>The example of this could be forcing some dependencies to resolve to the specific
-     * versions needed by this element.
      */
     void forceConfiguration();
 
