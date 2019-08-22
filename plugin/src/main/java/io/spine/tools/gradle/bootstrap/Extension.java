@@ -161,7 +161,7 @@ public final class Extension implements ConfigurationSensitive {
      * Returns {@code true} if the configuration enforcement is enabled for the current project.
      *
      * <p>Enabled configuration enforcement means certain dependencies will be forced to resolve
-     * to particular versions needed by the Spine Bootstrap plugin.
+     * to the versions needed by the Spine Bootstrap plugin.
      */
     public boolean getForceConfiguration() {
         return forceConfiguration;
