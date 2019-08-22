@@ -49,6 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
+import static io.spine.tools.gradle.bootstrap.JavaExtension.ForcedDependency.PROTOBUF_JAVA;
 import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.GRPC_PROTO_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.GRPC_STUB_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.spineVersion;
@@ -432,5 +433,24 @@ class ExtensionTest {
                 assertTrue(executedClosure.get());
             }
         }
+    }
+
+    @Test
+    @DisplayName("force dependencies whose particular version is required by the plugin")
+    void forceDependencies() {
+        extension.setForceConfiguration(true);
+
+        assertThat(dependencyTarget.forcedDependencies())
+                .containsExactly(PROTOBUF_JAVA.dependency(), PROTOBUF_JAVA.version());
+    }
+
+    @Test
+    @DisplayName("disable previously configured dependency enforcing")
+    void disableDependencyEnforcing() {
+        dependencyTarget.force(PROTOBUF_JAVA.dependency(), PROTOBUF_JAVA.version());
+        extension.setForceConfiguration(false);
+
+        assertThat(dependencyTarget.forcedDependencies())
+                .isEmpty();
     }
 }

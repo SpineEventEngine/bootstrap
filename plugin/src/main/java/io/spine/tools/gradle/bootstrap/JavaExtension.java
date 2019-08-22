@@ -20,6 +20,7 @@
 
 package io.spine.tools.gradle.bootstrap;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.ConfigurationName;
@@ -121,7 +122,8 @@ public final class JavaExtension extends CodeGenExtension {
                                ForcedDependency.PROTOBUF_JAVA.version());
     }
 
-    private enum ForcedDependency {
+    @VisibleForTesting
+    enum ForcedDependency {
         PROTOBUF_JAVA("com.google.protobuf", "protobuf-java", "3.9.0");
 
         private final String group;
