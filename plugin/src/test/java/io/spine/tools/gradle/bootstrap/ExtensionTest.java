@@ -436,7 +436,7 @@ class ExtensionTest {
     }
 
     @Test
-    @DisplayName("force dependencies whose particular version is required by the plugin")
+    @DisplayName("force configuration to resolve particular versions of needed dependencies")
     void forceDependencies() {
         extension.setForceConfiguration(true);
 
@@ -445,12 +445,20 @@ class ExtensionTest {
     }
 
     @Test
-    @DisplayName("disable previously configured dependency enforcing")
+    @DisplayName("disable previously enabled configuration enforcing")
     void disableDependencyEnforcing() {
         dependencyTarget.force(PROTOBUF_JAVA.dependency(), PROTOBUF_JAVA.version());
         extension.setForceConfiguration(false);
 
         assertThat(dependencyTarget.forcedDependencies())
                 .isEmpty();
+    }
+
+    @Test
+    @DisplayName("expose whether configuration enforcing is enabled")
+    void exposeWhetherConfigurationForced() {
+        assertThat(extension.getForceConfiguration()).isFalse();
+        extension.setForceConfiguration(true);
+        assertThat(extension.getForceConfiguration()).isTrue();
     }
 }
