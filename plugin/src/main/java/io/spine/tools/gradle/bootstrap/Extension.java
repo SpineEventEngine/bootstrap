@@ -35,7 +35,13 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.ModuleVersionSelector;
 import org.gradle.api.tasks.TaskContainer;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Predicate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ConfigurationName.testImplementation;
@@ -65,6 +71,8 @@ public final class Extension {
 
     private final Project project;
     private boolean javaEnabled = false;
+
+    private boolean forceConfiguration;
 
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
@@ -153,6 +161,43 @@ public final class Extension {
      */
     public void assembleModel() {
         this.modelExtension.enableGeneration();
+    }
+
+    public boolean getForceConfiguration() {
+        return forceConfiguration;
+    }
+
+    public void setForceConfiguration(boolean forceConfiguration) {
+        this.forceConfiguration = forceConfiguration;
+        if (forceConfiguration) {
+            forceConfiguration();
+        } else {
+            disableConfigurationEnforcing();
+        }
+    }
+
+    private void forceConfiguration() {
+        project.getConfigurations()
+               .all(config -> config.getResolutionStrategy()
+                                    .force("com.google.protobuf:protobuf-java:3.9.0"));
+    }
+
+    private void disableConfigurationEnforcing() {
+        project.getConfigurations()
+               .all(config -> {
+                        Set<ModuleVersionSelector> forcedModules = config.getResolutionStrategy()
+                                                                         .getForcedModules();
+                        Collection<ModuleVersionSelector> newForcedModules
+                                = new HashSet<>(forcedModules);
+                        Predicate<ModuleVersionSelector> isForcedSpineDependency = selector ->
+                                "com.google.protobuf".equals(
+                                        selector.getGroup())
+                                        && "protobuf-java".equals(selector.getName())
+                                        && "3.9.0".equals(selector.getVersion());
+                        newForcedModules.removeIf(isForcedSpineDependency);
+                        config.getResolutionStrategy().setForcedModules(newForcedModules);
+                    }
+               );
     }
 
     /**
