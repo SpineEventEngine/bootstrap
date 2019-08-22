@@ -50,7 +50,7 @@ import static org.gradle.util.ConfigureUtil.configure;
  * <p>Configures the project as a {@linkplain #enableJava() Java} or/and
  * a {@linkplain #enableJavaScript() JavaScript} project based on Spine.
  */
-public final class Extension {
+public final class Extension implements ConfigurationSensitive {
 
     @SuppressWarnings("DuplicateStringLiteralInspection") // Used in tests and with other meanings.
     static final String NAME = "spine";
@@ -170,13 +170,15 @@ public final class Extension {
         }
     }
 
-    private void forceConfiguration() {
+    @Override
+    public void forceConfiguration() {
         java.forceConfiguration();
         javaScript.forceConfiguration();
         modelExtension.forceConfiguration();
     }
 
-    private void disableConfigurationEnforcing() {
+    @Override
+    public void disableConfigurationEnforcing() {
         java.disableConfigurationEnforcing();
         javaScript.disableConfigurationEnforcing();
         modelExtension.disableConfigurationEnforcing();
