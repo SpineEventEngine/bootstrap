@@ -69,6 +69,16 @@ final class SpineBasedProject implements Dependant {
         dependencies.exclude(dependency);
     }
 
+    @Override
+    public void force(Dependency dependency, String version) {
+        dependencies.force(dependency, version);
+    }
+
+    @Override
+    public void removeForcedDependency(Dependency dependency) {
+        dependencies.removeForcedDependency(dependency);
+    }
+
     /**
      * Sets up Maven repositories required by Spine.
      *

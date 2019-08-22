@@ -20,9 +20,12 @@
 
 package io.spine.tools.gradle.bootstrap;
 
+import com.google.common.collect.ImmutableMap;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.ConfigurationName;
+import io.spine.tools.gradle.Dependency;
 import io.spine.tools.gradle.GeneratedSourceRoot;
+import io.spine.tools.gradle.ThirdPartyDependency;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.SourceSuperset;
@@ -110,6 +113,35 @@ public final class JavaExtension extends CodeGenExtension {
     private void addSourceSets() {
         GeneratedSourceRoot sourceRoot = GeneratedSourceRoot.of(project);
         directoryStructure.register(sourceRoot);
+    }
+
+    @Override
+    protected ImmutableMap<Dependency, String> forcedDependencies() {
+        return ImmutableMap.of(ForcedDependency.PROTOBUF_JAVA.dependency(),
+                               ForcedDependency.PROTOBUF_JAVA.version());
+    }
+
+    private enum ForcedDependency {
+        PROTOBUF_JAVA("com.google.protobuf", "protobuf-java", "3.9.0");
+
+        private final String group;
+        private final String name;
+        private final String version;
+
+        ForcedDependency(String group, String name, String version) {
+            this.group = group;
+            this.name = name;
+            this.version = version;
+        }
+
+        Dependency dependency() {
+            ThirdPartyDependency dependency = new ThirdPartyDependency(group, name);
+            return dependency;
+        }
+
+        String version() {
+            return version;
+        }
     }
 
     static Builder newBuilder() {

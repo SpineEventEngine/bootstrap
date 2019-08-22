@@ -20,8 +20,10 @@
 
 package io.spine.tools.gradle.bootstrap;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
+import io.spine.tools.gradle.Dependency;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -98,6 +100,19 @@ abstract class CodeGenExtension implements Logging {
      */
     final Dependant dependant() {
         return dependant;
+    }
+
+    final void forceConfiguration() {
+        forcedDependencies().forEach(dependant::force);
+    }
+
+    final void disableConfigurationEnforcing() {
+        forcedDependencies().keySet()
+                            .forEach(dependant::removeForcedDependency);
+    }
+
+    protected ImmutableMap<Dependency, String> forcedDependencies() {
+        return ImmutableMap.of();
     }
 
     /**
