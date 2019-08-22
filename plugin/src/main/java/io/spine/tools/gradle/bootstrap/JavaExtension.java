@@ -123,7 +123,8 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     /**
-     * The dependencies whose particular versions are required by the {@code JavaExtension}.
+     * The dependencies whose particular versions are required in order for {@code JavaExtension}
+     * to work properly.
      */
     @VisibleForTesting
     enum ForcedDependency {
