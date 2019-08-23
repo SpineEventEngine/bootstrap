@@ -50,7 +50,7 @@ import static org.gradle.util.ConfigureUtil.configure;
  * <p>Configures the project as a {@linkplain #enableJava() Java} or/and
  * a {@linkplain #enableJavaScript() JavaScript} project based on Spine.
  */
-public final class Extension implements ConfigurationSensitive {
+public final class Extension {
 
     @SuppressWarnings("DuplicateStringLiteralInspection") // Used in tests and with other meanings.
     static final String NAME = "spine";
@@ -170,8 +170,11 @@ public final class Extension implements ConfigurationSensitive {
     /**
      * Enables or disables the configuration enforcement for the current project.
      *
-     * <p>A convenience wrapper for the {@link #forceConfiguration()} and
-     * {@link #disableConfigurationEnforcement()}.
+     * <p>In Spine Bootstrap plugin, for some elements, it's necessary to have the particular
+     * dependency no lower than version {@code X} in the project.
+     *
+     * <p>Set this field to {@code true} to ensure the "correct" dependency version is used
+     * regardless of project environment.
      *
      * <p>In Gradle build script may be used as follows:
      * <pre>
@@ -181,7 +184,6 @@ public final class Extension implements ConfigurationSensitive {
      *     }
      *     }
      * </pre>
-     *
      */
     public void setForceConfiguration(boolean forceConfiguration) {
         this.forceConfiguration = forceConfiguration;
@@ -193,24 +195,22 @@ public final class Extension implements ConfigurationSensitive {
     }
 
     /**
-     * {@inheritDoc}
+     * Enforces a configuration needed for all child extensions.
      *
-     * <p>Enforces a configuration needed for all child extensions.
+     * @see #setForceConfiguration(boolean)
      */
-    @Override
-    public void forceConfiguration() {
+    private void forceConfiguration() {
         java.forceConfiguration();
         javaScript.forceConfiguration();
         modelExtension.forceConfiguration();
     }
 
     /**
-     * {@inheritDoc}
+     * Disables configuration enforcement for all child extensions.
      *
-     * <p>Disables configuration enforcement for all child extensions.
+     * @see #setForceConfiguration(boolean)
      */
-    @Override
-    public void disableConfigurationEnforcement() {
+    private void disableConfigurationEnforcement() {
         java.disableConfigurationEnforcement();
         javaScript.disableConfigurationEnforcement();
         modelExtension.disableConfigurationEnforcement();

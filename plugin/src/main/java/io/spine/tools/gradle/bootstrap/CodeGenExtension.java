@@ -41,7 +41,7 @@ import static io.spine.tools.gradle.config.SpineDependency.base;
  *
  * <p>One extension is responsible for one programming language to generate code in.
  */
-abstract class CodeGenExtension implements ConfigurationSensitive, Logging {
+abstract class CodeGenExtension implements Logging {
 
     private final ProtobufGenerator protobufGenerator;
 
@@ -103,13 +103,21 @@ abstract class CodeGenExtension implements ConfigurationSensitive, Logging {
         return dependant;
     }
 
-    @Override
-    public final void forceConfiguration() {
+    /**
+     * Forces the dependencies required by this extension.
+     *
+     * @see Extension#setForceConfiguration(boolean)
+     */
+    final void forceConfiguration() {
         forcedDependencies().forEach(dependant::force);
     }
 
-    @Override
-    public final void disableConfigurationEnforcement() {
+    /**
+     * Disables the dependencies enforcement.
+     *
+     * @see Extension#setForceConfiguration(boolean)
+     */
+    final void disableConfigurationEnforcement() {
         forcedDependencies().stream()
                             .map(CodeGenExtension::toThirdPartyDependency)
                             .forEach(dependant::removeForcedDependency);
