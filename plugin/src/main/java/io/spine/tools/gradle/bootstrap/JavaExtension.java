@@ -23,11 +23,8 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import groovy.lang.Closure;
-import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
-import io.spine.tools.gradle.Dependency;
 import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.ThirdPartyDependency;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.SourceSuperset;
@@ -118,37 +115,13 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     @Override
-    protected ImmutableSet<Artifact> forcedDependencies() {
-        return ImmutableSet.of(ForcedDependency.PROTOBUF_JAVA.artifact());
+    protected ImmutableSet<String> forcedDependencies() {
+        return ImmutableSet.of(protobufJavaSpec());
     }
 
-    /**
-     * The dependencies whose particular versions are required in order for {@code JavaExtension}
-     * to work properly.
-     */
     @VisibleForTesting
-    enum ForcedDependency {
-        PROTOBUF_JAVA("com.google.protobuf", "protobuf-java", "3.9.0");
-
-        private final String group;
-        private final String name;
-        private final String version;
-
-        ForcedDependency(String group, String name, String version) {
-            this.group = group;
-            this.name = name;
-            this.version = version;
-        }
-
-        Artifact artifact() {
-            Artifact artifact = dependency().ofVersion(version);
-            return artifact;
-        }
-
-        private Dependency dependency() {
-            Dependency dependency = new ThirdPartyDependency(group, name);
-            return dependency;
-        }
+    String protobufJavaSpec() {
+        return artifacts.protobufJava();
     }
 
     static Builder newBuilder() {

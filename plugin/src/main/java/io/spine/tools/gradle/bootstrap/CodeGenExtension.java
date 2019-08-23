@@ -23,8 +23,6 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
-import io.spine.tools.gradle.Artifact;
-import io.spine.tools.gradle.ThirdPartyDependency;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -118,23 +116,20 @@ abstract class CodeGenExtension implements Logging {
      * @see Extension#setForceConfiguration(boolean)
      */
     final void disableConfigurationEnforcement() {
-        forcedDependencies().stream()
-                            .map(CodeGenExtension::toThirdPartyDependency)
-                            .forEach(dependant::removeForcedDependency);
+        forcedDependencies().forEach(dependant::removeForcedDependency);
     }
 
     /**
      * Returns a set of dependencies whose versions should be forced.
      *
+     * <p>Each set entry is a dependency spec, for example
+     * {@code com.google.protobuf:protobuf-java:3.9.0}.
+     *
      * <p>The implementors may override this method to specify the dependencies that are critical
-     * for their work and should be resolved to some particular versions.
+     * for their work and should always be resolved to some particular versions.
      */
-    protected ImmutableSet<Artifact> forcedDependencies() {
+    protected ImmutableSet<String> forcedDependencies() {
         return ImmutableSet.of();
-    }
-
-    private static ThirdPartyDependency toThirdPartyDependency(Artifact artifact) {
-        return new ThirdPartyDependency(artifact.group(), artifact.name());
     }
 
     /**

@@ -42,6 +42,7 @@ public final class FakeArtifacts {
                 .setGrpcProtobuf(GRPC_PROTO_DEPENDENCY)
                 .setGrpcStub(GRPC_STUB_DEPENDENCY)
                 .setProtoc("com.google.protobuf:protoc:3.6.1")
+                .setProtobufJava("com.google.protobuf:protobuf-java:3.6.1")
                 .setSpineRepository("http://fake.maven.repo.org/releases")
                 .setSpineSnapshotRepository("http://fake.maven.repo.org/snapshots")
                 .build();

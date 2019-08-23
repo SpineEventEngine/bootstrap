@@ -49,7 +49,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
-import static io.spine.tools.gradle.bootstrap.JavaExtension.ForcedDependency.PROTOBUF_JAVA;
 import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.GRPC_PROTO_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.GRPC_STUB_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.spineVersion;
@@ -438,16 +437,21 @@ class ExtensionTest {
     @Test
     @DisplayName("force configuration to resolve particular versions of required dependencies")
     void forceDependencies() {
-        extension.setForceConfiguration(true);
+        JavaExtension javaExtension = extension.enableJava();
+        this.extension.setForceConfiguration(true);
 
+        String dependencySpec = javaExtension.protobufJavaSpec();
         assertThat(dependencyTarget.forcedDependencies())
-                .containsExactly(PROTOBUF_JAVA.artifact());
+                .containsExactly(dependencySpec);
     }
 
     @Test
     @DisplayName("disable previously enabled configuration enforcement")
     void disableDependencyEnforcing() {
-        dependencyTarget.force(PROTOBUF_JAVA.artifact());
+        JavaExtension javaExtension = extension.enableJava();
+        String dependencySpec = javaExtension.protobufJavaSpec();
+        dependencyTarget.force(dependencySpec);
+
         extension.setForceConfiguration(false);
 
         assertThat(dependencyTarget.forcedDependencies())

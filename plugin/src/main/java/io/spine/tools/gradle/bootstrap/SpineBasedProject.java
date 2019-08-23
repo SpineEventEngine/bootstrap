@@ -76,8 +76,18 @@ final class SpineBasedProject implements Dependant {
     }
 
     @Override
+    public void force(String notation) {
+        dependencies.force(notation);
+    }
+
+    @Override
     public void removeForcedDependency(Dependency dependency) {
         dependencies.removeForcedDependency(dependency);
+    }
+
+    @Override
+    public void removeForcedDependency(String notation) {
+        dependencies.removeForcedDependency(notation);
     }
 
     /**
