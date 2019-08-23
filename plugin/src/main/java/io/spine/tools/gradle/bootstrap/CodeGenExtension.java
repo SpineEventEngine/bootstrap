@@ -20,10 +20,11 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
-import io.spine.tools.gradle.Dependency;
+import io.spine.tools.gradle.Artifact;
+import io.spine.tools.gradle.ThirdPartyDependency;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -109,18 +110,23 @@ abstract class CodeGenExtension implements ConfigurationSensitive, Logging {
 
     @Override
     public final void disableConfigurationEnforcement() {
-        forcedDependencies().keySet()
+        forcedDependencies().stream()
+                            .map(CodeGenExtension::toThirdPartyDependency)
                             .forEach(dependant::removeForcedDependency);
     }
 
     /**
-     * Returns a {@code Map} of dependencies whose versions should be forced.
+     * Returns a set of dependencies whose versions should be forced.
      *
      * <p>The implementors may override this method to specify the dependencies that are critical
      * for their work and should be resolved to some particular versions.
      */
-    protected ImmutableMap<Dependency, String> forcedDependencies() {
-        return ImmutableMap.of();
+    protected ImmutableSet<Artifact> forcedDependencies() {
+        return ImmutableSet.of();
+    }
+
+    private static ThirdPartyDependency toThirdPartyDependency(Artifact artifact) {
+        return new ThirdPartyDependency(artifact.group(), artifact.name());
     }
 
     /**

@@ -441,13 +441,13 @@ class ExtensionTest {
         extension.setForceConfiguration(true);
 
         assertThat(dependencyTarget.forcedDependencies())
-                .containsExactly(PROTOBUF_JAVA.dependency(), PROTOBUF_JAVA.version());
+                .containsExactly(PROTOBUF_JAVA.artifact());
     }
 
     @Test
     @DisplayName("disable previously enabled configuration enforcement")
     void disableDependencyEnforcing() {
-        dependencyTarget.force(PROTOBUF_JAVA.dependency(), PROTOBUF_JAVA.version());
+        dependencyTarget.force(PROTOBUF_JAVA.artifact());
         extension.setForceConfiguration(false);
 
         assertThat(dependencyTarget.forcedDependencies())

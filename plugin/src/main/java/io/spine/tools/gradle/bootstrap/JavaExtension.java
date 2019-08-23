@@ -21,8 +21,9 @@
 package io.spine.tools.gradle.bootstrap;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import groovy.lang.Closure;
+import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.Dependency;
 import io.spine.tools.gradle.GeneratedSourceRoot;
@@ -117,9 +118,8 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     @Override
-    protected ImmutableMap<Dependency, String> forcedDependencies() {
-        return ImmutableMap.of(ForcedDependency.PROTOBUF_JAVA.dependency(),
-                               ForcedDependency.PROTOBUF_JAVA.version());
+    protected ImmutableSet<Artifact> forcedDependencies() {
+        return ImmutableSet.of(ForcedDependency.PROTOBUF_JAVA.artifact());
     }
 
     /**
@@ -140,13 +140,14 @@ public final class JavaExtension extends CodeGenExtension {
             this.version = version;
         }
 
-        Dependency dependency() {
-            ThirdPartyDependency dependency = new ThirdPartyDependency(group, name);
-            return dependency;
+        Artifact artifact() {
+            Artifact artifact = dependency().ofVersion(version);
+            return artifact;
         }
 
-        String version() {
-            return version;
+        private Dependency dependency() {
+            Dependency dependency = new ThirdPartyDependency(group, name);
+            return dependency;
         }
     }
 

@@ -21,6 +21,7 @@
 package io.spine.tools.gradle.bootstrap;
 
 import io.spine.net.Url;
+import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.Dependency;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
@@ -70,8 +71,8 @@ final class SpineBasedProject implements Dependant {
     }
 
     @Override
-    public void force(Dependency dependency, String version) {
-        dependencies.force(dependency, version);
+    public void force(Artifact artifact) {
+        dependencies.force(artifact);
     }
 
     @Override
