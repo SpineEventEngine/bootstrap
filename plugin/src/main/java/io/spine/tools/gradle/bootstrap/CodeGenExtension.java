@@ -104,18 +104,18 @@ abstract class CodeGenExtension implements Logging {
     /**
      * Forces the dependencies required by this extension.
      *
-     * @see Extension#setForceConfiguration(boolean)
+     * @see Extension#setForceDependencies(boolean)
      */
-    final void forceConfiguration() {
+    final void forceDependencies() {
         forcedDependencies().forEach(dependant::force);
     }
 
     /**
      * Disables the dependencies enforcement.
      *
-     * @see Extension#setForceConfiguration(boolean)
+     * @see Extension#setForceDependencies(boolean)
      */
-    final void disableConfigurationEnforcement() {
+    final void disableDependencyEnforcement() {
         forcedDependencies().forEach(dependant::removeForcedDependency);
     }
 

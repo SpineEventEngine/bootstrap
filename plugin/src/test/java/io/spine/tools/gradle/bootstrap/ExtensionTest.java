@@ -438,7 +438,7 @@ class ExtensionTest {
     @DisplayName("force configuration to resolve particular versions of required dependencies")
     void forceDependencies() {
         JavaExtension javaExtension = extension.enableJava();
-        this.extension.setForceConfiguration(true);
+        this.extension.setForceDependencies(true);
 
         String dependencySpec = javaExtension.protobufJavaSpec();
         assertThat(dependencyTarget.forcedDependencies())
@@ -452,7 +452,7 @@ class ExtensionTest {
         String dependencySpec = javaExtension.protobufJavaSpec();
         dependencyTarget.force(dependencySpec);
 
-        extension.setForceConfiguration(false);
+        extension.setForceDependencies(false);
 
         assertThat(dependencyTarget.forcedDependencies())
                 .isEmpty();
@@ -461,8 +461,8 @@ class ExtensionTest {
     @Test
     @DisplayName("expose whether configuration enforcement is enabled")
     void exposeWhetherConfigurationForced() {
-        assertThat(extension.getForceConfiguration()).isFalse();
-        extension.setForceConfiguration(true);
-        assertThat(extension.getForceConfiguration()).isTrue();
+        assertThat(extension.getForceDependencies()).isFalse();
+        extension.setForceDependencies(true);
+        assertThat(extension.getForceDependencies()).isTrue();
     }
 }

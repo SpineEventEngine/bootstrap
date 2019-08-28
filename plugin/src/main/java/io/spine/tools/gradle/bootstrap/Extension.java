@@ -66,7 +66,7 @@ public final class Extension {
     private final Project project;
     private boolean javaEnabled = false;
 
-    private boolean forceConfiguration;
+    private boolean forceDependencies;
 
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
@@ -158,17 +158,17 @@ public final class Extension {
     }
 
     /**
-     * Returns {@code true} if the configuration enforcement is enabled for the current project.
+     * Returns {@code true} if the dependency enforcement is enabled for the current project.
      *
-     * <p>Enabled configuration enforcement means certain dependencies will be forced to resolve
-     * to the versions needed by the Spine Bootstrap plugin.
+     * <p>If the option is enabled, certain dependencies will be forced to resolve to the versions
+     * needed by the Spine Bootstrap plugin.
      */
-    public boolean getForceConfiguration() {
-        return forceConfiguration;
+    public boolean getForceDependencies() {
+        return forceDependencies;
     }
 
     /**
-     * Enables or disables the configuration enforcement for the current project.
+     * Enables or disables the dependency enforcement for the current project.
      *
      * <p>In Spine Bootstrap plugin, for some elements, it's necessary to have the particular
      * dependency no lower than version {@code X} in the project.
@@ -180,40 +180,40 @@ public final class Extension {
      * <pre>
      *     {@code
      *     spine {
-     *         forceConfiguration = true
+     *         forceDependencies = true
      *     }
      *     }
      * </pre>
      */
-    public void setForceConfiguration(boolean forceConfiguration) {
-        this.forceConfiguration = forceConfiguration;
-        if (forceConfiguration) {
-            forceConfiguration();
+    public void setForceDependencies(boolean forceDependencies) {
+        this.forceDependencies = forceDependencies;
+        if (forceDependencies) {
+            forceDependencies();
         } else {
-            disableConfigurationEnforcement();
+            disableDependencyEnforcement();
         }
     }
 
     /**
-     * Enforces a configuration needed for all child extensions.
+     * Enforces the dependency configuration needed for all child extensions.
      *
-     * @see #setForceConfiguration(boolean)
+     * @see #setForceDependencies(boolean)
      */
-    private void forceConfiguration() {
-        java.forceConfiguration();
-        javaScript.forceConfiguration();
-        modelExtension.forceConfiguration();
+    private void forceDependencies() {
+        java.forceDependencies();
+        javaScript.forceDependencies();
+        modelExtension.forceDependencies();
     }
 
     /**
-     * Disables configuration enforcement for all child extensions.
+     * Disables dependency enforcement for all child extensions.
      *
-     * @see #setForceConfiguration(boolean)
+     * @see #setForceDependencies(boolean)
      */
-    private void disableConfigurationEnforcement() {
-        java.disableConfigurationEnforcement();
-        javaScript.disableConfigurationEnforcement();
-        modelExtension.disableConfigurationEnforcement();
+    private void disableDependencyEnforcement() {
+        java.disableDependencyEnforcement();
+        javaScript.disableDependencyEnforcement();
+        modelExtension.disableDependencyEnforcement();
     }
 
     /**
