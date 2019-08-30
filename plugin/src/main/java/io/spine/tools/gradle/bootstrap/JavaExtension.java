@@ -60,6 +60,11 @@ public final class JavaExtension extends CodeGenExtension {
     @Override
     void enableGeneration() {
         super.enableGeneration();
+
+        dependOn(SpineDependency.time(), implementation);
+        dependOn(SpineDependency.testUtilTime(), testImplementation);
+        dependOn(SpineDependency.testlib(), testImplementation);
+
         pluginTarget().applyModelCompiler();
         pluginTarget().apply(SpinePluginScripts.modelCompilerConfig());
         addSourceSets();
