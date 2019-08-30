@@ -20,7 +20,6 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import com.google.common.truth.DefaultSubject;
 import com.google.common.truth.Subject;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -58,7 +57,7 @@ class BootstrapPluginTest {
 
         Object extension = project.getExtensions()
                                   .getByName(Extension.NAME);
-        Subject<DefaultSubject, Object> assertExtension = assertThat(extension);
+        Subject assertExtension = assertThat(extension);
         assertExtension.isNotNull();
         assertExtension.isInstanceOf(Extension.class);
     }
