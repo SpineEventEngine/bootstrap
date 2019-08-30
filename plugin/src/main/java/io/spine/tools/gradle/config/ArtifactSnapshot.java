@@ -43,6 +43,7 @@ public final class ArtifactSnapshot {
 
     private final String spineVersion;
     private final String protoc;
+    private final String protobufJava;
     private final String grpcProtobuf;
     private final String grpcStub;
 
@@ -55,6 +56,7 @@ public final class ArtifactSnapshot {
     private ArtifactSnapshot(Builder builder) {
         this.spineVersion = checkNotNull(builder.spineVersion);
         this.protoc = checkNotNull(builder.protoc);
+        this.protobufJava = checkNotNull(builder.protobufJava);
         this.grpcProtobuf = checkNotNull(builder.grpcProtobuf);
         this.grpcStub = checkNotNull(builder.grpcStub);
         this.spineRepository = checkNotNull(builder.spineRepository);
@@ -72,6 +74,7 @@ public final class ArtifactSnapshot {
         ArtifactSnapshot snapshot = newBuilder()
                 .setSpineVersion(properties.getProperty("spine.version"))
                 .setProtoc(properties.getProperty("protobuf.compiler"))
+                .setProtobufJava(properties.getProperty("protobuf.java"))
                 .setGrpcProtobuf(properties.getProperty("grpc.protobuf"))
                 .setGrpcStub(properties.getProperty("grpc.stub"))
                 .setSpineRepository(properties.getProperty("repository.spine.release"))
@@ -113,10 +116,19 @@ public final class ArtifactSnapshot {
     /**
      * Obtains the artifact spec for the Protobuf compiler.
      *
-     * <p>The value may be something similar to {@code com.google.protobuf:protoc:3.8.0}.
+     * <p>The value may be something similar to {@code com.google.protobuf:protoc:3.9.0}.
      */
     public String protoc() {
         return protoc;
+    }
+
+    /**
+     * Obtains the artifact spec for the core Protobuf Java library.
+     *
+     * <p>The value may be something similar to {@code com.google.protobuf:protobuf-java:3.9.0}.
+     */
+    public String protobufJava() {
+        return protobufJava;
     }
 
     /**
@@ -139,6 +151,7 @@ public final class ArtifactSnapshot {
 
         private String spineVersion;
         private String protoc;
+        private String protobufJava;
         private String grpcProtobuf;
         private String grpcStub;
         private Url spineRepository;
@@ -157,6 +170,11 @@ public final class ArtifactSnapshot {
 
         public Builder setProtoc(String artifact) {
             this.protoc = artifact;
+            return this;
+        }
+
+        public Builder setProtobufJava(String artifact) {
+            this.protobufJava = artifact;
             return this;
         }
 

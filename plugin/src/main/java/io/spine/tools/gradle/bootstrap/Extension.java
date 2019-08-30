@@ -66,6 +66,8 @@ public final class Extension {
     private final Project project;
     private boolean javaEnabled = false;
 
+    private boolean forceDependencies;
+
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
         this.javaScript = builder.buildJavaScriptExtension();
@@ -153,6 +155,65 @@ public final class Extension {
      */
     public void assembleModel() {
         this.modelExtension.enableGeneration();
+    }
+
+    /**
+     * Returns {@code true} if the dependency enforcement is enabled for the current project.
+     *
+     * <p>If the option is enabled, certain dependencies will be forced to resolve to the versions
+     * needed by the Spine Bootstrap plugin.
+     */
+    public boolean getForceDependencies() {
+        return forceDependencies;
+    }
+
+    /**
+     * Enables or disables the dependency enforcement for the current project.
+     *
+     * <p>In Spine Bootstrap plugin, for some elements, it's necessary to have the particular
+     * dependency no lower than version {@code X} in the project.
+     *
+     * <p>Set this field to {@code true} to ensure the "correct" dependency version is used
+     * regardless of project environment.
+     *
+     * <p>In Gradle build script may be used as follows:
+     * <pre>
+     *     {@code
+     *     spine {
+     *         forceDependencies = true
+     *     }
+     *     }
+     * </pre>
+     */
+    public void setForceDependencies(boolean forceDependencies) {
+        this.forceDependencies = forceDependencies;
+        if (forceDependencies) {
+            forceDependencies();
+        } else {
+            disableDependencyEnforcement();
+        }
+    }
+
+    /**
+     * Enforces the dependency configuration needed for all child extensions.
+     *
+     * @see #setForceDependencies(boolean)
+     */
+    private void forceDependencies() {
+        java.forceDependencies();
+        javaScript.forceDependencies();
+        modelExtension.forceDependencies();
+    }
+
+    /**
+     * Disables dependency enforcement for all child extensions.
+     *
+     * @see #setForceDependencies(boolean)
+     */
+    private void disableDependencyEnforcement() {
+        java.disableDependencyEnforcement();
+        javaScript.disableDependencyEnforcement();
+        modelExtension.disableDependencyEnforcement();
     }
 
     /**

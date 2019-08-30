@@ -20,6 +20,7 @@
 
 package io.spine.tools.gradle.bootstrap;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
@@ -98,6 +99,37 @@ abstract class CodeGenExtension implements Logging {
      */
     final Dependant dependant() {
         return dependant;
+    }
+
+    /**
+     * Forces the dependencies required by this extension.
+     *
+     * @see Extension#setForceDependencies(boolean)
+     */
+    final void forceDependencies() {
+        forcedDependencies().forEach(dependant::force);
+    }
+
+    /**
+     * Disables the dependencies enforcement.
+     *
+     * @see Extension#setForceDependencies(boolean)
+     */
+    final void disableDependencyEnforcement() {
+        forcedDependencies().forEach(dependant::removeForcedDependency);
+    }
+
+    /**
+     * Returns a set of dependencies whose versions should be forced.
+     *
+     * <p>Each set entry is a dependency spec, for example
+     * {@code com.google.protobuf:protobuf-java:3.9.0}.
+     *
+     * <p>The implementors may override this method to specify the dependencies that are critical
+     * for their work and should always be resolved to some particular versions.
+     */
+    protected ImmutableSet<String> forcedDependencies() {
+        return ImmutableSet.of();
     }
 
     /**

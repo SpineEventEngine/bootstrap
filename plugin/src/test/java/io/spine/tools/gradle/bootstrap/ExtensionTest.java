@@ -433,4 +433,36 @@ class ExtensionTest {
             }
         }
     }
+
+    @Test
+    @DisplayName("force configuration to resolve particular versions of required dependencies")
+    void forceDependencies() {
+        JavaExtension javaExtension = extension.enableJava();
+        this.extension.setForceDependencies(true);
+
+        String dependencySpec = javaExtension.protobufJavaSpec();
+        assertThat(dependencyTarget.forcedDependencies())
+                .containsExactly(dependencySpec);
+    }
+
+    @Test
+    @DisplayName("disable previously enabled configuration enforcement")
+    void disableDependencyEnforcing() {
+        JavaExtension javaExtension = extension.enableJava();
+        String dependencySpec = javaExtension.protobufJavaSpec();
+        dependencyTarget.force(dependencySpec);
+
+        extension.setForceDependencies(false);
+
+        assertThat(dependencyTarget.forcedDependencies())
+                .isEmpty();
+    }
+
+    @Test
+    @DisplayName("expose whether configuration enforcement is enabled")
+    void exposeWhetherConfigurationForced() {
+        assertThat(extension.getForceDependencies()).isFalse();
+        extension.setForceDependencies(true);
+        assertThat(extension.getForceDependencies()).isTrue();
+    }
 }

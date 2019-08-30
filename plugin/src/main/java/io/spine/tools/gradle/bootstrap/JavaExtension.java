@@ -20,6 +20,8 @@
 
 package io.spine.tools.gradle.bootstrap;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableSet;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.GeneratedSourceRoot;
@@ -110,6 +112,16 @@ public final class JavaExtension extends CodeGenExtension {
     private void addSourceSets() {
         GeneratedSourceRoot sourceRoot = GeneratedSourceRoot.of(project);
         directoryStructure.register(sourceRoot);
+    }
+
+    @Override
+    protected ImmutableSet<String> forcedDependencies() {
+        return ImmutableSet.of(protobufJavaSpec());
+    }
+
+    @VisibleForTesting
+    String protobufJavaSpec() {
+        return artifacts.protobufJava();
     }
 
     static Builder newBuilder() {

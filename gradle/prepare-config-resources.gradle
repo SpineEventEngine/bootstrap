@@ -60,6 +60,7 @@ task writeDependencies {
         
         artifacts.setProperty('spine.version', spineVersion)
         artifacts.setProperty('protobuf.compiler', deps.build.protoc)
+        artifacts.setProperty('protobuf.java', deps.build.protobuf[0])
         artifacts.setProperty('grpc.stub', deps.grpc.grpcStub)
         artifacts.setProperty('grpc.protobuf', deps.grpc.grpcProtobuf)
         artifacts.setProperty('repository.spine.release', repos.spine)

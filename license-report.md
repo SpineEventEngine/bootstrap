@@ -1,6 +1,6 @@
 
     
-# Dependencies of `io.spine.tools:spine-plugin:1.0.1`
+# Dependencies of `io.spine.tools:spine-plugin:1.0.2`
 
 ## Runtime
 1. **Group:** aopalliance **Name:** aopalliance **Version:** 1.0
@@ -243,16 +243,16 @@
      * **Manifest license URL:** [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
      * **POM License: 3-Clause BSD License** - [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
 
-1. **Group:** com.google.truth **Name:** truth **Version:** 0.44
+1. **Group:** com.google.truth **Name:** truth **Version:** 1.0
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.truth.extensions **Name:** truth-java8-extension **Version:** 0.44
+1. **Group:** com.google.truth.extensions **Name:** truth-java8-extension **Version:** 1.0
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.truth.extensions **Name:** truth-liteproto-extension **Version:** 0.44
+1. **Group:** com.google.truth.extensions **Name:** truth-liteproto-extension **Version:** 1.0
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** com.google.truth.extensions **Name:** truth-proto-extension **Version:** 0.44
+1. **Group:** com.google.truth.extensions **Name:** truth-proto-extension **Version:** 1.0
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 1. **Group:** com.googlecode.java-diff-utils **Name:** diffutils **Version:** 1.3.0
@@ -488,4 +488,4 @@
  The dependencies distributed under several licenses, are used according their commercial-use-friendly license.
 
 
-This report was generated on **Sat Aug 10 18:46:29 EEST 2019** using [Gradle-License-Report plugin](https://github.com/jk1/Gradle-License-Report) by Evgeny Naumenko, licensed under [Apache 2.0 License](https://github.com/jk1/Gradle-License-Report/blob/master/LICENSE).
+This report was generated on **Fri Aug 30 14:26:48 EEST 2019** using [Gradle-License-Report plugin](https://github.com/jk1/Gradle-License-Report) by Evgeny Naumenko, licensed under [Apache 2.0 License](https://github.com/jk1/Gradle-License-Report/blob/master/LICENSE).
