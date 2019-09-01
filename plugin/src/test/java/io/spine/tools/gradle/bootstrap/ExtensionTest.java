@@ -96,6 +96,54 @@ class ExtensionTest {
     class ApplyPlugins {
 
         @Test
+        @DisplayName("add `base` dependency to a Java project")
+        void addBaseDependencyToJava() {
+            extension.enableJava();
+            assertThat(dependencyTarget.dependencies())
+                    .contains(baseDependency());
+        }
+
+        @Test
+        @DisplayName("add `base` dependency to a JS project")
+        void addBaseDependencyToJs() {
+            extension.enableJavaScript();
+            assertThat(dependencyTarget.dependencies())
+                    .contains(baseDependency());
+        }
+
+        @Test
+        @DisplayName("add `base` dependency to a model-only project")
+        void addBaseDependencyToModel() {
+            extension.assembleModel();
+            assertThat(dependencyTarget.dependencies())
+                    .contains(baseDependency());
+        }
+
+        @Test
+        @DisplayName("add `time` dependency to a Java project")
+        void addTimeDependencyToJava() {
+            extension.enableJava();
+            assertThat(dependencyTarget.dependencies())
+                    .contains(timeDependency());
+        }
+
+        @Test
+        @DisplayName("add `time` dependency to a JS project")
+        void addTimeDependencyToJs() {
+            extension.enableJavaScript();
+            assertThat(dependencyTarget.dependencies())
+                    .contains(timeDependency());
+        }
+
+        @Test
+        @DisplayName("add `time` dependency to a model-only project")
+        void addTimeDependencyToModel() {
+            extension.assembleModel();
+            assertThat(dependencyTarget.dependencies())
+                    .contains(timeDependency());
+        }
+
+        @Test
         @DisplayName("apply Model Compiler plugin to a Java project")
         void applyModelCompiler() {
             extension.enableJava();
@@ -118,6 +166,14 @@ class ExtensionTest {
             extension.enableJava();
             assertThat(dependencyTarget.dependencies())
                     .contains(testlibDependency());
+        }
+
+        @Test
+        @DisplayName("add `testutil-time` dependency to a Java project")
+        void addTestUtilTimeDependecy() {
+            extension.enableJava();
+            assertThat(dependencyTarget.dependencies())
+                    .contains(testUtilTimeDependency());
         }
 
         @Test
@@ -154,6 +210,15 @@ class ExtensionTest {
 
             assertThat(dependencyTarget.dependencies())
                     .doesNotContain(testlibDependency());
+        }
+
+        @Test
+        @DisplayName("not add a `testutil-time` dependency to a JS project")
+        void noTestUtilTimeForJs() {
+            extension.enableJavaScript();
+
+            assertThat(dependencyTarget.dependencies())
+                    .doesNotContain(testUtilTimeDependency());
         }
 
         @Test
@@ -278,6 +343,14 @@ class ExtensionTest {
             assertFalse(codegen.getProtobuf());
         }
 
+        private String baseDependency() {
+            return "io.spine:spine-base:" + spineVersion;
+        }
+
+        private String timeDependency() {
+            return "io.spine:spine-time:" + spineVersion;
+        }
+
         private String serverDependency() {
             return "io.spine:spine-server:" + spineVersion;
         }
@@ -296,6 +369,10 @@ class ExtensionTest {
 
         private String testlibDependency() {
             return "io.spine:spine-testlib:" + spineVersion;
+        }
+
+        private String testUtilTimeDependency() {
+            return "io.spine:spine-testutil-time:" + spineVersion;
         }
 
         private void assertApplied(Class<? extends Plugin<? extends Project>> pluginClass) {

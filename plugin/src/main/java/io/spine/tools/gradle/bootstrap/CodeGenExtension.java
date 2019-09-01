@@ -33,6 +33,7 @@ import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.config.SpineDependency.base;
+import static io.spine.tools.gradle.config.SpineDependency.time;
 
 /**
  * A part of the {@link Extension spine} extension which configures certain code generation tasks.
@@ -71,6 +72,7 @@ abstract class CodeGenExtension implements Logging {
         pluginTarget.applyJavaPlugin();
         String spineVersion = artifactSnapshot.spineVersion();
         dependant.compile(base().ofVersion(spineVersion));
+        dependant.compile(time().ofVersion(spineVersion));
         if (codeGenJob != null) {
             pluginTarget.applyProtobufPlugin();
             protobufGenerator.enableBuiltIn(codeGenJob);

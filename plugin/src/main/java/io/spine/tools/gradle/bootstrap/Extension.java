@@ -22,10 +22,8 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
-import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
-import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.project.SourceSuperset;
@@ -38,7 +36,6 @@ import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.tasks.TaskContainer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ConfigurationName.testImplementation;
 import static io.spine.tools.gradle.TaskName.compileJava;
 import static io.spine.tools.gradle.TaskName.compileTestJava;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
@@ -124,8 +121,6 @@ public final class Extension {
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {
         java.enableGeneration();
-        Artifact testlib = SpineDependency.testlib().ofVersion(version());
-        java.dependant().depend(testImplementation, testlib.notation());
         toggleJavaTasks(true);
         disableTransitiveProtos();
         return java;
