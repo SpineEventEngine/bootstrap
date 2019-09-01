@@ -30,11 +30,13 @@ public final class SpineDependency implements Dependency {
     private static final String SPINE_PREFIX = "spine-";
 
     private static final SpineDependency BASE = new SpineDependency("base");
+    private static final SpineDependency TIME = new SpineDependency("time");
     private static final SpineDependency CLIENT = new SpineDependency("client");
     private static final SpineDependency SERVER = new SpineDependency("server");
     private static final SpineDependency TEST_UTIL_SERVER = new SpineDependency("testutil-server");
     private static final SpineDependency TEST_UTIL_CLIENT = new SpineDependency("testutil-client");
     private static final SpineDependency TESTLIB = new SpineDependency("testlib");
+    private static final SpineDependency TEST_UTIL_TIME = new SpineDependency("testutil-time");
 
     private final String shortName;
 
@@ -47,6 +49,13 @@ public final class SpineDependency implements Dependency {
      */
     public static SpineDependency base() {
         return BASE;
+    }
+
+    /**
+     * Obtains a dependency on the {@code io.spine:spine-base} module.
+     */
+    public static SpineDependency time() {
+        return TIME;
     }
 
     /**
@@ -77,8 +86,18 @@ public final class SpineDependency implements Dependency {
         return TEST_UTIL_CLIENT;
     }
 
+    /**
+     * Obtains a dependency on the {@code io.spine:testlib} module.
+     */
     public static SpineDependency testlib() {
         return TESTLIB;
+    }
+
+    /**
+     * Obtains a dependency on the {@code io.spine:testutil-time} module.
+     */
+    public static SpineDependency testUtilTime() {
+        return TEST_UTIL_TIME;
     }
 
     @Override
