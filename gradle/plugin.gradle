@@ -60,7 +60,7 @@ project.pluginBundle {
  */
 
 project.jar {
-    classifier = 'pure'
+    archiveClassifier.set 'pure'
     it.dependsOn project.shadowJar
 }
 
