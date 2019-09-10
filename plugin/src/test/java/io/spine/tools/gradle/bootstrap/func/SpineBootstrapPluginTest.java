@@ -279,8 +279,7 @@ class SpineBootstrapPluginTest {
 
     private void configureJsGeneration() {
         writeConfigGradle(
-                "spine.enableJavaScript()",
-                "compileJava.enabled = false"
+                "spine.enableJavaScript()"
         );
     }
 
