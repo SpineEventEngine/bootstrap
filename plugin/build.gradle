@@ -18,6 +18,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '0.10.1'
@@ -36,4 +38,22 @@ dependencies {
     
     testImplementation "io.spine:spine-testlib:$spineVersion"
     testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
+}
+
+final targetResourceDir = "$buildDir/compiledResources/"
+
+task prepareBuildScript(type: Copy) { final Copy task ->
+    description = 'Creates the `build.gradle` script which is executed in functional tests of the plugin.'
+
+    from "$projectDir/src/test/build.gradle.template"
+    into targetResourceDir
+
+    rename { final _ -> 'build.gradle' }
+    filter(ReplaceTokens, tokens: ['spine-version': spineVersion])
+}
+
+processTestResources.dependsOn 'prepareBuildScript'
+
+sourceSets {
+    test.resources.srcDir(targetResourceDir)
 }

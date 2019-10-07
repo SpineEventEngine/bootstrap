@@ -19,12 +19,12 @@
  */
 
 plugins {
-    id 'io.spine.tools.gradle.bootstrap' version '1.1.2'
+    id 'io.spine.tools.gradle.bootstrap' version '@spine-version@'
 }
 
 // This script file is created at a test runtime by the `GradleProject`.
 //
 // If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case
-// performs such a configuration in `config.gradle`. 
+// performs such a configuration in `config.gradle`.
 //
 apply from: 'config.gradle'
