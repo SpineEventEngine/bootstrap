@@ -52,7 +52,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(TempDirectory.class)
 @SlowTest
-@DisplayName("`io.spine.bootstrap` plugin should")
+@DisplayName("`io.spine.tools.gradle.bootstrap` plugin should")
 class SpineBootstrapPluginTest {
 
     private static final String ADDITIONAL_CONFIG_SCRIPT = "config.gradle";
