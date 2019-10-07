@@ -18,10 +18,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '0.10.1'
-    id "com.github.johnrengelman.shadow" version "5.0.0"
+    id "com.github.johnrengelman.shadow" version "5.1.0"
 }
 
 apply from: "$rootDir/gradle/plugin.gradle"
@@ -29,11 +31,30 @@ apply from: "$rootDir/gradle/func-test-env.gradle"
 apply from: "$rootDir/gradle/prepare-config-resources.gradle"
 
 dependencies {
+    implementation gradleApi()
     implementation "io.spine.tools:spine-plugin-base:$spineVersion"
     implementation "io.spine.tools:spine-model-compiler:$spineVersion"
     implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
     implementation deps.build.gradlePlugins.protobuf
-    
+
     testImplementation "io.spine:spine-testlib:$spineVersion"
     testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
+}
+
+final targetResourceDir = "$buildDir/compiledResources/"
+
+task prepareBuildScript(type: Copy) { final Copy task ->
+    description = 'Creates the `build.gradle` script which is executed in functional tests of the plugin.'
+
+    from "$projectDir/src/test/build.gradle.template"
+    into targetResourceDir
+
+    rename { final _ -> 'build.gradle' }
+    filter(ReplaceTokens, tokens: ['spine-version': spineVersion])
+}
+
+processTestResources.dependsOn 'prepareBuildScript'
+
+sourceSets {
+    test.resources.srcDir(targetResourceDir)
 }
