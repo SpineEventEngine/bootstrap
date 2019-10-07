@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import io.spine.code.proto.FileDescriptors;
+import io.spine.testing.SlowTest;
 import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.testing.GradleProject;
 import org.gradle.testkit.runner.BuildResult;
@@ -50,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(TempDirectory.class)
-@Functional
+@SlowTest
 @DisplayName("`io.spine.bootstrap` plugin should")
 class SpineBootstrapPluginTest {
 
