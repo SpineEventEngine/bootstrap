@@ -23,7 +23,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id 'java-gradle-plugin'
     id 'com.gradle.plugin-publish' version '0.10.1'
-    id "com.github.johnrengelman.shadow" version "5.0.0"
+    id "com.github.johnrengelman.shadow" version "5.1.0"
 }
 
 apply from: "$rootDir/gradle/plugin.gradle"
@@ -31,11 +31,12 @@ apply from: "$rootDir/gradle/func-test-env.gradle"
 apply from: "$rootDir/gradle/prepare-config-resources.gradle"
 
 dependencies {
+    implementation gradleApi()
     implementation "io.spine.tools:spine-plugin-base:$spineVersion"
     implementation "io.spine.tools:spine-model-compiler:$spineVersion"
     implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
     implementation deps.build.gradlePlugins.protobuf
-    
+
     testImplementation "io.spine:spine-testlib:$spineVersion"
     testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
 }
