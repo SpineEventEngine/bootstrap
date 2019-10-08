@@ -31,8 +31,8 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.TaskName.generateRejections;
-import static io.spine.tools.gradle.TaskName.generateTestRejections;
+import static io.spine.tools.gradle.ModelCompilerTaskName.generateRejections;
+import static io.spine.tools.gradle.ModelCompilerTaskName.generateTestRejections;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 
 /**
@@ -142,7 +142,7 @@ public final class JavaCodegenExtension implements Logging {
 
     private void updateModelCompilerTask(TaskName taskName) {
         Task task = project.getTasks()
-                           .findByName(taskName.value());
+                           .findByName(taskName.name());
         if (task != null) {
             task.setEnabled(spine);
         } else {
