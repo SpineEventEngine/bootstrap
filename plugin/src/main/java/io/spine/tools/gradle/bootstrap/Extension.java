@@ -36,8 +36,8 @@ import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.tasks.TaskContainer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.TaskName.compileJava;
-import static io.spine.tools.gradle.TaskName.compileTestJava;
+import static io.spine.tools.gradle.JavaTaskName.compileJava;
+import static io.spine.tools.gradle.JavaTaskName.compileTestJava;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
 import static org.gradle.util.ConfigureUtil.configure;
 
@@ -51,9 +51,6 @@ public final class Extension {
 
     @SuppressWarnings("DuplicateStringLiteralInspection") // Used in tests and with other meanings.
     static final String NAME = "spine";
-
-    static final String COMPILE_JAVA = compileJava.value();
-    private static final String COMPILE_TEST_JAVA = compileTestJava.value();
 
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
@@ -251,13 +248,13 @@ public final class Extension {
      */
     private void toggleCompileJavaTasks(boolean enabled) {
         TaskContainer tasks = project.getTasks();
-        Task compileJava = tasks.findByPath(COMPILE_JAVA);
-        Task compileTestJava = tasks.findByPath(COMPILE_TEST_JAVA);
-        if (compileJava != null) {
-            compileJava.setEnabled(enabled);
+        Task compileJavaTask = tasks.findByPath(compileJava.name());
+        Task compileTestJavaTask = tasks.findByPath(compileTestJava.name());
+        if (compileJavaTask != null) {
+            compileJavaTask.setEnabled(enabled);
         }
-        if (compileTestJava != null) {
-            compileTestJava.setEnabled(enabled);
+        if (compileTestJavaTask != null) {
+            compileTestJavaTask.setEnabled(enabled);
         }
     }
 
