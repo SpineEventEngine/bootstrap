@@ -45,7 +45,6 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'maven'
     apply plugin: 'idea'
 
     apply plugin: 'net.ltgt.errorprone'
