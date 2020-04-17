@@ -31,14 +31,17 @@ apply from: "$rootDir/gradle/func-test-env.gradle"
 apply from: "$rootDir/gradle/prepare-config-resources.gradle"
 
 dependencies {
-    implementation gradleApi()
-    implementation "io.spine.tools:spine-plugin-base:$spineVersion"
-    implementation "io.spine.tools:spine-model-compiler:$spineVersion"
-    implementation "io.spine.tools:spine-proto-js-plugin:$spineVersion"
-    implementation deps.build.gradlePlugins.protobuf
-
-    testImplementation "io.spine:spine-testlib:$spineVersion"
-    testImplementation "io.spine.tools:spine-plugin-testlib:$spineVersion"
+    implementation(
+            gradleApi(),
+            deps.build.gradlePlugins.protobuf,
+            "io.spine.tools:spine-plugin-base:$spineVersion",
+            "io.spine.tools:spine-model-compiler:$spineVersion",
+            "io.spine.tools:spine-proto-js-plugin:$spineVersion",
+    )
+    testImplementation(
+            "io.spine:spine-testlib:$spineVersion",
+            "io.spine.tools:spine-plugin-testlib:$spineVersion"
+    )
 }
 
 final targetResourceDir = "$buildDir/compiledResources/"
