@@ -32,7 +32,7 @@ project.gradlePlugin {
 project.pluginBundle {
     website = 'https://spine.io/'
     vcsUrl = 'https://github.com/SpineEventEngine/bootstrap.git'
-    tags = ['spine', 'event-sourcing', 'bootstrap', 'quick-start']
+    tags = ['spine', 'event-sourcing', 'ddd', 'cqrs', 'bootstrap']
 
     it.mavenCoordinates {
         groupId = 'io.spine.tools'
