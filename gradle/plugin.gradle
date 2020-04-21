@@ -32,7 +32,7 @@ project.gradlePlugin {
 project.pluginBundle {
     website = 'https://spine.io/'
     vcsUrl = 'https://github.com/SpineEventEngine/bootstrap.git'
-    tags = ['spine', 'event-sourcing', 'bootstrap', 'quick-start']
+    tags = ['spine', 'event-sourcing', 'ddd', 'cqrs', 'bootstrap']
 
     it.mavenCoordinates {
         groupId = 'io.spine.tools'
@@ -51,7 +51,7 @@ project.pluginBundle {
 
 /*
  * In order to simplify the Bootstrap plugin usage, the plugin should have no external dependencies
- * which cannot be found in the Plugin portal or In JCenter. Spine core modules are not published to
+ * which cannot be found in the Plugin portal or in JCenter. Spine core modules are not published to
  * either of those repositories. Thus, we publish the "fat" JAR.
  * 
  * As Gradle Plugin plugin always publishes the JAR artifact with the empty classifier, we add 
