@@ -44,6 +44,17 @@ spine.enableJava().server()
 This config will add required dependencies for developing a Spine-based Java client and server 
 respectively.
 
+### Obtaining the version when adding other dependencies
+
+In order to use the same version for other Spine libraries, please use `sine.version()`. For example, adding testing utilities would look like this:
+
+```gradle
+dependencies {
+   //...
+   testImplementation "io.spine:spine-testutil-server:${spine.version()}"   
+}   
+```
+
 ### gRPC code generation
 
 Spine relies on [gRPC](https://grpc.io/).
