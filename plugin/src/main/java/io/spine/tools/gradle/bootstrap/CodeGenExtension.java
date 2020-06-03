@@ -70,9 +70,8 @@ abstract class CodeGenExtension implements Logging {
     @OverridingMethodsMustInvokeSuper
     void enableGeneration() {
         pluginTarget.applyJavaPlugin();
-        String spineVersion = artifactSnapshot.spineVersion();
-        dependant.compile(base().ofVersion(spineVersion));
-        dependant.compile(time().ofVersion(spineVersion));
+        dependant.compile(base().ofVersion(artifactSnapshot.spineBaseVersion()));
+        dependant.compile(time().ofVersion(artifactSnapshot.spineTimeVersion()));
         if (codeGenJob != null) {
             pluginTarget.applyProtobufPlugin();
             protobufGenerator.enableBuiltIn(codeGenJob);

@@ -30,7 +30,6 @@ plugins {
  */
 configurations { create("fetch") }
 
-val spineVersion: String by extra
 val spineBaseVersion: String by extra
 
 var spineProtocPluginDependency: Dependency? = null

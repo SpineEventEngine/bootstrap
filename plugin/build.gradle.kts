@@ -109,4 +109,3 @@ tasks.shadowJar {
 artifacts {
     archives(tasks.shadowJar)
 }
-

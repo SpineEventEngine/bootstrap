@@ -38,7 +38,9 @@ public final class FakeArtifacts {
     public static ArtifactSnapshot snapshot() {
         return ArtifactSnapshot
                 .newBuilder()
-                .setSpineVersion(spineVersion)
+                .setSpineBaseVersion(spineVersion)
+                .setSpineTimeVersion(spineVersion)
+                .setSpineCoreVersion(spineVersion)
                 .setGrpcProtobuf(GRPC_PROTO_DEPENDENCY)
                 .setGrpcStub(GRPC_STUB_DEPENDENCY)
                 .setProtoc("com.google.protobuf:protoc:3.6.1")

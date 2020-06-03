@@ -23,6 +23,7 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import groovy.lang.Closure;
+import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.GeneratedSourceRoot;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
@@ -35,6 +36,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ConfigurationName.implementation;
 import static io.spine.tools.gradle.ConfigurationName.testImplementation;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
+import static io.spine.tools.gradle.config.SpineDependency.testUtilTime;
+import static io.spine.tools.gradle.config.SpineDependency.testlib;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 import static org.gradle.util.ConfigureUtil.configure;
@@ -60,8 +63,8 @@ public final class JavaExtension extends CodeGenExtension {
     @Override
     void enableGeneration() {
         super.enableGeneration();
-        dependOn(SpineDependency.testlib(), testImplementation);
-        dependOn(SpineDependency.testUtilTime(), testImplementation);
+        dependOn(testlib().ofVersion(artifacts.spineBaseVersion()), testImplementation);
+        dependOn(testUtilTime().ofVersion(artifacts.spineTimeVersion()), testImplementation);
         pluginTarget().applyModelCompiler();
         pluginTarget().apply(SpinePluginScripts.modelCompilerConfig());
         addSourceSets();
@@ -91,8 +94,8 @@ public final class JavaExtension extends CodeGenExtension {
      * dependencies to the project.
      */
     public void client() {
-        dependOn(SpineDependency.client(), implementation);
-        dependOn(SpineDependency.testUtilClient(), testImplementation);
+        dependOnCore(SpineDependency.client(), implementation);
+        dependOnCore(SpineDependency.testUtilClient(), testImplementation);
     }
 
     /**
@@ -102,13 +105,18 @@ public final class JavaExtension extends CodeGenExtension {
      * dependencies to the project.
      */
     public void server() {
-        dependOn(SpineDependency.server(), implementation);
-        dependOn(SpineDependency.testUtilServer(), testImplementation);
+        dependOnCore(SpineDependency.server(), implementation);
+        dependOnCore(SpineDependency.testUtilServer(), testImplementation);
     }
 
-    private void dependOn(SpineDependency module, ConfigurationName configurationName) {
+    private void dependOn(Artifact module, ConfigurationName configurationName) {
+        dependant().depend(configurationName, module.notation());
+    }
+
+    private void dependOnCore(SpineDependency module, ConfigurationName configurationName) {
         String spineVersion = artifacts.spineVersion();
-        dependant().depend(configurationName, module.ofVersion(spineVersion).notation());
+        Artifact artifact = module.ofVersion(spineVersion);
+        dependOn(artifact, configurationName);
     }
 
     private void addSourceSets() {

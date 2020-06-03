@@ -49,16 +49,16 @@ tasks.register("copyModelCompilerConfig", Copy::class) {
     }
 }
 
+val spineBaseVersion: String by extra
+val spineTimeVersion: String by extra
 val spineVersion: String by extra
 
-tasks.register("writeDependencies") {
+val writeDependencies by tasks.registering {
     group = taskGroup
 
     inputs.dir(configDir)
     inputs.property("version", spineVersion)
     outputs.file(versionSnapshot)
-
-    tasks.processResources.get().dependsOn(this)
 
     doFirst {
         bootstrapDir.mkdirs()
@@ -70,7 +70,9 @@ tasks.register("writeDependencies") {
     doLast {
         val artifacts = Properties()
 
-        artifacts.setProperty("spine.version", spineVersion)
+        artifacts.setProperty("spine.version.base", spineBaseVersion)
+        artifacts.setProperty("spine.version.time", spineTimeVersion)
+        artifacts.setProperty("spine.version.core", spineVersion)
         artifacts.setProperty("protobuf.compiler", Deps.build.protoc)
         artifacts.setProperty("protobuf.java", Deps.build.protobuf[0])
         artifacts.setProperty("grpc.stub", Deps.grpc.stub)
@@ -78,10 +80,12 @@ tasks.register("writeDependencies") {
         artifacts.setProperty("repository.spine.release", Repos.spine)
         artifacts.setProperty("repository.spine.snapshot", Repos.spineSnapshots)
 
-        artifacts.store(
-                FileWriter(versionSnapshot),
-                "Dependencies and versions required by Spine."
-        )
+        FileWriter(versionSnapshot).use {
+            artifacts.store(it, "Dependencies and versions required by Spine.")
+        }
     }
 }
 
+tasks.processResources {
+    dependsOn(writeDependencies)
+}
