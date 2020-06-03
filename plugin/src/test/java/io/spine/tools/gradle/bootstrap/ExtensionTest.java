@@ -40,9 +40,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -57,8 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(TempDirectory.class)
-@DisplayName("`spine` extension should")
+@DisplayName("`spine` extension øshould")
 class ExtensionTest {
 
     private PluginTarget pluginTarget;
@@ -74,7 +71,8 @@ class ExtensionTest {
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
-        this.projectDir = project.getProjectDir().toPath();
+        this.projectDir = project.getProjectDir()
+                                 .toPath();
         pluginTarget = new MemoizingPluginRegistry();
         dependencyTarget = new MemoizingDependant();
         codeLayout = new MemoizingSourceSuperset();
@@ -243,7 +241,8 @@ class ExtensionTest {
         @Test
         @DisplayName("add server dependencies if required")
         void server() {
-            extension.enableJava().server();
+            extension.enableJava()
+                     .server();
 
             assertApplied(JavaPlugin.class);
             assertThat(dependencyTarget.dependencies()).contains(serverDependency());
@@ -261,7 +260,8 @@ class ExtensionTest {
         @Test
         @DisplayName("add `testutil-server` dependency for enableJava().server() declaring modules")
         void testUtilDependencyAdded() {
-            extension.enableJava().server();
+            extension.enableJava()
+                     .server();
 
             assertThat(dependencyTarget.dependencies())
                     .contains(testUtilServerDependency());
@@ -270,7 +270,8 @@ class ExtensionTest {
         @Test
         @DisplayName("add client dependencies if required")
         void client() {
-            extension.enableJava().client();
+            extension.enableJava()
+                     .client();
 
             IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
             assertDependencies.contains(clientDependency());
