@@ -9,7 +9,7 @@ The Gradle plugin for bootstrapping projects built with Spine.
 In order to apply the plugin to a Gradle project, in `build.gralde` add the following config:
 ```gradle
 plugins {
-    id 'io.spine.tools.gradle.bootstrap' version '1.5.8'
+    id("io.spine.tools.gradle.bootstrap").version("1.5.8")
 }
 ```
 
@@ -51,7 +51,7 @@ In order to use the same version for other Spine libraries, please use `sine.ver
 ```gradle
 dependencies {
    //...
-   testImplementation "io.spine:spine-testutil-server:${spine.version()}"   
+   testImplementation("io.spine:spine-testutil-server:${spine.version()}")   
 }   
 ```
 
