@@ -37,16 +37,19 @@ sourceSets.main {
 
 val taskGroup = "Spine bootstrapping"
 
-tasks.register("copyModelCompilerConfig", Copy::class) {
+val copyModelCompilerConfig by tasks.registering(Copy::class) {
     group = taskGroup
 
     from(file("$configDir/gradle/model-compiler.gradle"))
     into(file(bootstrapDir))
 
-    tasks.processResources.get().dependsOn(this)
     doFirst {
         bootstrapDir.mkdirs()
     }
+}
+
+tasks.processResources {
+    dependsOn(copyModelCompilerConfig)
 }
 
 val spineBaseVersion: String by extra
