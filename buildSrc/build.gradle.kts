@@ -19,8 +19,6 @@
  */
 
 plugins {
-    // Use Kotlin for `buildSrc`.
-    // https://kotlinlang.org/docs/reference/using-gradle.html#targeting-the-jvm
     `kotlin-dsl`
 }
 
