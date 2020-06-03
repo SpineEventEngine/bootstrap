@@ -21,7 +21,7 @@
 plugins {
     // Use Kotlin for `buildSrc`.
     // https://kotlinlang.org/docs/reference/using-gradle.html#targeting-the-jvm
-    kotlin("jvm").version("1.3.72")
+    `kotlin-dsl`
 }
 
 repositories {
