@@ -18,41 +18,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-Dependency spineProtocPluginDependency = null
-
-/*
- * Creates a configuration named `fetch`.
- *
- * The configuration is used in order to download artifacts. The artifacts are NOT added into
- * the application classpath.
- */
-configurations { fetch }
-
-dependencies {
-    spineProtocPluginDependency = fetch("io.spine.tools:spine-protoc-plugin:${spineVersion}@jar")
+plugins {
+    java
+    `java-gradle-plugin`
 }
 
-final File spineArtifactDir = file("$projectDir/.spine")
-
-project.task("downloadProtocPlugin") {
-    description = 'Downloads the Spine Protoc plugin for functional tests.'
-
-    doLast {
-        final File executableJar = configurations.fetch
-                .fileCollection(spineProtocPluginDependency)
-                .getSingleFile()
-        spineArtifactDir.mkdirs()
-        copy {
-            from executableJar
-            into spineArtifactDir
+gradlePlugin {
+    plugins {
+        create("spineBootstrapPlugin") {
+            id = "io.spine.tools.gradle.bootstrap"
+            implementationClass = "io.spine.tools.gradle.bootstrap.BootstrapPlugin"
+            displayName = "Spine Bootstrap"
+            description = "Prepares a Gradle project for development on Spine."
         }
     }
-
-    mustRunAfter project.clean
-    project.slowTest.dependsOn it
-    project.test.dependsOn it
-}
-
-project.clean {
-    delete += spineArtifactDir
 }
