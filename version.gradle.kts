@@ -29,8 +29,5 @@
  * already in the root directory.
  */
 
-final def SPINE_VERSION = '1.5.8'
-
-ext {
-    spineVersion = SPINE_VERSION
-}
+val spineBaseVersion: String by extra("1.5.12")
+val spineVersion: String by extra("1.5.14")
