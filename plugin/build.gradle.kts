@@ -19,6 +19,7 @@
  */
 
 import io.spine.gradle.internal.Deps
+import io.spine.gradle.internal.IncrementGuard
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
@@ -29,6 +30,8 @@ plugins {
     `func-test-env`
     `prepare-config-resources`
 }
+
+apply<IncrementGuard>()
 
 val spineVersion: String by extra
 val spineBaseVersion: String by extra
