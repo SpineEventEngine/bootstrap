@@ -35,6 +35,7 @@ apply<IncrementGuard>()
 
 val spineVersion: String by extra
 val spineBaseVersion: String by extra
+val pluginVersion: String by extra
 
 dependencies {
     implementation(gradleApi())
@@ -78,14 +79,14 @@ pluginBundle {
     mavenCoordinates {
         groupId = "io.spine.tools"
         artifactId = "spine-bootstrap"
-        version = spineVersion
+        version = pluginVersion
     }
 
     withDependencies { clear() }
 
     plugins {
         named("spineBootstrapPlugin") {
-            version = spineVersion
+            version = pluginVersion
         }
     }
 }
