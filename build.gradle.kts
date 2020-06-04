@@ -37,13 +37,14 @@ apply(from = "$rootDir/version.gradle.kts")
 
 val spineVersion: String by extra
 val spineBaseVersion: String by extra
+val pluginVersion: String by extra
 
 allprojects {
     apply(from = "$rootDir/version.gradle.kts")
     apply(from = "$rootDir/config/gradle/dependencies.gradle")
 
     group = "io.spine.tools"
-    version = spineVersion
+    version = pluginVersion
 }
 
 subprojects {
