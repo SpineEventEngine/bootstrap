@@ -18,19 +18,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Declares the version of the artifacts to publish and versions of
- * project-specific general dependencies.
- *
- * This file is used in both module `build.gradle` scripts and in the integration tests,
- * as we want to manage the versions in a single source.
- * 
- * This file is copied to the root of the project ONLY if there's no file with such a name
- * already in the root directory.
- */
+plugins {
+    java
+    `java-gradle-plugin`
+}
 
-final def SPINE_VERSION = '1.5.8'
-
-ext {
-    spineVersion = SPINE_VERSION
+gradlePlugin {
+    plugins {
+        create("spineBootstrapPlugin") {
+            id = "io.spine.tools.gradle.bootstrap"
+            implementationClass = "io.spine.tools.gradle.bootstrap.BootstrapPlugin"
+            displayName = "Spine Bootstrap"
+            description = "Prepares a Gradle project for development on Spine."
+        }
+    }
 }

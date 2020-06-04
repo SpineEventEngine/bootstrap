@@ -18,6 +18,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-rootProject.name = 'spine-bootstrap'
+package io.spine.gradle.internal
 
-include ':plugin'
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+
+/**
+ * Gradle plugin which adds a [CheckVersionIncrement] task.
+ *
+ * The task is called `checkVersionIncrement` inserted before the `check` task.
+ */
+class IncrementGuard : Plugin<Project> {
+
+    companion object {
+        const val taskName = "checkVersionIncrement"
+    }
+
+    override fun apply(target: Project) {
+        val tasks = target.tasks
+        tasks.register(taskName, CheckVersionIncrement::class.java) {
+            repository = PublishingRepos.cloudRepo
+            tasks.getByName("check").dependsOn(this)
+
+            shouldRunAfter("test")
+        }
+    }
+}

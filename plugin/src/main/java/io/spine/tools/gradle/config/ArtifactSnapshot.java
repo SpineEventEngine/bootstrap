@@ -41,7 +41,10 @@ public final class ArtifactSnapshot {
 
     private static final ArtifactSnapshot instance = load();
 
-    private final String spineVersion;
+    private final String spineBaseVersion;
+    private final String spineTimeVersion;
+    private final String spineCoreVersion;
+
     private final String protoc;
     private final String protobufJava;
     private final String grpcProtobuf;
@@ -54,7 +57,9 @@ public final class ArtifactSnapshot {
      * Prevents direct instantiation.
      */
     private ArtifactSnapshot(Builder builder) {
-        this.spineVersion = checkNotNull(builder.spineVersion);
+        this.spineBaseVersion = checkNotNull(builder.spineBaseVersion);
+        this.spineTimeVersion = checkNotNull(builder.spineTimeVersion);
+        this.spineCoreVersion = checkNotNull(builder.spineCoreVersion);
         this.protoc = checkNotNull(builder.protoc);
         this.protobufJava = checkNotNull(builder.protobufJava);
         this.grpcProtobuf = checkNotNull(builder.grpcProtobuf);
@@ -72,7 +77,9 @@ public final class ArtifactSnapshot {
             throw illegalStateWithCauseOf(e);
         }
         ArtifactSnapshot snapshot = newBuilder()
-                .setSpineVersion(properties.getProperty("spine.version"))
+                .setSpineCoreVersion(properties.getProperty("spine.version.core"))
+                .setSpineBaseVersion(properties.getProperty("spine.version.base"))
+                .setSpineTimeVersion(properties.getProperty("spine.version.time"))
                 .setProtoc(properties.getProperty("protobuf.compiler"))
                 .setProtobufJava(properties.getProperty("protobuf.java"))
                 .setGrpcProtobuf(properties.getProperty("grpc.protobuf"))
@@ -93,10 +100,24 @@ public final class ArtifactSnapshot {
     }
 
     /**
-     * Obtains the current version of Spine.
+     * Obtains the current version of Spine core.
      */
     public String spineVersion() {
-        return spineVersion;
+        return spineCoreVersion;
+    }
+
+    /**
+     * Obtains the current version of Spine {@code base}.
+     */
+    public String spineBaseVersion() {
+        return spineBaseVersion;
+    }
+
+    /**
+     * Obtains the current version of Spine {@code time}.
+     */
+    public String spineTimeVersion() {
+        return spineTimeVersion;
     }
 
     /**
@@ -149,7 +170,9 @@ public final class ArtifactSnapshot {
      */
     public static final class Builder {
 
-        private String spineVersion;
+        private String spineBaseVersion;
+        private String spineTimeVersion;
+        private String spineCoreVersion;
         private String protoc;
         private String protobufJava;
         private String grpcProtobuf;
@@ -163,28 +186,38 @@ public final class ArtifactSnapshot {
         private Builder() {
         }
 
-        public Builder setSpineVersion(String version) {
-            this.spineVersion = version;
+        public Builder setSpineBaseVersion(String spineBaseVersion) {
+            this.spineBaseVersion = checkNotNull(spineBaseVersion);
+            return this;
+        }
+
+        public Builder setSpineTimeVersion(String spineTimeVersion) {
+            this.spineTimeVersion = checkNotNull(spineTimeVersion);
+            return this;
+        }
+
+        public Builder setSpineCoreVersion(String version) {
+            this.spineCoreVersion = checkNotNull(version);
             return this;
         }
 
         public Builder setProtoc(String artifact) {
-            this.protoc = artifact;
+            this.protoc = checkNotNull(artifact);
             return this;
         }
 
         public Builder setProtobufJava(String artifact) {
-            this.protobufJava = artifact;
+            this.protobufJava = checkNotNull(artifact);
             return this;
         }
 
         public Builder setGrpcProtobuf(String artifact) {
-            this.grpcProtobuf = artifact;
+            this.grpcProtobuf = checkNotNull(artifact);
             return this;
         }
 
         public Builder setGrpcStub(String artifact) {
-            this.grpcStub = artifact;
+            this.grpcStub = checkNotNull(artifact);
             return this;
         }
 
