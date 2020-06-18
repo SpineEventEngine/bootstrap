@@ -36,7 +36,7 @@
 !.idea/misc.xml
 
 # Gradle interim configs
-.gradle/**
+**/.gradle/**
 
 # Generated source code
 **/generated/**
