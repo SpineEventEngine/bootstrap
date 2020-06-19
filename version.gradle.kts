@@ -31,5 +31,5 @@
 
 val spineBaseVersion: String by extra("1.5.19")
 val spineTimeVersion: String by extra("1.5.19")
-val spineVersion: String by extra("1.5.19")
+val spineVersion: String by extra("1.5.20")
 val pluginVersion: String by extra("1.5.22")
