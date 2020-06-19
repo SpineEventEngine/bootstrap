@@ -31,12 +31,13 @@
 .idea/.name
 .idea/libraries/**
 .idea/modules/**
+.idea/shelf/**
 
 # Do not ignore the following IDEA settings
 !.idea/misc.xml
 
 # Gradle interim configs
-.gradle/**
+**/.gradle/**
 
 # Generated source code
 **/generated/**
