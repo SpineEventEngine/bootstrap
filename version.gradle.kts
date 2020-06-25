@@ -24,12 +24,12 @@
  *
  * This file is used in both module `build.gradle` scripts and in the integration tests,
  * as we want to manage the versions in a single source.
- * 
+ *
  * This file is copied to the root of the project ONLY if there's no file with such a name
  * already in the root directory.
  */
 
-val spineBaseVersion: String by extra("1.5.19")
-val spineTimeVersion: String by extra("1.5.19")
-val spineVersion: String by extra("1.5.20")
-val pluginVersion: String by extra("1.5.23")
+val spineBaseVersion: String by extra("1.5.21")
+val spineTimeVersion: String by extra("1.5.21")
+val spineVersion: String by extra("1.5.21")
+val pluginVersion: String by extra("1.5.24")
