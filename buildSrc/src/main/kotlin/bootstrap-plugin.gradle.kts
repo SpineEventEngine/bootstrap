@@ -1,8 +1,3 @@
-import Bootstrap_plugin_gradle.Nodes.findAll
-import Bootstrap_plugin_gradle.Nodes.findFirst
-import org.w3c.dom.Node
-import org.w3c.dom.NodeList
-
 /*
  * Copyright 2020, TeamDev. All rights reserved.
  *
@@ -22,6 +17,11 @@ import org.w3c.dom.NodeList
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+import Bootstrap_plugin_gradle.Nodes.findAll
+import Bootstrap_plugin_gradle.Nodes.findFirst
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
 
 plugins {
     java
