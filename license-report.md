@@ -1,6 +1,6 @@
 
     
-# Dependencies of `io.spine.tools:spine-plugin:1.5.24`
+# Dependencies of `io.spine.tools:spine-plugin:1.5.25`
 
 ## Runtime
 1. **Group:** com.google.code.findbugs **Name:** jsr305 **Version:** 3.0.2
@@ -226,10 +226,10 @@
      * **POM Project URL:** [https://javacc.dev.java.net/](https://javacc.dev.java.net/)
      * **POM License: Berkeley Software Distribution (BSD) License** - [http://www.opensource.org/licenses/bsd-license.html](http://www.opensource.org/licenses/bsd-license.html)
 
-1. **Group:** net.sourceforge.pmd **Name:** pmd-core **Version:** 6.20.0
+1. **Group:** net.sourceforge.pmd **Name:** pmd-core **Version:** 6.24.0
      * **POM License: BSD-style** - [http://pmd.sourceforge.net/license.html](http://pmd.sourceforge.net/license.html)
 
-1. **Group:** net.sourceforge.pmd **Name:** pmd-java **Version:** 6.20.0
+1. **Group:** net.sourceforge.pmd **Name:** pmd-java **Version:** 6.24.0
      * **POM License: BSD-style** - [http://pmd.sourceforge.net/license.html](http://pmd.sourceforge.net/license.html)
 
 1. **Group:** net.sourceforge.saxon **Name:** saxon **Version:** 9.1.0.8
@@ -310,10 +310,11 @@
      * **POM Project URL:** [https://github.com/ota4j-team/opentest4j](https://github.com/ota4j-team/opentest4j)
      * **POM License: The Apache License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-1. **Group:** org.ow2.asm **Name:** asm **Version:** 7.1
+1. **Group:** org.ow2.asm **Name:** asm **Version:** 7.3.1
      * **Manifest Project URL:** [http://asm.ow2.org](http://asm.ow2.org)
-     * **POM Project URL:** [http://asm.ow2.org/](http://asm.ow2.org/)
-     * **POM License: BSD** - [http://asm.ow2.org/license.html](http://asm.ow2.org/license.html)
+     * **Manifest License:** BSD-3-Clause;link=https://asm.ow2.io/LICENSE.txt (Not packaged)
+     * **POM Project URL:** [http://asm.ow2.io/](http://asm.ow2.io/)
+     * **POM License: BSD-3-Clause** - [https://asm.ow2.io/license.html](https://asm.ow2.io/license.html)
      * **POM License: The Apache Software License, Version 2.0** - [http://www.apache.org/licenses/LICENSE-2.0.txt](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 1. **Group:** org.pcollections **Name:** pcollections **Version:** 2.1.2
@@ -337,4 +338,4 @@
  The dependencies distributed under several licenses, are used according their commercial-use-friendly license.
 
 
-This report was generated on **Wed Aug 26 15:53:09 EEST 2020** using [Gradle-License-Report plugin](https://github.com/jk1/Gradle-License-Report) by Evgeny Naumenko, licensed under [Apache 2.0 License](https://github.com/jk1/Gradle-License-Report/blob/master/LICENSE).
+This report was generated on **Thu Aug 27 11:28:28 EEST 2020** using [Gradle-License-Report plugin](https://github.com/jk1/Gradle-License-Report) by Evgeny Naumenko, licensed under [Apache 2.0 License](https://github.com/jk1/Gradle-License-Report/blob/master/LICENSE).
