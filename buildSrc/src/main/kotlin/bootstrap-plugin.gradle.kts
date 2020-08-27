@@ -18,6 +18,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import Bootstrap_plugin_gradle.Nodes.findAll
+import Bootstrap_plugin_gradle.Nodes.findFirst
+import org.w3c.dom.Node
+import org.w3c.dom.NodeList
+
 plugins {
     java
     `java-gradle-plugin`
@@ -30,6 +35,57 @@ gradlePlugin {
             implementationClass = "io.spine.tools.gradle.bootstrap.BootstrapPlugin"
             displayName = "Spine Bootstrap"
             description = "Prepares a Gradle project for development on Spine."
+        }
+    }
+}
+
+/**
+ * Utilities for working with DOM nodes.
+ */
+object Nodes {
+
+    /**
+     * Finds the first node with the given name in this `NodeList`.
+     *
+     * @return a node with the given name or `null` if this list does not contain such a node
+     */
+    fun NodeList.findFirst(name: String): Node? {
+        for (i in (0 until length)) {
+            val child = item(i)
+            if (child.nodeName == name) {
+                return child
+            }
+        }
+        return null
+    }
+
+    /**
+     * Finds all the nodes with the given name in this `NodeList`.
+     *
+     * @return a list of all the nodes with a given name; an empty list if this `NodeList` does not
+     * contain such nodes
+     */
+    fun NodeList.findAll(name: String): List<Node> {
+        val nodes = mutableListOf<Node>()
+        for (i in (0 until length)) {
+            val child = item(i)
+            if (child.nodeName == name) {
+                nodes.add(child)
+            }
+        }
+        return nodes
+    }
+}
+
+project.afterEvaluate {
+    tasks.withType(GenerateMavenPom::class) {
+        pom.withXml {
+            val root = asElement()
+            val children = root.childNodes
+            val dependenciesNode = children.findFirst("dependencies")
+            dependenciesNode?.apply {
+                childNodes.findAll("dependency").forEach { removeChild(it) }
+            }
         }
     }
 }

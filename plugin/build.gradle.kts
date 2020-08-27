@@ -24,8 +24,8 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     java
-    id("com.gradle.plugin-publish").version("0.11.0")
-    id("com.github.johnrengelman.shadow").version("5.2.0")
+    id("com.gradle.plugin-publish").version("0.12.0")
+    id("com.github.johnrengelman.shadow").version("6.0.0")
     `bootstrap-plugin`
     `func-test-env`
     `prepare-config-resources`
@@ -81,8 +81,6 @@ pluginBundle {
         artifactId = "spine-bootstrap"
         version = pluginVersion
     }
-
-    withDependencies { clear() }
 
     plugins {
         named("spineBootstrapPlugin") {
