@@ -27,7 +27,7 @@ repositories {
     jcenter()
 }
 
-val jacksonVersion = "2.11.2"
+val jacksonVersion = "2.11.0"
 
 dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")

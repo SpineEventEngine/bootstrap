@@ -82,6 +82,8 @@ pluginBundle {
         version = pluginVersion
     }
 
+    withDependencies { clear() }
+
     plugins {
         named("spineBootstrapPlugin") {
             version = pluginVersion
