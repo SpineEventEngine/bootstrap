@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DisplayName("`spine` extension øshould")
+@DisplayName("`spine` extension should")
 class ExtensionTest {
 
     private PluginTarget pluginTarget;
