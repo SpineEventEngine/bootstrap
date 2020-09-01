@@ -129,6 +129,17 @@ public final class JavaExtension extends CodeGenExtension {
         dependOnWeb(SpineDependency.firebaseWeb());
     }
 
+    /**
+     * Marks this project as a part of a Java server and adds the Google Cloud Datastore storage
+     * dependency to the project.
+     */
+    public void withDatastore() {
+        server();
+        Artifact dependency = SpineDependency.datastore()
+                                             .ofVersion(artifacts.spineGCloudVersion());
+        dependOn(dependency, implementation);
+    }
+
     private void dependOnWeb(SpineDependency dependency) {
         server();
         String version = artifacts.spineWebVersion();

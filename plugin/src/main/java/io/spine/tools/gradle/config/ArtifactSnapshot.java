@@ -45,6 +45,7 @@ public final class ArtifactSnapshot {
     private final String spineTimeVersion;
     private final String spineCoreVersion;
     private final String spineWebVersion;
+    private final String spineGCloudVersion;
 
     private final String protoc;
     private final String protobufJava;
@@ -62,6 +63,7 @@ public final class ArtifactSnapshot {
         this.spineTimeVersion = checkNotNull(builder.spineTimeVersion);
         this.spineCoreVersion = checkNotNull(builder.spineCoreVersion);
         this.spineWebVersion = checkNotNull(builder.spineWebVersion);
+        this.spineGCloudVersion = checkNotNull(builder.spineGCloudVersion);
         this.protoc = checkNotNull(builder.protoc);
         this.protobufJava = checkNotNull(builder.protobufJava);
         this.grpcProtobuf = checkNotNull(builder.grpcProtobuf);
@@ -131,6 +133,13 @@ public final class ArtifactSnapshot {
     }
 
     /**
+     * Obtains the current version of Spine GCloud.
+     */
+    public String spineGCloudVersion() {
+        return spineGCloudVersion;
+    }
+
+    /**
      * Obtains the Maven repository which hosts Spine artifacts with release versions.
      */
     public Url spineRepository() {
@@ -184,6 +193,7 @@ public final class ArtifactSnapshot {
         private String spineTimeVersion;
         private String spineCoreVersion;
         private String spineWebVersion;
+        private String spineGCloudVersion;
         private String protoc;
         private String protobufJava;
         private String grpcProtobuf;
@@ -214,6 +224,11 @@ public final class ArtifactSnapshot {
 
         public Builder setSpineWebVersion(String spineWebVersion) {
             this.spineWebVersion = checkNotNull(spineWebVersion);
+            return this;
+        }
+
+        public Builder setGCloudVersion(String spineGCloudVersion) {
+            this.spineGCloudVersion = checkNotNull(spineGCloudVersion);
             return this;
         }
 
