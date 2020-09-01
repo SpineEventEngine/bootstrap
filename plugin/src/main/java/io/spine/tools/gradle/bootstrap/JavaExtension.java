@@ -26,11 +26,17 @@ import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.GeneratedSourceRoot;
+import io.spine.tools.gradle.compiler.Extension;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.SourceSuperset;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.plugins.ide.idea.model.IdeaModel;
+import org.gradle.plugins.ide.idea.model.IdeaModule;
+
+import java.io.File;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ConfigurationName.implementation;
@@ -69,6 +75,24 @@ public final class JavaExtension extends CodeGenExtension {
         pluginTarget().apply(SpinePluginScripts.modelCompilerConfig());
         addSourceSets();
         excludeProtobufLite();
+        pluginTarget().withIdeaPlugin(this::configureIdea);
+    }
+
+    private void configureIdea(IdeaModel idea) {
+        IdeaModule module = idea.getModule();
+
+        add(module.getSourceDirs(), Extension.getMainProtoSrcDir(project));
+        add(module.getGeneratedSourceDirs(), Extension.getMainGenProtoDir(project));
+        add(module.getGeneratedSourceDirs(), Extension.getMainGenGrpcDir(project));
+
+        add(module.getTestSourceDirs(), Extension.getTestProtoSrcDir(project));
+        add(module.getGeneratedSourceDirs(), Extension.getTestGenProtoDir(project));
+        add(module.getGeneratedSourceDirs(), Extension.getTestGenGrpcDir(project));
+    }
+
+    private static void add(Set<File> files, String path) {
+        File file = new File(path);
+        files.add(file);
     }
 
     private void excludeProtobufLite() {

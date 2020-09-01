@@ -29,7 +29,7 @@
  * already in the root directory.
  */
 
-val spineBaseVersion: String by extra("1.5.30")
+val spineBaseVersion: String by extra("1.5.31")
 val spineTimeVersion: String by extra("1.5.24")
 val spineVersion: String by extra("1.5.27")
 val spineWebVersion: String by extra("1.5.25")
