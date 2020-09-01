@@ -22,6 +22,10 @@ plugins {
     id 'io.spine.tools.gradle.bootstrap' version '@spine-version@'
 }
 
+repositories {
+    mavenLocal()
+}
+
 // This script file is created at a test runtime by the `GradleProject`.
 //
 // If Spine Bootstrap plugin requires a configuration, specific to a test case, the test case
