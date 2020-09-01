@@ -83,7 +83,7 @@ public final class JavaExtension extends CodeGenExtension {
         config.execute(codegen);
     }
 
-    public void codegen(Closure config) {
+    public void codegen(@SuppressWarnings("rawtypes") /* For Gradle API. */ Closure config) {
         configure(config, codegen);
     }
 
@@ -107,6 +107,35 @@ public final class JavaExtension extends CodeGenExtension {
     public void server() {
         dependOnCore(SpineDependency.server(), implementation);
         dependOnCore(SpineDependency.testUtilServer(), testImplementation);
+    }
+
+    /**
+     * Marks this project as a part of a Java server and a Web server.
+     *
+     * <p>Additionally to the {@linkplain #server() server} dependencies, adds a dependency for
+     * {@code io.spine:spine-web} and {@code io.spine:spine-testutil-web}.
+     */
+    public void webServer() {
+        dependOnWeb(SpineDependency.web());
+    }
+
+    /**
+     * Marks this project as a part of a Java server and a Web server based on the Firebase RDB.
+     *
+     * <p>Additionally to the {@linkplain #server() server} dependencies, adds a dependency for
+     * {@code io.spine.gcloud:spine-firebase-web} and {@code io.spine:spine-testutil-web}.
+     */
+    public void firebaseWebServer() {
+        dependOnWeb(SpineDependency.firebaseWeb());
+    }
+
+    private void dependOnWeb(SpineDependency dependency) {
+        server();
+        String version = artifacts.spineWebVersion();
+        dependOn(dependency.ofVersion(version), implementation);
+        Artifact testDependency = SpineDependency.testUtilWeb()
+                                                 .ofVersion(version);
+        dependOn(testDependency, testImplementation);
     }
 
     private void dependOn(Artifact module, ConfigurationName configurationName) {
