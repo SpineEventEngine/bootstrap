@@ -85,6 +85,7 @@ public final class ArtifactSnapshot {
                 .setSpineBaseVersion(properties.getProperty("spine.version.base"))
                 .setSpineTimeVersion(properties.getProperty("spine.version.time"))
                 .setSpineWebVersion(properties.getProperty("spine.version.web"))
+                .setSpineGCloudVersion(properties.getProperty("spine.version.gcloud"))
                 .setProtoc(properties.getProperty("protobuf.compiler"))
                 .setProtobufJava(properties.getProperty("protobuf.java"))
                 .setGrpcProtobuf(properties.getProperty("grpc.protobuf"))
@@ -227,7 +228,7 @@ public final class ArtifactSnapshot {
             return this;
         }
 
-        public Builder setGCloudVersion(String spineGCloudVersion) {
+        public Builder setSpineGCloudVersion(String spineGCloudVersion) {
             this.spineGCloudVersion = checkNotNull(spineGCloudVersion);
             return this;
         }

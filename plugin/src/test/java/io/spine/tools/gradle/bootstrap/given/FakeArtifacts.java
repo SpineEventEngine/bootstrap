@@ -42,7 +42,7 @@ public final class FakeArtifacts {
                 .setSpineTimeVersion(spineVersion)
                 .setSpineCoreVersion(spineVersion)
                 .setSpineWebVersion(spineVersion)
-                .setGCloudVersion(spineVersion)
+                .setSpineGCloudVersion(spineVersion)
                 .setGrpcProtobuf(GRPC_PROTO_DEPENDENCY)
                 .setGrpcStub(GRPC_STUB_DEPENDENCY)
                 .setProtoc("com.google.protobuf:protoc:3.6.1")

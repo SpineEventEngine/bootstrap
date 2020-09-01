@@ -50,8 +50,6 @@ public final class SpineDependency implements Dependency {
             new SpineDependency("testutil-time");
     private static final SpineDependency WEB =
             new SpineDependency("web");
-    private static final SpineDependency TEST_UTIL_WEB =
-            new SpineDependency("testutil-web");
     private static final SpineDependency FIREBASE_WEB =
             new SpineDependency(G_CLOUD_GROUP, "firebase-web");
     private static final SpineDependency DATASTORE =
@@ -127,10 +125,6 @@ public final class SpineDependency implements Dependency {
 
     public static SpineDependency web() {
         return WEB;
-    }
-
-    public static SpineDependency testUtilWeb() {
-        return TEST_UTIL_WEB;
     }
 
     public static SpineDependency firebaseWeb() {

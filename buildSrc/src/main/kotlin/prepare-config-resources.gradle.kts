@@ -56,6 +56,7 @@ val spineBaseVersion: String by extra
 val spineTimeVersion: String by extra
 val spineVersion: String by extra
 val spineWebVersion: String by extra
+val spineGCloudVersion: String by extra
 
 val writeDependencies by tasks.registering {
     group = taskGroup
@@ -78,6 +79,7 @@ val writeDependencies by tasks.registering {
         artifacts.setProperty("spine.version.time", spineTimeVersion)
         artifacts.setProperty("spine.version.core", spineVersion)
         artifacts.setProperty("spine.version.web",  spineWebVersion)
+        artifacts.setProperty("spine.version.gcloud",  spineWebVersion)
         artifacts.setProperty("protobuf.compiler", Deps.build.protoc)
         artifacts.setProperty("protobuf.java", Deps.build.protobuf[0])
         artifacts.setProperty("grpc.stub", Deps.grpc.stub)

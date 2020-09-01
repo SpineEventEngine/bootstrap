@@ -112,8 +112,8 @@ public final class JavaExtension extends CodeGenExtension {
     /**
      * Marks this project as a part of a Java server and a Web server.
      *
-     * <p>Additionally to the {@linkplain #server() server} dependencies, adds a dependency for
-     * {@code io.spine:spine-web} and {@code io.spine:spine-testutil-web}.
+     * <p>Additionally to the {@linkplain #server() server} dependencies, adds a dependency on
+     * {@code io.spine:spine-web}.
      */
     public void webServer() {
         dependOnWeb(SpineDependency.web());
@@ -122,8 +122,8 @@ public final class JavaExtension extends CodeGenExtension {
     /**
      * Marks this project as a part of a Java server and a Web server based on the Firebase RDB.
      *
-     * <p>Additionally to the {@linkplain #server() server} dependencies, adds a dependency for
-     * {@code io.spine.gcloud:spine-firebase-web} and {@code io.spine:spine-testutil-web}.
+     * <p>Additionally to the {@linkplain #server() server} dependencies, adds a dependency on
+     * {@code io.spine.gcloud:spine-firebase-web}.
      */
     public void firebaseWebServer() {
         dependOnWeb(SpineDependency.firebaseWeb());
@@ -144,9 +144,6 @@ public final class JavaExtension extends CodeGenExtension {
         server();
         String version = artifacts.spineWebVersion();
         dependOn(dependency.ofVersion(version), implementation);
-        Artifact testDependency = SpineDependency.testUtilWeb()
-                                                 .ofVersion(version);
-        dependOn(testDependency, testImplementation);
     }
 
     private void dependOn(Artifact module, ConfigurationName configurationName) {
