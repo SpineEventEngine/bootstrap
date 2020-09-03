@@ -58,6 +58,14 @@ val spineVersion: String by extra
 val spineWebVersion: String by extra
 val spineGCloudVersion: String by extra
 
+/*
+  This task creates the `artifact-snapshot.properties` file which is later added to the classpath of
+  the Bootstrap plugin. The file contains versions, artifact notations, repositories, etc. used in
+  the Gradle scripts which should also be used in the runtime of the Bootstrap plugin.
+
+  The keys for the `artifact-snapshot.properties` file are duplicated in
+  the `io.spine.tools.gradle.config.ArtifactSnapshot` class, where the file is parsed.
+ */
 val writeDependencies by tasks.registering {
     group = taskGroup
 

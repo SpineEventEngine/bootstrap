@@ -72,6 +72,14 @@ public final class ArtifactSnapshot {
         this.spineSnapshotRepository = checkNotNull(builder.spineSnapshotRepository);
     }
 
+    /**
+     * Loads the values from the {@code artifact-snapshot.properties} file from classpath.
+     *
+     * <p>The keys for the {@code artifact-snapshot.properties} file are duplicated in
+     * the {@code prepare-config-resources.gradle.kts} Gradle script, where the file is generated.
+     *
+     * @return loaded {@code ArtifactSnapshot}
+     */
     private static ArtifactSnapshot load() {
         Resource file = Resource.file("artifact-snapshot.properties");
         Properties properties = new Properties();
