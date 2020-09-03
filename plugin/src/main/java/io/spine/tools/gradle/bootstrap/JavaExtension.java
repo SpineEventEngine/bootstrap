@@ -81,13 +81,21 @@ public final class JavaExtension extends CodeGenExtension {
     private void configureIdea(IdeaModel idea) {
         IdeaModule module = idea.getModule();
 
-        add(module.getSourceDirs(), Extension.getMainProtoSrcDir(project));
-        add(module.getGeneratedSourceDirs(), Extension.getMainGenProtoDir(project));
-        add(module.getGeneratedSourceDirs(), Extension.getMainGenGrpcDir(project));
+        Set<File> mainSrc = module.getSourceDirs();
+        Set<File> mainGenerated = module.getGeneratedSourceDirs();
+        add(mainSrc, Extension.getMainProtoSrcDir(project));
+        add(mainGenerated, Extension.getMainGenProtoDir(project));
+        add(mainGenerated, Extension.getMainGenGrpcDir(project));
+        add(mainGenerated, Extension.getTargetGenColumnsRootDir(project));
+        add(mainGenerated, Extension.getTargetGenRejectionsRootDir(project));
 
-        add(module.getTestSourceDirs(), Extension.getTestProtoSrcDir(project));
-        add(module.getGeneratedSourceDirs(), Extension.getTestGenProtoDir(project));
-        add(module.getGeneratedSourceDirs(), Extension.getTestGenGrpcDir(project));
+        Set<File> testSrc = module.getTestSourceDirs();
+        add(testSrc, Extension.getTestProtoSrcDir(project));
+        add(testSrc, Extension.getTestGenProtoDir(project));
+        add(testSrc, Extension.getTestGenGrpcDir(project));
+
+        module.setDownloadJavadoc(true);
+        module.setDownloadSources(true);
     }
 
     private static void add(Set<File> files, String path) {
