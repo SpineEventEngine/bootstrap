@@ -26,7 +26,13 @@ import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.PluginScript;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.gradle.project.PluginTarget;
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.plugins.ide.idea.IdeaPlugin;
+import org.gradle.plugins.ide.idea.model.IdeaModel;
+
+import java.util.function.Consumer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -45,7 +51,12 @@ public final class SpinePluginTarget implements PluginTarget {
     }
 
     @Override
-    public void apply(GradlePlugin plugin) {
+    public <P extends Plugin<Project>> void with(GradlePlugin<P> plugin, Consumer<P> action) {
+        delegate.with(plugin, action);
+    }
+
+    @Override
+    public void apply(GradlePlugin<?> plugin) {
         delegate.apply(plugin);
     }
 
@@ -55,7 +66,7 @@ public final class SpinePluginTarget implements PluginTarget {
     }
 
     @Override
-    public boolean isApplied(GradlePlugin plugin) {
+    public boolean isApplied(GradlePlugin<?> plugin) {
         return delegate.isApplied(plugin);
     }
 
@@ -63,7 +74,7 @@ public final class SpinePluginTarget implements PluginTarget {
      * Applies the standard {@link JavaPlugin}.
      */
     public void applyJavaPlugin() {
-        GradlePlugin javaPlugin = GradlePlugin.implementedIn(JavaPlugin.class);
+        GradlePlugin<?> javaPlugin = GradlePlugin.implementedIn(JavaPlugin.class);
         apply(javaPlugin);
     }
 
@@ -74,7 +85,7 @@ public final class SpinePluginTarget implements PluginTarget {
      */
     public void applyProtobufPlugin() {
         applyJavaPlugin();
-        GradlePlugin protoPlugin = GradlePlugin.implementedIn(ProtobufPlugin.class);
+        GradlePlugin<?> protoPlugin = GradlePlugin.implementedIn(ProtobufPlugin.class);
         apply(protoPlugin);
     }
 
@@ -82,7 +93,7 @@ public final class SpinePluginTarget implements PluginTarget {
      * Applies the {@link ModelCompilerPlugin}.
      */
     public void applyModelCompiler() {
-        GradlePlugin plugin = GradlePlugin.implementedIn(ModelCompilerPlugin.class);
+        GradlePlugin<?> plugin = GradlePlugin.implementedIn(ModelCompilerPlugin.class);
         apply(plugin);
     }
 
@@ -90,7 +101,15 @@ public final class SpinePluginTarget implements PluginTarget {
      * Applies the {@link ProtoJsPlugin}.
      */
     public void applyProtoJsPlugin() {
-        GradlePlugin plugin = GradlePlugin.implementedIn(ProtoJsPlugin.class);
+        GradlePlugin<?> plugin = GradlePlugin.implementedIn(ProtoJsPlugin.class);
         apply(plugin);
+    }
+
+    /**
+     * Checks if the {@code idea} plugin is applied to this project.
+     */
+    public void withIdeaPlugin(Consumer<IdeaModel> action) {
+        GradlePlugin<IdeaPlugin> plugin = GradlePlugin.implementedIn(IdeaPlugin.class);
+        with(plugin, idea -> action.accept(idea.getModel()));
     }
 }

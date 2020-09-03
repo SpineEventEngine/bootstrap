@@ -27,20 +27,43 @@ import io.spine.tools.gradle.Dependency;
  */
 public final class SpineDependency implements Dependency {
 
+    private static final String DEFAULT_GROUP = "io.spine";
+    private static final String G_CLOUD_GROUP = DEFAULT_GROUP + ".gcloud";
+
     private static final String SPINE_PREFIX = "spine-";
 
-    private static final SpineDependency BASE = new SpineDependency("base");
-    private static final SpineDependency TIME = new SpineDependency("time");
-    private static final SpineDependency CLIENT = new SpineDependency("client");
-    private static final SpineDependency SERVER = new SpineDependency("server");
-    private static final SpineDependency TEST_UTIL_SERVER = new SpineDependency("testutil-server");
-    private static final SpineDependency TEST_UTIL_CLIENT = new SpineDependency("testutil-client");
-    private static final SpineDependency TESTLIB = new SpineDependency("testlib");
-    private static final SpineDependency TEST_UTIL_TIME = new SpineDependency("testutil-time");
+    private static final SpineDependency BASE =
+            new SpineDependency("base");
+    private static final SpineDependency TIME =
+            new SpineDependency("time");
+    private static final SpineDependency CLIENT =
+            new SpineDependency("client");
+    private static final SpineDependency SERVER =
+            new SpineDependency("server");
+    private static final SpineDependency TEST_UTIL_SERVER =
+            new SpineDependency("testutil-server");
+    private static final SpineDependency TEST_UTIL_CLIENT =
+            new SpineDependency("testutil-client");
+    private static final SpineDependency TESTLIB =
+            new SpineDependency("testlib");
+    private static final SpineDependency TEST_UTIL_TIME =
+            new SpineDependency("testutil-time");
+    private static final SpineDependency WEB =
+            new SpineDependency("web");
+    private static final SpineDependency FIREBASE_WEB =
+            new SpineDependency(G_CLOUD_GROUP, "firebase-web");
+    private static final SpineDependency DATASTORE =
+            new SpineDependency(G_CLOUD_GROUP, "datastore");
 
+    private final String group;
     private final String shortName;
 
     private SpineDependency(String name) {
+        this(DEFAULT_GROUP, name);
+    }
+
+    private SpineDependency(String group, String name) {
+        this.group = group;
         this.shortName = name;
     }
 
@@ -100,6 +123,18 @@ public final class SpineDependency implements Dependency {
         return TEST_UTIL_TIME;
     }
 
+    public static SpineDependency web() {
+        return WEB;
+    }
+
+    public static SpineDependency firebaseWeb() {
+        return FIREBASE_WEB;
+    }
+
+    public static SpineDependency datastore() {
+        return DATASTORE;
+    }
+
     @Override
     public String name() {
         return SPINE_PREFIX + shortName;
@@ -107,7 +142,7 @@ public final class SpineDependency implements Dependency {
 
     @Override
     public String groupId() {
-        return "io.spine";
+        return group;
     }
 
     @Override

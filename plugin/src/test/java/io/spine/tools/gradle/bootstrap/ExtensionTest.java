@@ -55,7 +55,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DisplayName("`spine` extension øshould")
+@DisplayName("`spine` extension should")
 class ExtensionTest {
 
     private PluginTarget pluginTarget;
@@ -172,6 +172,31 @@ class ExtensionTest {
             extension.enableJava();
             assertThat(dependencyTarget.dependencies())
                     .contains(testUtilTimeDependency());
+        }
+
+        @Test
+        @DisplayName("add `web` dependencies to a Java project")
+        void addWebDependency() {
+            extension.enableJava(JavaExtension::webServer);
+            assertThat(dependencyTarget.dependencies())
+                    .contains(webDependency());
+        }
+
+        @Test
+        @DisplayName("add `firebase-web` dependencies to a Java project")
+        void addFirebaseWebDependency() {
+            extension.enableJava(JavaExtension::firebaseWebServer);
+            assertThat(dependencyTarget.dependencies())
+                    .contains(firebaseWebDependency());
+        }
+
+        @Test
+        @DisplayName("add `gcloud` dependency to a Java project")
+        void addGCloudDependency() {
+            extension.enableJava(JavaExtension::withDatastore);
+            IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
+            assertDependencies
+                    .contains(datastoreDependency());
         }
 
         @Test
@@ -374,6 +399,18 @@ class ExtensionTest {
 
         private String testUtilTimeDependency() {
             return "io.spine:spine-testutil-time:" + spineVersion;
+        }
+
+        private String webDependency() {
+            return "io.spine:spine-web:" + spineVersion;
+        }
+
+        private String firebaseWebDependency() {
+            return "io.spine.gcloud:spine-firebase-web:" + spineVersion;
+        }
+
+        private String datastoreDependency() {
+            return "io.spine.gcloud:spine-datastore:" + spineVersion;
         }
 
         private void assertApplied(Class<? extends Plugin<? extends Project>> pluginClass) {

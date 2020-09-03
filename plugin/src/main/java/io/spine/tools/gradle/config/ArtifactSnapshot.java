@@ -44,6 +44,8 @@ public final class ArtifactSnapshot {
     private final String spineBaseVersion;
     private final String spineTimeVersion;
     private final String spineCoreVersion;
+    private final String spineWebVersion;
+    private final String spineGCloudVersion;
 
     private final String protoc;
     private final String protobufJava;
@@ -60,6 +62,8 @@ public final class ArtifactSnapshot {
         this.spineBaseVersion = checkNotNull(builder.spineBaseVersion);
         this.spineTimeVersion = checkNotNull(builder.spineTimeVersion);
         this.spineCoreVersion = checkNotNull(builder.spineCoreVersion);
+        this.spineWebVersion = checkNotNull(builder.spineWebVersion);
+        this.spineGCloudVersion = checkNotNull(builder.spineGCloudVersion);
         this.protoc = checkNotNull(builder.protoc);
         this.protobufJava = checkNotNull(builder.protobufJava);
         this.grpcProtobuf = checkNotNull(builder.grpcProtobuf);
@@ -68,6 +72,14 @@ public final class ArtifactSnapshot {
         this.spineSnapshotRepository = checkNotNull(builder.spineSnapshotRepository);
     }
 
+    /**
+     * Loads the values from the {@code artifact-snapshot.properties} file from classpath.
+     *
+     * <p>The keys for the {@code artifact-snapshot.properties} file are duplicated in
+     * the {@code prepare-config-resources.gradle.kts} Gradle script, where the file is generated.
+     *
+     * @return loaded {@code ArtifactSnapshot}
+     */
     private static ArtifactSnapshot load() {
         Resource file = Resource.file("artifact-snapshot.properties");
         Properties properties = new Properties();
@@ -80,6 +92,8 @@ public final class ArtifactSnapshot {
                 .setSpineCoreVersion(properties.getProperty("spine.version.core"))
                 .setSpineBaseVersion(properties.getProperty("spine.version.base"))
                 .setSpineTimeVersion(properties.getProperty("spine.version.time"))
+                .setSpineWebVersion(properties.getProperty("spine.version.web"))
+                .setSpineGCloudVersion(properties.getProperty("spine.version.gcloud"))
                 .setProtoc(properties.getProperty("protobuf.compiler"))
                 .setProtobufJava(properties.getProperty("protobuf.java"))
                 .setGrpcProtobuf(properties.getProperty("grpc.protobuf"))
@@ -118,6 +132,20 @@ public final class ArtifactSnapshot {
      */
     public String spineTimeVersion() {
         return spineTimeVersion;
+    }
+
+    /**
+     * Obtains the current version of Spine {@code web} API.
+     */
+    public String spineWebVersion() {
+        return spineWebVersion;
+    }
+
+    /**
+     * Obtains the current version of Spine GCloud.
+     */
+    public String spineGCloudVersion() {
+        return spineGCloudVersion;
     }
 
     /**
@@ -173,6 +201,8 @@ public final class ArtifactSnapshot {
         private String spineBaseVersion;
         private String spineTimeVersion;
         private String spineCoreVersion;
+        private String spineWebVersion;
+        private String spineGCloudVersion;
         private String protoc;
         private String protobufJava;
         private String grpcProtobuf;
@@ -198,6 +228,16 @@ public final class ArtifactSnapshot {
 
         public Builder setSpineCoreVersion(String version) {
             this.spineCoreVersion = checkNotNull(version);
+            return this;
+        }
+
+        public Builder setSpineWebVersion(String spineWebVersion) {
+            this.spineWebVersion = checkNotNull(spineWebVersion);
+            return this;
+        }
+
+        public Builder setSpineGCloudVersion(String spineGCloudVersion) {
+            this.spineGCloudVersion = checkNotNull(spineGCloudVersion);
             return this;
         }
 
