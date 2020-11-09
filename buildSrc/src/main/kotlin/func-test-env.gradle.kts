@@ -36,30 +36,3 @@ var spineProtocPluginDependency: Dependency? = null
 dependencies {
     spineProtocPluginDependency = "fetch"("io.spine.tools:spine-protoc-plugin:${spineBaseVersion}@jar")
 }
-
-val spineArtifactDir = file("$projectDir/.spine")
-
-val downloadProtocPlugin by tasks.registering {
-    description = "Downloads the Spine Protoc plugin for functional tests."
-
-    doLast {
-        val executableJar = configurations["fetch"]
-                .fileCollection(spineProtocPluginDependency)
-                .getSingleFile()
-        spineArtifactDir.mkdirs()
-        copy {
-            from(executableJar)
-            into(spineArtifactDir)
-        }
-    }
-
-    mustRunAfter(tasks.clean)
-}
-
-tasks.withType(Test::class) {
-    dependsOn(downloadProtocPlugin)
-}
-
-tasks.clean {
-    delete(spineArtifactDir)
-}
