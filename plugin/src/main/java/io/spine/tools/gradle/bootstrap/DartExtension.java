@@ -23,16 +23,11 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
 
-import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.js;
+import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.dart;
 
-/**
- * An extension which configures JavaScript code generation.
- */
-final class JavaScriptExtension extends CodeGenExtension {
+final class DartExtension extends CodeGenExtension {
 
-    private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
-
-    private JavaScriptExtension(Builder builder) {
+    DartExtension(Builder builder) {
         super(builder);
     }
 
@@ -40,20 +35,28 @@ final class JavaScriptExtension extends CodeGenExtension {
     @Override
     void enableGeneration() {
         super.enableGeneration();
-        pluginTarget().applyProtoJsPlugin();
+        pluginTarget().applyProtoDartPlugin();
     }
 
+    /**
+     * Creates a new instance of {@code Builder} for {@code DartExtension} instances.
+     *
+     * @return new instance of {@code Builder}
+     */
     static Builder newBuilder() {
         return new Builder();
     }
 
-    static final class Builder extends CodeGenExtension.Builder<JavaScriptExtension, Builder> {
+    /**
+     * A builder for the {@code DartExtension} instances.
+     */
+    static final class Builder extends CodeGenExtension.Builder<DartExtension, Builder> {
 
         /**
          * Prevents direct instantiation.
          */
         private Builder() {
-            super(ProtocPlugin.withOption(js, IMPORT_STYLE_OPTION));
+            super(ProtocPlugin.called(dart));
         }
 
         @Override
@@ -62,8 +65,8 @@ final class JavaScriptExtension extends CodeGenExtension {
         }
 
         @Override
-        JavaScriptExtension doBuild() {
-            return new JavaScriptExtension(this);
+        DartExtension doBuild() {
+            return new DartExtension(this);
         }
     }
 }

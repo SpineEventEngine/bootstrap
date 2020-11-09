@@ -44,6 +44,7 @@ dependencies {
     implementation("io.spine.tools:spine-plugin-base:$spineBaseVersion")
     implementation("io.spine.tools:spine-model-compiler:$spineBaseVersion")
     implementation("io.spine.tools:spine-proto-js-plugin:$spineBaseVersion")
+    implementation("io.spine.tools:spine-proto-dart-plugin:$spineBaseVersion")
 
     testImplementation("io.spine:spine-testlib:$spineBaseVersion")
     testImplementation("io.spine.tools:spine-plugin-testlib:$spineBaseVersion")
