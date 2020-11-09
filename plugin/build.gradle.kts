@@ -27,7 +27,6 @@ plugins {
     id("com.gradle.plugin-publish").version("0.12.0")
     id("com.github.johnrengelman.shadow").version("6.0.0")
     `bootstrap-plugin`
-    `func-test-env`
     `prepare-config-resources`
 }
 

@@ -156,11 +156,6 @@ all modules and does not describe the project structure per-subproject.
     <version>9+181-r4173-1</version>
   </dependency>
   <dependency>
-    <groupId>io.spine.tools</groupId>
-    <artifactId>spine-protoc-plugin</artifactId>
-    <version>1.6.8</version>
-  </dependency>
-  <dependency>
     <groupId>net.sourceforge.pmd</groupId>
     <artifactId>pmd-java</artifactId>
     <version>6.24.0</version>
