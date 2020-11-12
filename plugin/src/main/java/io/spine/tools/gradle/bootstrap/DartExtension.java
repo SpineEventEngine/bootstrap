@@ -36,6 +36,8 @@ import org.gradle.api.tasks.TaskContainer;
 import java.nio.file.Path;
 
 import static io.spine.tools.gradle.BaseTaskName.assemble;
+import static io.spine.tools.gradle.ProtobufTaskName.generateProto;
+import static io.spine.tools.gradle.ProtobufTaskName.generateTestProto;
 import static io.spine.tools.gradle.bootstrap.DartTaskName.generateDart;
 import static io.spine.tools.gradle.bootstrap.DartTaskName.generateTestDart;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.dart;
@@ -67,8 +69,11 @@ final class DartExtension extends CodeGenExtension {
         Task testTask = createTask(generateTestDart,
                                    protoDart.getTestDescriptorSet(),
                                    protoDart.getTestDir());
-        Task assembleTask = project.getTasks()
-                                   .getByName(assemble.name());
+        Task assembleTask = project.getTasks().getByName(assemble.name());
+        project.afterEvaluate((p) -> {
+            mainTask.dependsOn(generateProto.name());
+            testTask.dependsOn(generateTestProto.name());
+        });
         assembleTask.dependsOn(mainTask, testTask);
         testTask.shouldRunAfter(mainTask);
     }
@@ -82,29 +87,30 @@ final class DartExtension extends CodeGenExtension {
             return foundTask;
         }
         Exec task = tasks.create(name.name(), Exec.class);
-        task.getInputs()
-            .file(descriptorFile);
-        project.afterEvaluate(p -> {
-            Path command = dartCodeGenCommand();
-            task.commandLine(
-                    command,
-                    "--descriptor", p.file(descriptorFile)
-                                     .getAbsolutePath(),
-                    "--destination", dartDir.file("types.dart")
-                                            .get()
-                                            .getAsFile()
-                                            .getAbsolutePath(),
-                    "--standard-types", "spine_client",
-                    "--import_prefix", "."
-            );
-        });
+        project.afterEvaluate(p -> setUpTask(task, dartDir, descriptorFile));
+        task.getOutputs().upToDateWhen(t -> project.file(descriptorFile).exists());
         return task;
+    }
+
+    private void setUpTask(Exec task, DirectoryProperty dartDir, Property<Object> descriptorFile) {
+        Path command = dartCodeGenCommand();
+        task.commandLine(
+                command,
+                "--descriptor", project.file(descriptorFile)
+                                       .getAbsolutePath(),
+                "--destination", dartDir.file("types.dart")
+                                        .get()
+                                        .getAsFile()
+                                        .getAbsolutePath(),
+                "--standard-types", "spine_client",
+                "--import-prefix", "."
+        );
     }
 
     private Path dartCodeGenCommand() {
         String extension = Os.isFamily(FAMILY_WINDOWS) ? ".bat" : "";
         Path command = PubCache.location().resolve("dart_code_gen" + extension);
-        if (exists(command)) {
+        if (!exists(command)) {
             _warn().log("Cannot locate `dart_code_gen` under `%s`. " +
                                 "To install, run `pub global activate dart_code_gen`.",
                         command);

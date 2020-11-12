@@ -23,6 +23,7 @@ package io.spine.tools.gradle.bootstrap.func;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
+import com.google.common.truth.Truth8;
 import io.spine.code.proto.FileDescriptors;
 import io.spine.testing.SlowTest;
 import io.spine.tools.gradle.testing.GradleProject;
@@ -132,6 +133,17 @@ class SpineBootstrapPluginTest {
 
         Collection<String> jsFileNames = generatedJsFileNames();
         assertThat(jsFileNames).contains("roller_coaster_pb.js");
+    }
+
+    @Test
+    @DisplayName("generate Dart if requested")
+    void generateDart() {
+        configureDartGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+
+        Collection<String> dartFileNames = generatedDartFileNames();
+        assertThat(dartFileNames).contains("roller_coaster_pb.js");
     }
 
     @Test
@@ -280,6 +292,12 @@ class SpineBootstrapPluginTest {
         );
     }
 
+    private void configureDartGeneration() {
+        writeConfigGradle(
+                "spine.enableDart()"
+        );
+    }
+
     @SuppressWarnings("CheckReturnValue")
     private void configureJavaClient() {
         writeConfigGradle(
@@ -410,6 +428,16 @@ class SpineBootstrapPluginTest {
         assertTrue(compiledJsDir.isDirectory());
         @SuppressWarnings("ConstantConditions")
         ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledJsDir.list());
+        return packageContents;
+    }
+
+    private Collection<String> generatedDartFileNames() {
+        Path libDir = projectDir.resolve("lib");
+        File libDirFile = libDir.toFile();
+        assertTrue(libDirFile.exists());
+        assertTrue(libDirFile.isDirectory());
+        @SuppressWarnings("ConstantConditions")
+        ImmutableSet<String> packageContents = ImmutableSet.copyOf(libDirFile.list());
         return packageContents;
     }
 }
