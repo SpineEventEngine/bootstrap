@@ -33,7 +33,6 @@ import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.gradle.project.PlugableProject;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.testing.MemoizingDependant;
-import io.spine.tools.gradle.testing.MemoizingPluginRegistry;
 import io.spine.tools.gradle.testing.MemoizingSourceSuperset;
 import io.spine.tools.groovy.ConsumerClosure;
 import org.checkerframework.checker.nullness.qual.NonNull;
