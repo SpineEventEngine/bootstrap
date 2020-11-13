@@ -22,8 +22,20 @@ package io.spine.tools.gradle.bootstrap;
 
 import io.spine.tools.gradle.TaskName;
 
+/**
+ * Tasks which launch the `dart_code_gen` tool.
+ */
 public enum DartTaskName implements TaskName {
 
+    /**
+     * Name of the task which launches the `dart_code_gen` tool for generating extra Dart code for
+     * the main scope.
+     */
     generateDart,
+
+    /**
+     * Name of the task which launches the `dart_code_gen` tool for generating extra Dart code for
+     * the test scope.
+     */
     generateTestDart
 }
