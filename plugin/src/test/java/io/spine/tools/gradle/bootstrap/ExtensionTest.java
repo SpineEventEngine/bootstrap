@@ -21,20 +21,27 @@
 package io.spine.tools.gradle.bootstrap;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.truth.Correspondence;
 import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
+import io.spine.generate.dart.ProtoDartPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
+import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.bootstrap.given.FakeArtifacts;
 import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
+import io.spine.tools.gradle.project.PlugableProject;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.testing.MemoizingDependant;
 import io.spine.tools.gradle.testing.MemoizingPluginRegistry;
 import io.spine.tools.gradle.testing.MemoizingSourceSuperset;
 import io.spine.tools.groovy.ConsumerClosure;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.tasks.TaskContainer;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,22 +65,29 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("`spine` extension should")
 class ExtensionTest {
 
+    private static final
+    Correspondence<@NonNull Task, @NonNull TaskName> names = Correspondence.from(
+            (@NonNull Task task, @NonNull TaskName name) -> task.getName().equals(name.name()),
+            "names"
+    );
+
     private PluginTarget pluginTarget;
     private Extension extension;
     private MemoizingSourceSuperset codeLayout;
     private MemoizingDependant dependencyTarget;
     private Path projectDir;
+    private Project project;
 
     @BeforeEach
     void setUp(@TempDir Path projectDir) {
-        Project project = ProjectBuilder
+        this.project = ProjectBuilder
                 .builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
         this.projectDir = project.getProjectDir()
                                  .toPath();
-        pluginTarget = new MemoizingPluginRegistry();
+        pluginTarget = new PlugableProject(project);
         dependencyTarget = new MemoizingDependant();
         codeLayout = new MemoizingSourceSuperset();
         extension = Extension
@@ -84,9 +98,6 @@ class ExtensionTest {
                 .setDependencyTarget(dependencyTarget)
                 .setArtifactSnapshot(FakeArtifacts.snapshot())
                 .build();
-        project.getExtensions()
-               .add(ModelCompilerPlugin.extensionName(),
-                    new io.spine.tools.gradle.compiler.Extension());
     }
 
     @Nested
@@ -369,6 +380,22 @@ class ExtensionTest {
             assertFalse(codegen.getProtobuf());
         }
 
+        @Test
+        @DisplayName("apply Proto Dart plugin to a Dart project")
+        void applyProtoDart() {
+            DartExtension dartExtension = extension.enableDart();
+            assertThat(dartExtension)
+                    .isNotNull();
+            assertApplied(ProtoDartPlugin.class);
+        }
+
+        @Test
+        @DisplayName("apply Protobuf plugin to a Dart project")
+        void applyProtobufToDart() {
+            extension.enableDart();
+            assertApplied(ProtobufPlugin.class);
+        }
+
         private String baseDependency() {
             return "io.spine:spine-base:" + spineVersion;
         }
@@ -414,13 +441,13 @@ class ExtensionTest {
         }
 
         private void assertApplied(Class<? extends Plugin<? extends Project>> pluginClass) {
-            GradlePlugin plugin = GradlePlugin.implementedIn(pluginClass);
+            GradlePlugin<?> plugin = GradlePlugin.implementedIn(pluginClass);
             assertTrue(pluginTarget.isApplied(plugin),
                        format("Plugin %s must be applied.", plugin));
         }
 
         private void assertNotApplied(Class<? extends Plugin<? extends Project>> pluginClass) {
-            GradlePlugin plugin = GradlePlugin.implementedIn(pluginClass);
+            GradlePlugin<?> plugin = GradlePlugin.implementedIn(pluginClass);
             assertFalse(pluginTarget.isApplied(plugin),
                         format("Plugin %s must NOT be applied.", plugin));
         }
@@ -579,5 +606,15 @@ class ExtensionTest {
         assertThat(extension.getForceDependencies()).isFalse();
         extension.setForceDependencies(true);
         assertThat(extension.getForceDependencies()).isTrue();
+    }
+
+    @Test
+    @DisplayName("add `generateDart` tasks if needed")
+    void addDartTasks() {
+        extension.enableDart();
+        TaskContainer tasks = project.getTasks();
+        assertThat(tasks)
+                .comparingElementsUsing(names)
+                .containsAtLeastElementsIn(DartTaskName.values());
     }
 }
