@@ -55,6 +55,7 @@ import static org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS;
 public final class DartExtension extends CodeGenExtension {
 
     public static final String TYPES_FILE = "types.dart";
+    private static final String DART_TOOL_NAME = "dart_code_gen";
     private static final Joiner commandJoiner = Joiner.on(' ');
 
     private final Project project;
@@ -110,7 +111,7 @@ public final class DartExtension extends CodeGenExtension {
                 Process dartToolProcess = processBuilder.start();
                 exitCode = dartToolProcess.waitFor();
             } catch (IOException | InterruptedException e) {
-                throw new GradleException("Failed to execute `dart_code_gen`.", e);
+                throw new GradleException(format("Failed to execute `%s`.", DART_TOOL_NAME), e);
             }
             if (exitCode != 0) {
                 throw onProcessError(processBuilder, exitCode);
@@ -147,11 +148,11 @@ public final class DartExtension extends CodeGenExtension {
     private Path dartCodeGenCommand() {
         String extension = Os.isFamily(FAMILY_WINDOWS) ? ".bat" : "";
         Path command = PubCache.bin()
-                               .resolve("dart_code_gen" + extension);
+                               .resolve(DART_TOOL_NAME + extension);
         if (!exists(command)) {
             _warn().log("Cannot locate `dart_code_gen` under `%s`. " +
-                                "To install, run `pub global activate dart_code_gen`.",
-                        command);
+                                "To install, run `pub global activate %s`.",
+                        command, DART_TOOL_NAME);
         }
         return command;
     }
