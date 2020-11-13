@@ -23,8 +23,8 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import io.spine.generate.dart.Extension;
+import io.spine.generate.dart.PubCache;
 import io.spine.tools.gradle.TaskName;
-import io.spine.tools.gradle.config.PubCache;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.gradle.api.GradleException;
@@ -49,7 +49,7 @@ import static java.nio.file.Files.exists;
 import static org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS;
 
 /**
- * An extension which configures JavaScript code generation.
+ * An extension which configures Dart code generation.
  */
 @VisibleForTesting // Would be package private, but needed for integration tests.
 public final class DartExtension extends CodeGenExtension {
@@ -77,7 +77,8 @@ public final class DartExtension extends CodeGenExtension {
         Task testTask = createTask(generateTestDart,
                                    protoDart.getTestDescriptorSet(),
                                    protoDart.getTestDir());
-        Task assembleTask = project.getTasks().getByName(assemble.name());
+        Task assembleTask = project.getTasks()
+                                   .getByName(assemble.name());
         project.afterEvaluate((p) -> {
             mainTask.dependsOn(generateProto.name());
             testTask.dependsOn(generateTestProto.name());
@@ -100,7 +101,8 @@ public final class DartExtension extends CodeGenExtension {
     }
 
     private void runDartTool(Property<Object> descriptorFile, DirectoryProperty dartDir) {
-        if (project.file(descriptorFile).exists()) {
+        if (project.file(descriptorFile)
+                   .exists()) {
             @SuppressWarnings("UseOfProcessBuilder")
             ProcessBuilder processBuilder = buildDartToolProcess(descriptorFile, dartDir);
             int exitCode;
@@ -144,7 +146,8 @@ public final class DartExtension extends CodeGenExtension {
 
     private Path dartCodeGenCommand() {
         String extension = Os.isFamily(FAMILY_WINDOWS) ? ".bat" : "";
-        Path command = PubCache.location().resolve("dart_code_gen" + extension);
+        Path command = PubCache.bin()
+                               .resolve("dart_code_gen" + extension);
         if (!exists(command)) {
             _warn().log("Cannot locate `dart_code_gen` under `%s`. " +
                                 "To install, run `pub global activate dart_code_gen`.",
