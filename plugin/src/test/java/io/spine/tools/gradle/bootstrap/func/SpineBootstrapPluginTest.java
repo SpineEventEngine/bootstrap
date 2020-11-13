@@ -23,7 +23,6 @@ package io.spine.tools.gradle.bootstrap.func;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
-import com.google.common.truth.Truth8;
 import io.spine.code.proto.FileDescriptors;
 import io.spine.testing.SlowTest;
 import io.spine.tools.gradle.testing.GradleProject;
@@ -41,6 +40,7 @@ import java.util.Set;
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.BaseTaskName.build;
 import static io.spine.tools.gradle.ProtoJsTaskName.generateJsonParsers;
+import static io.spine.tools.gradle.bootstrap.DartExtension.TYPES_FILE;
 import static java.nio.file.Files.exists;
 import static java.util.Collections.emptySet;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
@@ -113,7 +113,8 @@ class SpineBootstrapPluginTest {
         project.executeTask(build);
 
         Collection<String> resourceFiles = assembledResources();
-        String projectDir = this.projectDir.getFileName().toString();
+        String projectDir = this.projectDir.getFileName()
+                                           .toString();
         boolean containsDescriptorSetFile =
                 resourceFiles.stream()
                              .filter(f -> f.endsWith(FileDescriptors.DESC_EXTENSION))
@@ -143,7 +144,15 @@ class SpineBootstrapPluginTest {
         project.executeTask(build);
 
         Collection<String> dartFileNames = generatedDartFileNames();
-        assertThat(dartFileNames).contains("roller_coaster_pb.js");
+        String protoName = "roller_coaster";
+        assertThat(dartFileNames)
+                .containsExactly(
+                        TYPES_FILE,
+                        protoName + ".pb.dart",
+                        protoName + ".pbjson.dart",
+                        protoName + ".pbenum.dart",
+                        protoName + ".pbserver.dart"
+                );
     }
 
     @Test
@@ -270,7 +279,8 @@ class SpineBootstrapPluginTest {
         GradleProject project = this.project.build();
         project.executeTask(build);
 
-        assertThat(generatedFiles().toFile().exists()).isFalse();
+        assertThat(generatedFiles().toFile()
+                                   .exists()).isFalse();
     }
 
     private void noAdditionalConfig() {

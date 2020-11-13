@@ -20,19 +20,22 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
 import io.spine.generate.dart.Extension;
 import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.config.PubCache;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
 import org.apache.tools.ant.taskdefs.condition.Os;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Exec;
 import org.gradle.api.tasks.TaskContainer;
 
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+import java.io.IOException;
 import java.nio.file.Path;
 
 import static io.spine.tools.gradle.BaseTaskName.assemble;
@@ -41,13 +44,18 @@ import static io.spine.tools.gradle.ProtobufTaskName.generateTestProto;
 import static io.spine.tools.gradle.bootstrap.DartTaskName.generateDart;
 import static io.spine.tools.gradle.bootstrap.DartTaskName.generateTestDart;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.dart;
+import static java.lang.String.format;
 import static java.nio.file.Files.exists;
 import static org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS;
 
 /**
  * An extension which configures JavaScript code generation.
  */
-final class DartExtension extends CodeGenExtension {
+@VisibleForTesting // Would be package private, but needed for integration tests.
+public final class DartExtension extends CodeGenExtension {
+
+    public static final String TYPES_FILE = "types.dart";
+    private static final Joiner commandJoiner = Joiner.on(' ');
 
     private final Project project;
 
@@ -86,25 +94,52 @@ final class DartExtension extends CodeGenExtension {
         if (foundTask != null) {
             return foundTask;
         }
-        Exec task = tasks.create(name.name(), Exec.class);
-        project.afterEvaluate(p -> setUpTask(task, dartDir, descriptorFile));
-        task.getOutputs().upToDateWhen(t -> project.file(descriptorFile).exists());
+        Task task = tasks.create(name.name());
+        task.doLast(t -> runDartTool(descriptorFile, dartDir));
         return task;
     }
 
-    private void setUpTask(Exec task, DirectoryProperty dartDir, Property<Object> descriptorFile) {
+    private void runDartTool(Property<Object> descriptorFile, DirectoryProperty dartDir) {
+        if (project.file(descriptorFile).exists()) {
+            @SuppressWarnings("UseOfProcessBuilder")
+            ProcessBuilder processBuilder = buildDartToolProcess(descriptorFile, dartDir);
+            int exitCode;
+            try {
+                Process dartToolProcess = processBuilder.start();
+                exitCode = dartToolProcess.waitFor();
+            } catch (IOException | InterruptedException e) {
+                throw new GradleException("Failed to execute `dart_code_gen`.", e);
+            }
+            if (exitCode != 0) {
+                throw onProcessError(processBuilder, exitCode);
+            }
+        }
+    }
+
+    private ProcessBuilder buildDartToolProcess(Property<Object> descriptorFile,
+                                                DirectoryProperty dartDir) {
         Path command = dartCodeGenCommand();
-        task.commandLine(
-                command,
+        @SuppressWarnings("UseOfProcessBuilder")
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                command.toString(),
                 "--descriptor", project.file(descriptorFile)
                                        .getAbsolutePath(),
-                "--destination", dartDir.file("types.dart")
+                "--destination", dartDir.file(TYPES_FILE)
                                         .get()
                                         .getAsFile()
                                         .getAbsolutePath(),
                 "--standard-types", "spine_client",
                 "--import-prefix", "."
-        );
+        ).inheritIO();
+        return processBuilder;
+    }
+
+    private static GradleException onProcessError(
+            @SuppressWarnings("UseOfProcessBuilder") ProcessBuilder processBuilder,
+            int exitCode
+    ) {
+        String command = commandJoiner.join(processBuilder.command());
+        throw new GradleException(format("Command `%s` exited with code %s.", command, exitCode));
     }
 
     private Path dartCodeGenCommand() {
