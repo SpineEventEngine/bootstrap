@@ -21,7 +21,7 @@
 package io.spine.tools.gradle.bootstrap;
 
 import com.google.protobuf.gradle.ProtobufPlugin;
-import io.spine.generate.dart.ProtoDartPlugin;
+import io.spine.dart.gradle.ProtoDartPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.PluginScript;

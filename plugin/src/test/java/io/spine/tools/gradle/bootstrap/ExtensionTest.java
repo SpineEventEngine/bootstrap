@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.Correspondence;
 import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
-import io.spine.generate.dart.ProtoDartPlugin;
+import io.spine.dart.gradle.ProtoDartPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.TaskName;
