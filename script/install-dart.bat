@@ -18,8 +18,6 @@
 @rem OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 @rem
 
-@echo off
-
 choco install dart-sdk --limitoutput
 refreshenv
 pub global activate protoc_plugin
