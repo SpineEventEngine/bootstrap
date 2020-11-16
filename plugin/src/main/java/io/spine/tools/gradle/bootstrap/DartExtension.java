@@ -22,6 +22,7 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
+import io.spine.dart.gradle.Extension;
 import io.spine.dart.PubCache;
 import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
