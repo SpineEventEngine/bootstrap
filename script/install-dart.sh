@@ -32,5 +32,3 @@ sudo apt-get update
 
 # Install Dart, `pub`, etc.
 sudo apt-get install dart
-
-pub global activate protoc_plugin
