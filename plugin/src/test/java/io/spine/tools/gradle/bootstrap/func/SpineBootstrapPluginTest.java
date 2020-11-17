@@ -61,6 +61,7 @@ class SpineBootstrapPluginTest {
     @BeforeEach
     void setUp() {
         this.projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
+        projectDir.toFile().deleteOnExit();
         this.project = GradleProject
                 .newBuilder()
                 .setProjectName("func-test")

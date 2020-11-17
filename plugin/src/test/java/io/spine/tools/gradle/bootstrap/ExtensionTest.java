@@ -48,6 +48,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -86,6 +87,7 @@ class ExtensionTest {
     @BeforeEach
     void setUp() {
         this.projectDir = TempDir.forClass(ExtensionTest.class).toPath();
+        projectDir.toFile().deleteOnExit();
         this.project = ProjectBuilder
                 .builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
@@ -339,12 +341,13 @@ class ExtensionTest {
 
         @Test
         @DisplayName("declare `generated` directory a source root")
-        void declareGeneratedDirectory() {
+        void declareGeneratedDirectory() throws IOException {
             extension.enableJava();
 
             assertApplied(JavaPlugin.class);
             ImmutableSet<Path> declaredPaths = codeLayout.javaSourceDirs();
-            assertThat(declaredPaths).contains(projectDir.resolve("generated"));
+            Path realDirPath = projectDir.toRealPath();
+            assertThat(declaredPaths).contains(realDirPath.resolve("generated"));
         }
 
         @Test

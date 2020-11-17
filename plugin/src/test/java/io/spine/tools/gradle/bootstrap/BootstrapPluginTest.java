@@ -40,6 +40,7 @@ class BootstrapPluginTest {
     @BeforeEach
     void setUp() {
         File projectDir = TempDir.forClass(BootstrapPluginTest.class);
+        projectDir.deleteOnExit();
         project = ProjectBuilder
                 .builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
