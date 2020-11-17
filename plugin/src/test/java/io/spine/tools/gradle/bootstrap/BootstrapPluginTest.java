@@ -21,14 +21,14 @@
 package io.spine.tools.gradle.bootstrap;
 
 import com.google.common.truth.Subject;
+import io.spine.testing.TempDir;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import java.nio.file.Path;
+import java.io.File;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -38,11 +38,12 @@ class BootstrapPluginTest {
     private Project project;
 
     @BeforeEach
-    void setUp(@TempDir Path projectDir) {
+    void setUp() {
+        File projectDir = TempDir.forClass(BootstrapPluginTest.class);
         project = ProjectBuilder
                 .builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
-                .withProjectDir(projectDir.toFile())
+                .withProjectDir(projectDir)
                 .build();
     }
 

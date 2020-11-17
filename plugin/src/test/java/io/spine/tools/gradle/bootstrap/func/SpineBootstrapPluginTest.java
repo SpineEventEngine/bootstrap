@@ -25,12 +25,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import io.spine.code.proto.FileDescriptors;
 import io.spine.testing.SlowTest;
+import io.spine.testing.TempDir;
 import io.spine.tools.gradle.testing.GradleProject;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -59,8 +59,8 @@ class SpineBootstrapPluginTest {
     private Path projectDir;
 
     @BeforeEach
-    void setUp(@TempDir Path dir) {
-        this.projectDir = dir;
+    void setUp() {
+        this.projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
         this.project = GradleProject
                 .newBuilder()
                 .setProjectName("func-test")

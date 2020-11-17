@@ -26,6 +26,7 @@ import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.dart.gradle.ProtoDartPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
+import io.spine.testing.TempDir;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.bootstrap.given.FakeArtifacts;
@@ -46,7 +47,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -78,14 +78,13 @@ class ExtensionTest {
     private Project project;
 
     @BeforeEach
-    void setUp(@TempDir Path projectDir) {
+    void setUp() {
+        this.projectDir = TempDir.forClass(ExtensionTest.class).toPath();
         this.project = ProjectBuilder
                 .builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
-        this.projectDir = project.getProjectDir()
-                                 .toPath();
         pluginTarget = new PlugableProject(project);
         dependencyTarget = new MemoizingDependant();
         codeLayout = new MemoizingSourceSuperset();
