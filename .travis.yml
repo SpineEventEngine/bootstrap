@@ -27,7 +27,6 @@ script:
   # fail the Travis build if execution of this script is failed.
   - ./config/scripts/publish-artifacts.sh
 
-
 after_success:
   # See: https://github.com/codecov/example-java/blob/master/.travis.yml
   - bash <(curl -s https://codecov.io/bash)
