@@ -25,12 +25,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import io.spine.code.proto.FileDescriptors;
 import io.spine.testing.SlowTest;
+import io.spine.testing.TempDir;
 import io.spine.tools.gradle.testing.GradleProject;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -55,18 +55,16 @@ class SpineBootstrapPluginTest {
     private static final String ADDITIONAL_CONFIG_SCRIPT = "config.gradle";
     private static final String TRANSITIVE_JS_DEPENDENCY = "any_pb.js";
 
-    @TempDir
-    @SuppressWarnings({"PackageVisibleField", "WeakerAccess"})
-    File projectDir;
-
     private GradleProject.Builder project;
+    private Path projectDir;
 
     @BeforeEach
     void setUp() {
+        this.projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
         this.project = GradleProject
                 .newBuilder()
                 .setProjectName("func-test")
-                .setProjectFolder(projectDir)
+                .setProjectFolder(projectDir.toFile())
                 .withPluginClasspath()
                 .addProtoFile("roller_coaster.proto");
     }
@@ -115,7 +113,8 @@ class SpineBootstrapPluginTest {
         project.executeTask(build);
 
         Collection<String> resourceFiles = assembledResources();
-        String projectDir = this.projectDir.getName();
+        String projectDir = this.projectDir.getFileName()
+                                           .toString();
         boolean containsDescriptorSetFile =
                 resourceFiles.stream()
                              .filter(f -> f.endsWith(FileDescriptors.DESC_EXTENSION))
@@ -375,8 +374,7 @@ class SpineBootstrapPluginTest {
     }
 
     private Collection<String> assembledResources() {
-        Path resourcePath = projectDir.toPath()
-                                      .resolve("build")
+        Path resourcePath = projectDir.resolve("build")
                                       .resolve("resources")
                                       .resolve("main");
         File resourceDir = resourcePath.toFile();
@@ -406,8 +404,7 @@ class SpineBootstrapPluginTest {
     }
 
     private Path compiledJavaClasses() {
-        Path compiledClasses = projectDir.toPath()
-                                         .resolve("build")
+        Path compiledClasses = projectDir.resolve("build")
                                          .resolve("classes")
                                          .resolve("java")
                                          .resolve("main");
@@ -415,8 +412,7 @@ class SpineBootstrapPluginTest {
     }
 
     private Path generatedFiles() {
-        Path generated = projectDir.toPath()
-                                   .resolve("generated");
+        Path generated = projectDir.resolve("generated");
         return generated;
     }
 
@@ -446,7 +442,7 @@ class SpineBootstrapPluginTest {
     }
 
     private Collection<String> generatedDartFileNames() {
-        Path libDir = projectDir.toPath().resolve("lib");
+        Path libDir = projectDir.resolve("lib");
         File libDirFile = libDir.toFile();
         assertTrue(libDirFile.exists());
         assertTrue(libDirFile.isDirectory());
