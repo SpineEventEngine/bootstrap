@@ -66,10 +66,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("`spine` extension should")
 class ExtensionTest {
 
+    /**
+     * A {@link Correspondence} of a Gradle {@link Task} to its {@linkplain TaskName name}.
+     *
+     * <p>Allow to assert facts about a collection of tasks referencing them by names instead of
+     * looking up individual elements.
+     */
     private static final
     Correspondence<@NonNull Task, @NonNull TaskName> names = Correspondence.from(
             (@NonNull Task task, @NonNull TaskName name) -> task.getName().equals(name.name()),
-            "names"
+            "has name"
     );
 
     private PluginTarget pluginTarget;
