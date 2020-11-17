@@ -26,7 +26,6 @@ import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
 import io.spine.dart.gradle.ProtoDartPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
-import io.spine.testing.TempDir;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.bootstrap.given.FakeArtifacts;
@@ -47,7 +46,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -74,16 +76,18 @@ class ExtensionTest {
     private Extension extension;
     private MemoizingSourceSuperset codeLayout;
     private MemoizingDependant dependencyTarget;
-    private Path projectDir;
     private Project project;
+
+    @TempDir
+    @SuppressWarnings({"PackageVisibleField", "WeakerAccess"})
+    File projectDir;
 
     @BeforeEach
     void setUp() {
-        this.projectDir = TempDir.forClass(ExtensionTest.class).toPath();
         this.project = ProjectBuilder
                 .builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
-                .withProjectDir(projectDir.toFile())
+                .withProjectDir(projectDir)
                 .build();
         pluginTarget = new PlugableProject(project);
         dependencyTarget = new MemoizingDependant();
@@ -333,12 +337,14 @@ class ExtensionTest {
 
         @Test
         @DisplayName("declare `generated` directory a source root")
-        void declareGeneratedDirectory() {
+        void declareGeneratedDirectory() throws IOException {
             extension.enableJava();
 
             assertApplied(JavaPlugin.class);
             ImmutableSet<Path> declaredPaths = codeLayout.javaSourceDirs();
-            assertThat(declaredPaths).contains(projectDir.resolve("generated"));
+            Path realProjectPath = projectDir.toPath().toRealPath();
+            Path generatedPath = realProjectPath.resolve("generated");
+            assertThat(declaredPaths).contains(generatedPath);
         }
 
         @Test
