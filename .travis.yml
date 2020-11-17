@@ -13,6 +13,7 @@ before_install:
   - chmod +x ./script/install-dart.sh
   - ./script/install-dart.sh
   - pub global activate protoc_plugin
+  - pub global activate dart_code_gen
 
 install:
   - openssl aes-256-cbc -K $encrypted_484d6a99d515_key -iv $encrypted_484d6a99d515_iv -in credentials.tar.enc -out credentials.tar -d

@@ -21,3 +21,4 @@
 choco install dart-sdk --limitoutput
 refreshenv
 pub global activate protoc_plugin
+pub global activate dart_code_gen
