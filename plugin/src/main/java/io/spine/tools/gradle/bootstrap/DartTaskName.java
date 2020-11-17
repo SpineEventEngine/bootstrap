@@ -18,20 +18,24 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/**
- * Declares the version of the artifacts to publish and versions of
- * project-specific general dependencies.
- *
- * This file is used in both module `build.gradle` scripts and in the integration tests,
- * as we want to manage the versions in a single source.
- *
- * This file is copied to the root of the project ONLY if there's no file with such a name
- * already in the root directory.
- */
+package io.spine.tools.gradle.bootstrap;
 
-val spineBaseVersion: String by extra("1.6.11")
-val spineTimeVersion: String by extra("1.6.0")
-val spineVersion: String by extra("1.6.6")
-val spineWebVersion: String by extra("1.6.6")
-val spineGCloudVersion: String by extra("1.6.6")
-val pluginVersion: String by extra("1.6.11")
+import io.spine.tools.gradle.TaskName;
+
+/**
+ * Tasks which launch the `dart_code_gen` tool.
+ */
+public enum DartTaskName implements TaskName {
+
+    /**
+     * Name of the task which launches the `dart_code_gen` tool for generating extra Dart code for
+     * the main scope.
+     */
+    generateDart,
+
+    /**
+     * Name of the task which launches the `dart_code_gen` tool for generating extra Dart code for
+     * the test scope.
+     */
+    generateTestDart
+}

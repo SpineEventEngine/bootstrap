@@ -28,7 +28,7 @@ import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.js;
 /**
  * An extension which configures JavaScript code generation.
  */
-public final class JavaScriptExtension extends CodeGenExtension {
+final class JavaScriptExtension extends CodeGenExtension {
 
     private static final String IMPORT_STYLE_OPTION = "import_style=commonjs";
 

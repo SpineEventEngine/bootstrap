@@ -3,9 +3,18 @@ language: java
 jdk:
   - openjdk8
 
+env:
+  global:
+    - PATH="$PATH:/usr/lib/dart/bin"
+
 before_install:
   - chmod +x ./gradlew
   - chmod +x ./config/scripts/publish-artifacts.sh
+  - chmod +x ./config/scripts/update-apt.sh
+  - ./config/scripts/update-apt.sh
+  - sudo apt-get install dart
+  - pub global activate protoc_plugin
+  - pub global activate dart_code_gen
 
 install:
   - openssl aes-256-cbc -K $encrypted_484d6a99d515_key -iv $encrypted_484d6a99d515_iv -in credentials.tar.enc -out credentials.tar -d

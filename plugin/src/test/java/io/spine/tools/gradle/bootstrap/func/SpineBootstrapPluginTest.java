@@ -25,12 +25,12 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import io.spine.code.proto.FileDescriptors;
 import io.spine.testing.SlowTest;
+import io.spine.testing.TempDir;
 import io.spine.tools.gradle.testing.GradleProject;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -40,6 +40,7 @@ import java.util.Set;
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.BaseTaskName.build;
 import static io.spine.tools.gradle.ProtoJsTaskName.generateJsonParsers;
+import static io.spine.tools.gradle.bootstrap.DartExtension.TYPES_FILE;
 import static java.nio.file.Files.exists;
 import static java.util.Collections.emptySet;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
@@ -58,8 +59,9 @@ class SpineBootstrapPluginTest {
     private Path projectDir;
 
     @BeforeEach
-    void setUp(@TempDir Path dir) {
-        this.projectDir = dir;
+    void setUp() {
+        this.projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
+        projectDir.toFile().deleteOnExit();
         this.project = GradleProject
                 .newBuilder()
                 .setProjectName("func-test")
@@ -112,7 +114,8 @@ class SpineBootstrapPluginTest {
         project.executeTask(build);
 
         Collection<String> resourceFiles = assembledResources();
-        String projectDir = this.projectDir.getFileName().toString();
+        String projectDir = this.projectDir.getFileName()
+                                           .toString();
         boolean containsDescriptorSetFile =
                 resourceFiles.stream()
                              .filter(f -> f.endsWith(FileDescriptors.DESC_EXTENSION))
@@ -132,6 +135,25 @@ class SpineBootstrapPluginTest {
 
         Collection<String> jsFileNames = generatedJsFileNames();
         assertThat(jsFileNames).contains("roller_coaster_pb.js");
+    }
+
+    @Test
+    @DisplayName("generate Dart if requested")
+    void generateDart() {
+        configureDartGeneration();
+        GradleProject project = this.project.build();
+        project.executeTask(build);
+
+        Collection<String> dartFileNames = generatedDartFileNames();
+        String protoName = "roller_coaster";
+        assertThat(dartFileNames)
+                .containsExactly(
+                        TYPES_FILE,
+                        protoName + ".pb.dart",
+                        protoName + ".pbjson.dart",
+                        protoName + ".pbenum.dart",
+                        protoName + ".pbserver.dart"
+                );
     }
 
     @Test
@@ -258,7 +280,8 @@ class SpineBootstrapPluginTest {
         GradleProject project = this.project.build();
         project.executeTask(build);
 
-        assertThat(generatedFiles().toFile().exists()).isFalse();
+        assertThat(generatedFiles().toFile()
+                                   .exists()).isFalse();
     }
 
     private void noAdditionalConfig() {
@@ -277,6 +300,12 @@ class SpineBootstrapPluginTest {
     private void configureJsGeneration() {
         writeConfigGradle(
                 "spine.enableJavaScript()"
+        );
+    }
+
+    private void configureDartGeneration() {
+        writeConfigGradle(
+                "spine.enableDart()"
         );
     }
 
@@ -410,6 +439,16 @@ class SpineBootstrapPluginTest {
         assertTrue(compiledJsDir.isDirectory());
         @SuppressWarnings("ConstantConditions")
         ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledJsDir.list());
+        return packageContents;
+    }
+
+    private Collection<String> generatedDartFileNames() {
+        Path libDir = projectDir.resolve("lib");
+        File libDirFile = libDir.toFile();
+        assertTrue(libDirFile.exists());
+        assertTrue(libDirFile.isDirectory());
+        @SuppressWarnings("ConstantConditions")
+        ImmutableSet<String> packageContents = ImmutableSet.copyOf(libDirFile.list());
         return packageContents;
     }
 }

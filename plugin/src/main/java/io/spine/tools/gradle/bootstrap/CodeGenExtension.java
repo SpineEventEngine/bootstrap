@@ -96,6 +96,14 @@ abstract class CodeGenExtension implements Logging {
     }
 
     /**
+     * Obtains the {@code ProtobufGenerator} which configures the code generation for the associated
+     * project.
+     */
+    final ProtobufGenerator protobufGenerator() {
+        return protobufGenerator;
+    }
+
+    /**
      * Obtains the dependency container associated with this extension.
      */
     final Dependant dependant() {

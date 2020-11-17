@@ -22,5 +22,10 @@ jobs:
         run: git submodule update --init --recursive
 
       - name: Run tests with Gradle
-        run: gradlew.bat build
         shell: cmd
+        run: >
+          choco install dart-sdk --limitoutput
+          && refreshenv
+          && pub global activate protoc_plugin
+          && pub global activate dart_code_gen
+          && gradlew.bat build

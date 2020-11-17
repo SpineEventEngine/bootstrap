@@ -27,7 +27,6 @@ plugins {
     id("com.gradle.plugin-publish").version("0.12.0")
     id("com.github.johnrengelman.shadow").version("6.0.0")
     `bootstrap-plugin`
-    `func-test-env`
     `prepare-config-resources`
 }
 
@@ -44,6 +43,7 @@ dependencies {
     implementation("io.spine.tools:spine-plugin-base:$spineBaseVersion")
     implementation("io.spine.tools:spine-model-compiler:$spineBaseVersion")
     implementation("io.spine.tools:spine-proto-js-plugin:$spineBaseVersion")
+    implementation("io.spine.tools:spine-proto-dart-plugin:$spineBaseVersion")
 
     testImplementation("io.spine:spine-testlib:$spineBaseVersion")
     testImplementation("io.spine.tools:spine-plugin-testlib:$spineBaseVersion")

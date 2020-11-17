@@ -21,6 +21,7 @@
 package io.spine.tools.gradle.bootstrap;
 
 import com.google.protobuf.gradle.ProtobufPlugin;
+import io.spine.dart.gradle.ProtoDartPlugin;
 import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.PluginScript;
@@ -102,6 +103,14 @@ public final class SpinePluginTarget implements PluginTarget {
      */
     public void applyProtoJsPlugin() {
         GradlePlugin<?> plugin = GradlePlugin.implementedIn(ProtoJsPlugin.class);
+        apply(plugin);
+    }
+
+    /**
+     * Applies the {@link ProtoDartPlugin}.
+     */
+    public void applyProtoDartPlugin() {
+        GradlePlugin<?> plugin = GradlePlugin.implementedIn(ProtoDartPlugin.class);
         apply(plugin);
     }
 
