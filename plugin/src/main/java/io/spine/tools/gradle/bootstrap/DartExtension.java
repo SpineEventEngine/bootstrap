@@ -22,10 +22,9 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
-import io.spine.dart.gradle.Extension;
 import io.spine.dart.PubCache;
+import io.spine.dart.gradle.Extension;
 import io.spine.tools.gradle.TaskName;
-import io.spine.tools.gradle.protoc.ProtocPlugin;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
@@ -44,6 +43,7 @@ import static io.spine.tools.gradle.ProtobufTaskName.generateTestProto;
 import static io.spine.tools.gradle.bootstrap.DartTaskName.generateDart;
 import static io.spine.tools.gradle.bootstrap.DartTaskName.generateTestDart;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.dart;
+import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 import static java.lang.String.format;
 import static java.nio.file.Files.exists;
 import static org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS;
@@ -69,7 +69,13 @@ public final class DartExtension extends CodeGenExtension {
     @Override
     void enableGeneration() {
         super.enableGeneration();
+        pluginTarget().applyProtobufPlugin();
+        protobufGenerator().enablePlugin(called(dart));
         pluginTarget().applyProtoDartPlugin();
+        createGenerationTasks();
+    }
+
+    private void createGenerationTasks() {
         Extension protoDart = project.getExtensions()
                                      .getByType(Extension.class);
         Task mainTask = createTask(generateDart,
@@ -175,7 +181,7 @@ public final class DartExtension extends CodeGenExtension {
          * Prevents direct instantiation.
          */
         private Builder() {
-            super(ProtocPlugin.called(dart));
+            super();
         }
 
         @Override
