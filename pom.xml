@@ -12,7 +12,7 @@ all modules and does not describe the project structure per-subproject.
 
 <groupId>io.spine.tools</groupId>
 <artifactId>spine-bootstrap</artifactId>
-<version>1.6.15</version>
+<version>1.6.16</version>
 
 <inceptionYear>2015</inceptionYear>
 
@@ -25,18 +25,6 @@ all modules and does not describe the project structure per-subproject.
 </licenses>
 
 <dependencies>
-  <dependency>
-    <groupId>com.google.errorprone</groupId>
-    <artifactId>error_prone_annotations</artifactId>
-    <version>2.4.0</version>
-    <scope>compile</scope>
-  </dependency>
-  <dependency>
-    <groupId>com.google.errorprone</groupId>
-    <artifactId>error_prone_type_annotations</artifactId>
-    <version>2.4.0</version>
-    <scope>compile</scope>
-  </dependency>
   <dependency>
     <groupId>com.google.guava</groupId>
     <artifactId>guava</artifactId>
@@ -52,37 +40,31 @@ all modules and does not describe the project structure per-subproject.
   <dependency>
     <groupId>io.spine</groupId>
     <artifactId>spine-base</artifactId>
-    <version>1.6.13</version>
+    <version>1.6.16</version>
     <scope>compile</scope>
   </dependency>
   <dependency>
     <groupId>io.spine.tools</groupId>
     <artifactId>spine-model-compiler</artifactId>
-    <version>1.6.13</version>
+    <version>1.6.16</version>
     <scope>compile</scope>
   </dependency>
   <dependency>
     <groupId>io.spine.tools</groupId>
     <artifactId>spine-plugin-base</artifactId>
-    <version>1.6.13</version>
+    <version>1.6.16</version>
     <scope>compile</scope>
   </dependency>
   <dependency>
     <groupId>io.spine.tools</groupId>
     <artifactId>spine-proto-dart-plugin</artifactId>
-    <version>1.6.13</version>
+    <version>1.6.16</version>
     <scope>compile</scope>
   </dependency>
   <dependency>
     <groupId>io.spine.tools</groupId>
     <artifactId>spine-proto-js-plugin</artifactId>
-    <version>1.6.13</version>
-    <scope>compile</scope>
-  </dependency>
-  <dependency>
-    <groupId>org.checkerframework</groupId>
-    <artifactId>checker-qual</artifactId>
-    <version>3.7.1</version>
+    <version>1.6.16</version>
     <scope>compile</scope>
   </dependency>
   <dependency>
@@ -112,19 +94,25 @@ all modules and does not describe the project structure per-subproject.
   <dependency>
     <groupId>io.spine</groupId>
     <artifactId>spine-testlib</artifactId>
-    <version>1.6.13</version>
+    <version>1.6.16</version>
     <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>io.spine.tools</groupId>
     <artifactId>spine-plugin-testlib</artifactId>
-    <version>1.6.13</version>
+    <version>1.6.16</version>
     <scope>test</scope>
   </dependency>
   <dependency>
     <groupId>org.apiguardian</groupId>
     <artifactId>apiguardian-api</artifactId>
     <version>1.1.0</version>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.junit-pioneer</groupId>
+    <artifactId>junit-pioneer</artifactId>
+    <version>1.0.0</version>
     <scope>test</scope>
   </dependency>
   <dependency>
@@ -146,29 +134,28 @@ all modules and does not describe the project structure per-subproject.
     <scope>test</scope>
   </dependency>
   <dependency>
+    <groupId>com.google.code.findbugs</groupId>
+    <artifactId>jsr305</artifactId>
+    <version>3.0.2</version>
+    <scope>provided</scope>
+  </dependency>
+  <dependency>
     <groupId>com.google.errorprone</groupId>
-    <artifactId>error_prone_core</artifactId>
+    <artifactId>error_prone_annotations</artifactId>
     <version>2.4.0</version>
+    <scope>provided</scope>
   </dependency>
   <dependency>
     <groupId>com.google.errorprone</groupId>
-    <artifactId>javac</artifactId>
-    <version>9+181-r4173-1</version>
+    <artifactId>error_prone_type_annotations</artifactId>
+    <version>2.4.0</version>
+    <scope>provided</scope>
   </dependency>
   <dependency>
-    <groupId>net.sourceforge.pmd</groupId>
-    <artifactId>pmd-java</artifactId>
-    <version>6.24.0</version>
-  </dependency>
-  <dependency>
-    <groupId>org.jacoco</groupId>
-    <artifactId>org.jacoco.agent</artifactId>
-    <version>0.8.5</version>
-  </dependency>
-  <dependency>
-    <groupId>org.jacoco</groupId>
-    <artifactId>org.jacoco.ant</artifactId>
-    <version>0.8.5</version>
+    <groupId>org.checkerframework</groupId>
+    <artifactId>checker-qual</artifactId>
+    <version>3.7.1</version>
+    <scope>provided</scope>
   </dependency>
 </dependencies>
 </project>
