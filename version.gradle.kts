@@ -29,9 +29,9 @@
  * already in the root directory.
  */
 
-val spineBaseVersion: String by extra("1.6.13")
-val spineTimeVersion: String by extra("1.6.13")
-val spineVersion: String by extra("1.6.15")
-val spineWebVersion: String by extra("1.6.15")
-val spineGCloudVersion: String by extra("1.6.15")
-val pluginVersion: String by extra("1.6.15")
+val spineBaseVersion: String by extra("1.6.16")
+val spineTimeVersion: String by extra("1.6.16")
+val spineVersion: String by extra("1.6.18")
+val spineWebVersion: String by extra("1.6.16")
+val spineGCloudVersion: String by extra("1.6.16")
+val pluginVersion: String by extra("1.6.16")
