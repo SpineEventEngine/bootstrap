@@ -23,7 +23,6 @@ import io.spine.gradle.internal.IncrementGuard
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    java
     id("com.gradle.plugin-publish").version("0.12.0")
     id("com.github.johnrengelman.shadow").version("6.1.0")
     `bootstrap-plugin`
@@ -52,7 +51,8 @@ dependencies {
 val targetResourceDir = "$buildDir/compiledResources/"
 
 val prepareBuildScript by tasks.registering(Copy::class) {
-    description = "Creates the `build.gradle` script which is executed in functional tests of the plugin."
+    description = "Creates the `build.gradle` script which is executed " +
+            "in functional tests of the plugin."
 
     from("$projectDir/src/test/build.gradle.template")
     into(targetResourceDir)

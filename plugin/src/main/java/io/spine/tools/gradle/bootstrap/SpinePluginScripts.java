@@ -64,7 +64,7 @@ final class SpinePluginScripts {
 
         private Resource resourceFile() {
             String resourceName = name + SCRIPT_EXTENSION;
-            return Resource.file(resourceName);
+            return Resource.file(resourceName, SpinePluginScripts.class.getClassLoader());
         }
     }
 }

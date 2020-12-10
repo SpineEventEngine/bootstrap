@@ -81,7 +81,9 @@ public final class ArtifactSnapshot {
      * @return loaded {@code ArtifactSnapshot}
      */
     private static ArtifactSnapshot load() {
-        Resource file = Resource.file("artifact-snapshot.properties");
+        Resource file = Resource.file(
+                "artifact-snapshot.properties", ArtifactSnapshot.class.getClassLoader()
+        );
         Properties properties = new Properties();
         try (InputStream resource = file.open()) {
             properties.load(resource);
