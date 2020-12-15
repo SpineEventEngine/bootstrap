@@ -133,3 +133,17 @@ This configuration:
  - configures JS code generation from Protobuf.
  
 If only JS generation is configured, the Java code will not be generated (and the other way around).
+
+## Dart Projects
+
+In order to mark a (sub-)project as a Dart project for Spine, apply the following config:
+
+```gradle
+spine.enableDart()
+```
+
+This configuration:
+- applies `com.google.protobuf` and `java` Gradle plugin (as the former depends on the latter);
+- configures Dart code generation from Protobuf.
+
+If only Dart generation is configured, the Java code will not be generated (and the other way around).
