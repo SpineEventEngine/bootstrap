@@ -1,6 +1,12 @@
 /*
  * Copyright 2020, TeamDev. All rights reserved.
  *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Redistribution and use in source and/or binary forms, with or without
  * modification, must retain the above copyright notice and the following
  * disclaimer.
@@ -29,9 +35,9 @@
  * already in the root directory.
  */
 
-val spineBaseVersion: String by extra("1.6.16")
-val spineTimeVersion: String by extra("1.6.16")
-val spineVersion: String by extra("1.6.18")
-val spineWebVersion: String by extra("1.6.16")
-val spineGCloudVersion: String by extra("1.6.16")
-val pluginVersion: String by extra("1.6.16")
+val spineVersion: String by extra("1.7.0")
+val spineBaseVersion: String by extra(spineVersion)
+val spineTimeVersion: String by extra(spineVersion)
+val spineWebVersion: String by extra(spineVersion)
+val spineGCloudVersion: String by extra(spineVersion)
+val pluginVersion: String by extra(spineVersion)
