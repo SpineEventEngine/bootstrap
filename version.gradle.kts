@@ -1,5 +1,5 @@
 /*
- * Copyright 2020, TeamDev. All rights reserved.
+ * Copyright 2021, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@
  * already in the root directory.
  */
 
-val spineVersion: String by extra("1.7.0")
-val spineBaseVersion: String by extra(spineVersion)
+val spineVersion: String by extra("1.7.1")
+val spineBaseVersion: String by extra("1.7.4")
 val spineTimeVersion: String by extra(spineVersion)
 val spineWebVersion: String by extra(spineVersion)
 val spineGCloudVersion: String by extra(spineVersion)
