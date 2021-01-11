@@ -137,46 +137,25 @@ all modules and does not describe the project structure per-subproject.
     <groupId>com.google.code.findbugs</groupId>
     <artifactId>jsr305</artifactId>
     <version>3.0.2</version>
+    <scope>provided</scope>
   </dependency>
   <dependency>
     <groupId>com.google.errorprone</groupId>
     <artifactId>error_prone_annotations</artifactId>
     <version>2.4.0</version>
-  </dependency>
-  <dependency>
-    <groupId>com.google.errorprone</groupId>
-    <artifactId>error_prone_core</artifactId>
-    <version>2.4.0</version>
+    <scope>provided</scope>
   </dependency>
   <dependency>
     <groupId>com.google.errorprone</groupId>
     <artifactId>error_prone_type_annotations</artifactId>
     <version>2.4.0</version>
-  </dependency>
-  <dependency>
-    <groupId>com.google.errorprone</groupId>
-    <artifactId>javac</artifactId>
-    <version>9+181-r4173-1</version>
-  </dependency>
-  <dependency>
-    <groupId>net.sourceforge.pmd</groupId>
-    <artifactId>pmd-java</artifactId>
-    <version>6.24.0</version>
+    <scope>provided</scope>
   </dependency>
   <dependency>
     <groupId>org.checkerframework</groupId>
     <artifactId>checker-qual</artifactId>
     <version>3.7.1</version>
-  </dependency>
-  <dependency>
-    <groupId>org.jacoco</groupId>
-    <artifactId>org.jacoco.agent</artifactId>
-    <version>0.8.5</version>
-  </dependency>
-  <dependency>
-    <groupId>org.jacoco</groupId>
-    <artifactId>org.jacoco.ant</artifactId>
-    <version>0.8.5</version>
+    <scope>provided</scope>
   </dependency>
 </dependencies>
 </project>
