@@ -24,10 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.gradle.internal.Deps
-import io.spine.gradle.internal.Repos
 import java.util.Properties
 import java.io.FileWriter
+
+import io.spine.internal.dependency.Protobuf
+import io.spine.internal.dependency.Grpc
+import io.spine.internal.gradle.publish.PublishingRepos.cloudArtifactRegistry
 
 plugins {
     java
@@ -43,26 +45,12 @@ sourceSets.main {
 
 val taskGroup = "Spine bootstrapping"
 
-val copyModelCompilerConfig by tasks.registering(Copy::class) {
-    group = taskGroup
-
-    from(file("$configDir/gradle/model-compiler.gradle"))
-    into(file(bootstrapDir))
-
-    doFirst {
-        bootstrapDir.mkdirs()
-    }
-}
-
-tasks.processResources {
-    dependsOn(copyModelCompilerConfig)
-}
-
-val spineBaseVersion: String by extra
-val spineTimeVersion: String by extra
-val spineVersion: String by extra
-val spineWebVersion: String by extra
-val spineGCloudVersion: String by extra
+val baseVersion: String by extra
+val timeVersion: String by extra
+val bootstrapVersion: String by extra
+val coreJavaVersion: String by extra
+val webVersion: String by extra
+val gCloudVersion: String by extra
 
 /*
   This task creates the `artifact-snapshot.properties` file which is later added to the classpath of
@@ -76,7 +64,7 @@ val writeDependencies by tasks.registering {
     group = taskGroup
 
     inputs.dir(configDir)
-    inputs.property("version", spineVersion)
+    inputs.property("version", bootstrapVersion)
     outputs.file(versionSnapshot)
 
     doFirst {
@@ -89,17 +77,35 @@ val writeDependencies by tasks.registering {
     doLast {
         val artifacts = Properties()
 
-        artifacts.setProperty("spine.version.base", spineBaseVersion)
-        artifacts.setProperty("spine.version.time", spineTimeVersion)
-        artifacts.setProperty("spine.version.core", spineVersion)
-        artifacts.setProperty("spine.version.web", spineWebVersion)
-        artifacts.setProperty("spine.version.gcloud", spineWebVersion)
-        artifacts.setProperty("protobuf.compiler", Deps.build.protoc)
-        artifacts.setProperty("protobuf.java", Deps.build.protobuf[0])
-        artifacts.setProperty("grpc.stub", Deps.grpc.stub)
-        artifacts.setProperty("grpc.protobuf", Deps.grpc.protobuf)
-        artifacts.setProperty("repository.spine.release", Repos.spine)
-        artifacts.setProperty("repository.spine.snapshot", Repos.spineSnapshots)
+        artifacts.setProperty("spine.version.base", baseVersion)
+        artifacts.setProperty("spine.version.time", timeVersion)
+        artifacts.setProperty("spine.version.core", coreJavaVersion)
+        artifacts.setProperty("spine.version.web", webVersion)
+        artifacts.setProperty("spine.version.gcloud", gCloudVersion)
+        artifacts.setProperty(
+            "protobuf.compiler",
+            Protobuf.compiler
+        )
+        artifacts.setProperty(
+            "protobuf.java",
+            Protobuf.libs[0]
+        )
+        artifacts.setProperty(
+            "grpc.stub",
+            Grpc.stub
+        )
+        artifacts.setProperty(
+            "grpc.protobuf",
+            Grpc.protobuf
+        )
+        artifacts.setProperty(
+            "repository.spine.release",
+            cloudArtifactRegistry.releases
+        )
+        artifacts.setProperty(
+            "repository.spine.snapshot",
+            cloudArtifactRegistry.snapshots
+        )
 
         FileWriter(versionSnapshot).use {
             artifacts.store(it, "Dependencies and versions required by Spine.")

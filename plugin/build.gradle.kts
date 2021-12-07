@@ -23,35 +23,50 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+@file:Suppress("RemoveRedundantQualifierName") // To prevent IDEA replacing FQN imports.
 
-import io.spine.gradle.internal.Deps
-import io.spine.gradle.internal.IncrementGuard
+import io.spine.internal.gradle.IncrementGuard
+import io.spine.internal.dependency.Protobuf
+
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id("com.gradle.plugin-publish").version("0.12.0")
-    id("com.github.johnrengelman.shadow").version("6.1.0")
+    id(io.spine.internal.dependency.Protobuf.GradlePlugin.id)
+
+    id("com.gradle.plugin-publish").version("0.18.0")
+    id("com.github.johnrengelman.shadow").version("7.1.0")
     `bootstrap-plugin`
     `prepare-config-resources`
 }
 
 apply<IncrementGuard>()
 
-val spineVersion: String by extra
-val spineBaseVersion: String by extra
-val pluginVersion: String by extra
+val baseVersion: String by extra
+val baseTypesVersion: String by extra
+val toolBaseVersion: String by extra
+val mcVersion: String by extra
+val mcJavaVersion: String by extra
+val mcJsVersion: String by extra
+val mcDartVersion: String by extra
+
+val bootstrapVersion: String by extra
 
 dependencies {
     implementation(gradleApi())
-    implementation(Deps.build.gradlePlugins.protobuf)
-    implementation("io.spine:spine-base:$spineBaseVersion")
-    implementation("io.spine.tools:spine-plugin-base:$spineBaseVersion")
-    implementation("io.spine.tools:spine-model-compiler:$spineBaseVersion")
-    implementation("io.spine.tools:spine-proto-js-plugin:$spineBaseVersion")
-    implementation("io.spine.tools:spine-proto-dart-plugin:$spineBaseVersion")
+    implementation(Protobuf.GradlePlugin.lib)
 
-    testImplementation("io.spine:spine-testlib:$spineBaseVersion")
-    testImplementation("io.spine.tools:spine-plugin-testlib:$spineBaseVersion")
+    implementation("io.spine:spine-base:$baseVersion")
+    implementation("io.spine:spine-base-types:$baseTypesVersion")
+
+    implementation("io.spine.tools:spine-plugin-base:$toolBaseVersion")
+    implementation("io.spine.tools:spine-model-compiler:$mcVersion")
+    implementation("io.spine.tools:spine-mc-java:$mcJavaVersion")
+    implementation("io.spine.tools:spine-mc-java-base:$mcJavaVersion")
+    implementation("io.spine.tools:spine-mc-js:$mcJsVersion")
+    implementation("io.spine.tools:spine-mc-dart:$mcDartVersion")
+
+    testImplementation("io.spine.tools:spine-testlib:$baseVersion")
+    testImplementation("io.spine.tools:spine-plugin-testlib:$toolBaseVersion")
 }
 
 val targetResourceDir = "$buildDir/compiledResources/"
@@ -64,7 +79,7 @@ val prepareBuildScript by tasks.registering(Copy::class) {
     into(targetResourceDir)
 
     rename { "build.gradle" }
-    filter(mapOf("tokens" to mapOf("spine-version" to spineVersion)), ReplaceTokens::class.java)
+    filter(mapOf("tokens" to mapOf("spine-version" to bootstrapVersion)), ReplaceTokens::class.java)
 }
 
 tasks.processTestResources {
@@ -85,21 +100,21 @@ pluginBundle {
     mavenCoordinates {
         groupId = "io.spine.tools"
         artifactId = "spine-bootstrap"
-        version = pluginVersion
+        version = bootstrapVersion
     }
 
     withDependencies { clear() }
 
     plugins {
         named("spineBootstrapPlugin") {
-            version = pluginVersion
+            version = bootstrapVersion
         }
     }
 }
 
 /*
  * In order to simplify the Bootstrap plugin usage, the plugin should have no external dependencies
- * which cannot be found in the Plugin portal or in JCenter. Spine core modules are not published to
+ * which cannot be found in the Plugin portal. Spine core modules are not published to
  * either of those repositories. Thus, we publish the "fat" JAR.
  *
  * As Gradle Plugin plugin always publishes the JAR artifact with the empty classifier, we add
@@ -114,6 +129,7 @@ tasks.jar {
 
 tasks.shadowJar {
     archiveClassifier.set("")
+    isZip64 = true
 }
 
 artifacts {

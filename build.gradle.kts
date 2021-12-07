@@ -24,79 +24,157 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.gradle.internal.DependencyResolution
-import io.spine.gradle.internal.Deps
-import io.spine.gradle.internal.PublishingRepos
+@file:Suppress("RemoveRedundantQualifierName") // To prevent IDEA replacing FQN imports.
+
+import io.spine.internal.dependency.CheckerFramework
+import io.spine.internal.dependency.ErrorProne
+import io.spine.internal.dependency.FindBugs
+import io.spine.internal.dependency.Guava
+import io.spine.internal.dependency.JUnit
+import io.spine.internal.dependency.Truth
+import io.spine.internal.gradle.IncrementGuard
+import io.spine.internal.gradle.VersionWriter
+import io.spine.internal.gradle.applyStandard
+import io.spine.internal.gradle.checkstyle.CheckStyleConfig
+import io.spine.internal.gradle.excludeProtobufLite
+import io.spine.internal.gradle.forceVersions
+import io.spine.internal.gradle.javac.configureErrorProne
+import io.spine.internal.gradle.javac.configureJavac
+import io.spine.internal.gradle.javadoc.JavadocConfig
+import io.spine.internal.gradle.kotlin.applyJvmToolchain
+import io.spine.internal.gradle.kotlin.setFreeCompilerArgs
+import io.spine.internal.gradle.publish.Publish.Companion.publishProtoArtifact
+import io.spine.internal.gradle.publish.PublishingRepos
+import io.spine.internal.gradle.publish.PublishingRepos.cloudArtifactRegistry
+import io.spine.internal.gradle.publish.PublishingRepos.cloudRepo
+import io.spine.internal.gradle.publish.spinePublishing
+import io.spine.internal.gradle.report.license.LicenseReporter
+import io.spine.internal.gradle.testing.configureLogging
+import io.spine.internal.gradle.testing.exposeTestArtifacts
+import io.spine.internal.gradle.testing.registerTestTasks
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    java
+    `java-library`
     idea
     jacoco
-    @Suppress("RemoveRedundantQualifierName") // Cannot use imports here.
-    id("net.ltgt.errorprone").version(io.spine.gradle.internal.Deps.versions.errorPronePlugin)
+    io.spine.internal.dependency.ErrorProne.GradlePlugin.apply {
+        id(id)
+    }
+    kotlin("jvm")
 }
 
-extra["credentialsPropertyFile"] = PublishingRepos.cloudRepo.credentials
-extra["projectsToPublish"] = listOf("plugin")
+spinePublishing {
+    projectsToPublish.addAll(subprojects.map { it.path })
+    targetRepositories.addAll(
+        cloudRepo,
+        cloudArtifactRegistry,
+        PublishingRepos.gitHub("bootstrap")
+    )
+    spinePrefix.set(true)
+}
 
 apply(from = "$rootDir/version.gradle.kts")
 
-val spineVersion: String by extra
-val spineBaseVersion: String by extra
-val pluginVersion: String by extra
+val bootstrapVersion: String by extra
 
 allprojects {
+    apply {
+        plugin("jacoco")
+        plugin("idea")
+        plugin("project-report")
+        apply(from = "$rootDir/version.gradle.kts")
+    }
     apply(from = "$rootDir/version.gradle.kts")
-    apply(from = "$rootDir/config/gradle/dependencies.gradle")
+
+    repositories {
+        PublishingRepos.gitHub("base")
+        PublishingRepos.gitHub("tool-base")
+        PublishingRepos.gitHub("model-compiler")
+        applyStandard()
+    }
 
     group = "io.spine.tools"
-    version = pluginVersion
+    version = bootstrapVersion
 }
+
+val baseVersion: String by extra
 
 subprojects {
     apply {
-        plugin("java")
+        plugin("java-library")
+        plugin("kotlin")
         plugin("idea")
         plugin("net.ltgt.errorprone")
-        plugin("pmd")
+        plugin("pmd-settings")
+    }
 
-        from(Deps.scripts.slowTests(project))
-        from(Deps.scripts.testOutput(project))
-        from(Deps.scripts.javadocOptions(project))
-        from(Deps.scripts.pmd(project))
-        from(Deps.scripts.projectLicenseReport(project))
+    dependencies {
+        errorprone(ErrorProne.core)
+        errorproneJavac(ErrorProne.javacPlugin)
+
+        compileOnlyApi(FindBugs.annotations)
+        compileOnlyApi(CheckerFramework.annotations)
+        ErrorProne.annotations.forEach { compileOnlyApi(it) }
+
+        implementation(Guava.lib)
+        implementation("io.spine:spine-base:$baseVersion")
+
+        testImplementation(Guava.testLib)
+        JUnit.api.forEach { testImplementation(it) }
+        Truth.libs.forEach { testImplementation(it) }
+        testRuntimeOnly(JUnit.runner)
+    }
+
+    val baseVersion: String by extra
+    val toolBaseVersion: String by extra
+    val mcVersion: String by extra
+    with(configurations) {
+        forceVersions()
+        excludeProtobufLite()
+        all {
+            resolutionStrategy {
+                force(
+                    "io.spine:spine-base:$baseVersion",
+                    "io.spine.tools:spine-testlib:$baseVersion",
+                    "io.spine.tools:spine-tool-base:$toolBaseVersion",
+                    "io.spine.tools:spine-plugin-base:$toolBaseVersion",
+                    "io.spine.tools:spine-model-compiler:$mcVersion"
+                )
+            }
+        }
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        exposeTestArtifacts()
     }
 
-    DependencyResolution.defaultRepositories(repositories)
-
-    dependencies {
-        errorprone(Deps.build.errorProneCore)
-        errorproneJavac(Deps.build.errorProneJavac)
-
-        implementation(Deps.build.guava)
-        implementation("io.spine:spine-base:$spineBaseVersion")
-
-        compileOnly(Deps.build.checkerAnnotations)
-        compileOnly(Deps.build.jsr305Annotations)
-        Deps.build.errorProneAnnotations.forEach { compileOnly(it) }
-
-        testImplementation(Deps.test.guavaTestlib)
-        testImplementation(Deps.test.junitPioneer)
-        Deps.test.junit5Api.forEach { testImplementation(it) }
-        Deps.test.truth.forEach { testImplementation(it) }
-        testRuntimeOnly(Deps.test.junit5Runner)
+    tasks.withType<JavaCompile> {
+        configureJavac()
+        configureErrorProne()
     }
 
-    DependencyResolution.forceConfiguration(configurations)
+    JavadocConfig.applyTo(project)
+    CheckStyleConfig.applyTo(project)
 
-    tasks.withType(Test::class) {
-        useJUnitPlatform {
-            includeEngines("junit-jupiter")
+    val javaVersion = 11
+    kotlin {
+        applyJvmToolchain(javaVersion)
+        explicitApi()
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
+        kotlinOptions.jvmTarget = JavaVersion.VERSION_11.toString()
+        setFreeCompilerArgs()
+    }
+
+    tasks {
+        registerTestTasks()
+        test {
+            useJUnitPlatform {
+                includeEngines("junit-jupiter")
+            }
+            configureLogging()
         }
     }
 
@@ -122,16 +200,15 @@ subprojects {
             isDownloadSources = true
         }
     }
+
+    apply<IncrementGuard>()
+    apply<VersionWriter>()
+    publishProtoArtifact(project)
+    LicenseReporter.generateReportIn(project)
 }
 
-apply {
-    from(Deps.scripts.publish(project))
-    from(Deps.scripts.jacoco(project))
-    from(Deps.scripts.repoLicenseReport(project))
-    from(Deps.scripts.generatePom(project))
-}
-
-rootProject.afterEvaluate {
-    val pluginProject = project(":plugin")
-    pluginProject.tasks["publish"].dependsOn(pluginProject.tasks["publishPlugins"])
-}
+//TODO:2021-12-07:alexander.yevsyukov: Restore after the referenced task is found.
+//rootProject.afterEvaluate {
+//    val pluginProject = project(":plugin")
+//    pluginProject.tasks["publish"].dependsOn(pluginProject.tasks["publishPlugins"])
+//}

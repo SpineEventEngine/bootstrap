@@ -27,7 +27,8 @@
 package io.spine.tools.gradle.bootstrap;
 
 import io.spine.logging.Logging;
-import io.spine.tools.gradle.TaskName;
+import io.spine.tools.gradle.SourceSetName;
+import io.spine.tools.gradle.task.TaskName;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
@@ -37,8 +38,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ModelCompilerTaskName.generateRejections;
-import static io.spine.tools.gradle.ModelCompilerTaskName.generateTestRejections;
+import static io.spine.tools.mc.java.gradle.McJavaTaskName.generateRejections;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 
 /**
@@ -85,6 +85,7 @@ public final class JavaCodegenExtension implements Logging {
         return protobuf;
     }
 
+    @SuppressWarnings("unused")
     public boolean getGrpc() {
         return grpc;
     }
@@ -116,6 +117,7 @@ public final class JavaCodegenExtension implements Logging {
      *
      * @param grpc {@code true} to enable, {@code false} to disable
      */
+    @SuppressWarnings("unused")
     public void setGrpc(boolean grpc) {
         this.grpc = grpc;
         switchPlugin(GRPC_PLUGIN, grpc);
@@ -142,8 +144,8 @@ public final class JavaCodegenExtension implements Logging {
     public void setSpine(boolean spine) {
         this.spine = spine;
         switchPlugin(SPINE_PLUGIN, spine);
-        updateModelCompilerTask(generateRejections);
-        updateModelCompilerTask(generateTestRejections);
+        updateModelCompilerTask(generateRejections(SourceSetName.main));
+        updateModelCompilerTask(generateRejections(SourceSetName.main));
     }
 
     private void updateModelCompilerTask(TaskName taskName) {

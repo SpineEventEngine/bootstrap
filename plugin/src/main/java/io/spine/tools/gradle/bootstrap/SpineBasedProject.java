@@ -62,7 +62,7 @@ final class SpineBasedProject implements Dependant {
      */
     static SpineBasedProject from(Project project) {
         checkNotNull(project);
-        DependantProject dependantProject = DependantProject.from(project);
+        DependantProject dependantProject = DependantProject.newInstance(project);
         return new SpineBasedProject(dependantProject, project);
     }
 
@@ -112,11 +112,9 @@ final class SpineBasedProject implements Dependant {
                            MavenRepositoryContentDescriptor::releasesOnly);
         addSpineRepository(artifacts.spineSnapshotRepository(),
                            MavenRepositoryContentDescriptor::snapshotsOnly);
-        repositories.jcenter();
+        repositories.mavenCentral();
     }
 
-    @SuppressWarnings("UnstableApiUsage")
-        // Usage of the advanced repository configuration API.
     private void addSpineRepository(Url repositoryUrl,
                                     Consumer<MavenRepositoryContentDescriptor> contentConfig) {
         project.getRepositories().maven(repo -> {

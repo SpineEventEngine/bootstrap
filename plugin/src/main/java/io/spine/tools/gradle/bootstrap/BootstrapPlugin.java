@@ -26,13 +26,13 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import io.spine.tools.gradle.SpinePlugin;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.PlugableProject;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.project.ProjectSourceSuperset;
 import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 /**
@@ -67,7 +67,7 @@ import org.gradle.api.Project;
  * and {@code io.spine.tools.spine-proto-js-plugin} Gradle plugins are added to the project
  * automatically.
  */
-public final class BootstrapPlugin extends SpinePlugin {
+public final class BootstrapPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
@@ -81,8 +81,7 @@ public final class BootstrapPlugin extends SpinePlugin {
         SourceSuperset layout = ProjectSourceSuperset.of(project);
         SpineBasedProject dependant = SpineBasedProject.from(project);
         dependant.prepareRepositories(artifacts);
-        Extension extension = Extension
-                .newBuilder()
+        Extension extension = Extension.newBuilder()
                 .setProject(project)
                 .setDependencyTarget(dependant)
                 .setPluginTarget(plugableProject)

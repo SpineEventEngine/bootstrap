@@ -27,8 +27,6 @@
 package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
-import groovy.lang.Closure;
-import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -42,10 +40,9 @@ import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.tasks.TaskContainer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.JavaTaskName.compileJava;
-import static io.spine.tools.gradle.JavaTaskName.compileTestJava;
+import static io.spine.tools.gradle.task.JavaTaskName.compileJava;
+import static io.spine.tools.gradle.task.JavaTaskName.compileTestJava;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
-import static org.gradle.util.ConfigureUtil.configure;
 
 /**
  * The {@code spine} Gradle DSL extension.
@@ -92,22 +89,10 @@ public final class Extension {
      * Marks this project as a Java project and configures the Java code generation.
      *
      * @param configuration
-     *         Groovy style configuration
-     * @see #enableJava()
-     */
-    public void enableJava(Closure configuration) {
-        checkNotNull(configuration);
-        enableJava();
-        configure(configuration, java);
-    }
-
-    /**
-     * Marks this project as a Java project and configures the Java code generation.
-     *
-     * @param configuration
      *         Java/Kotlin style configuration
      * @see #enableJava()
      */
+    @SuppressWarnings("unused")
     public void enableJava(Action<JavaExtension> configuration) {
         checkNotNull(configuration);
         enableJava();
@@ -135,6 +120,7 @@ public final class Extension {
      * <p>Enables the JS code generation from Protobuf. If the {@code spine-proto-js-plugin} is
      * not applied to this project, applies it immediately.
      */
+    @SuppressWarnings("unused")
     @CanIgnoreReturnValue
     public JavaScriptExtension enableJavaScript() {
         javaScript.enableGeneration();
@@ -151,6 +137,7 @@ public final class Extension {
      * <p>Enables the Dart code generation from Protobuf. If the {@code spine-proto-dart-plugin} is
      * not applied to this project, applies it immediately.
      */
+    @SuppressWarnings("unused")
     @CanIgnoreReturnValue
     public DartExtension enableDart() {
         dart.enableGeneration();
@@ -167,6 +154,7 @@ public final class Extension {
      * <p>Enables the {@code protobuf} and {@code java} plugins. Also adds the generated source
      * sets.
      */
+    @SuppressWarnings("unused")
     public void assembleModel() {
         this.modelExtension.enableGeneration();
     }
@@ -177,6 +165,7 @@ public final class Extension {
      * <p>If the option is enabled, certain dependencies will be forced to resolve to the versions
      * needed by the Spine Bootstrap plugin.
      */
+    @SuppressWarnings("unused")
     public boolean getForceDependencies() {
         return forceDependencies;
     }
@@ -248,14 +237,14 @@ public final class Extension {
     }
 
     /**
-     * If the {@code protobuf} configuration is present, disables its transitibity.
+     * If the {@code protobuf} configuration is present, disables its transitivity.
      *
      * <p>Disabling transitivity leads to exclusion of {@code spine} and
      * {@code com.google.protobuf} dependencies.
      */
     private void disableTransitiveProtos() {
         project.configurations(closure((ConfigurationContainer container) -> {
-            Configuration protobuf = container.findByName(ConfigurationName.protobuf.name());
+            Configuration protobuf = container.findByName("protobuf");
             if (protobuf != null) {
                 protobuf.setTransitive(false);
             }
@@ -334,8 +323,7 @@ public final class Extension {
         }
 
         private JavaExtension buildJavaExtension() {
-            JavaExtension javaExtension = JavaExtension
-                    .newBuilder()
+            JavaExtension javaExtension = JavaExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -347,8 +335,7 @@ public final class Extension {
         }
 
         private JavaScriptExtension buildJavaScriptExtension() {
-            JavaScriptExtension javaScriptExtension = JavaScriptExtension
-                    .newBuilder()
+            JavaScriptExtension javaScriptExtension = JavaScriptExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -359,8 +346,7 @@ public final class Extension {
         }
 
         private DartExtension buildDartExtension() {
-            DartExtension dartExtension = DartExtension
-                    .newBuilder()
+            DartExtension dartExtension = DartExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -371,8 +357,7 @@ public final class Extension {
         }
 
         private ModelExtension buildModelExtension() {
-            ModelExtension modelExtension = ModelExtension
-                    .newBuilder()
+            ModelExtension modelExtension = ModelExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)

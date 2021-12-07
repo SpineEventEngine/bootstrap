@@ -30,13 +30,13 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.Correspondence;
 import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
-import io.spine.dart.gradle.ProtoDartPlugin;
-import io.spine.js.gradle.ProtoJsPlugin;
+import io.spine.tools.mc.dart.gradle.McDartPlugin;
+import io.spine.tools.mc.js.gradle.McJsPlugin;
+import io.spine.tools.mc.java.gradle.plugins.McJavaPlugin;
 import io.spine.testing.TempDir;
 import io.spine.tools.gradle.GradlePlugin;
-import io.spine.tools.gradle.TaskName;
+import io.spine.tools.gradle.task.TaskName;
 import io.spine.tools.gradle.bootstrap.given.FakeArtifacts;
-import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.gradle.project.PlugableProject;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.testing.MemoizingDependant;
@@ -169,8 +169,8 @@ class ExtensionTest {
         void applyModelCompiler() {
             extension.enableJava();
 
-            assertApplied(ModelCompilerPlugin.class);
-            assertNotApplied(ProtoJsPlugin.class);
+            assertApplied(McJavaPlugin.class);
+            assertNotApplied(McJsPlugin.class);
         }
 
         @Test
@@ -245,8 +245,8 @@ class ExtensionTest {
         void applyProtoJs() {
             extension.enableJavaScript();
 
-            assertApplied(ProtoJsPlugin.class);
-            assertNotApplied(ModelCompilerPlugin.class);
+            assertApplied(McJsPlugin.class);
+            assertNotApplied(McJavaPlugin.class);
         }
 
         @Test
@@ -282,8 +282,8 @@ class ExtensionTest {
             extension.enableJava();
 
             assertApplied(JavaPlugin.class);
-            assertApplied(ProtoJsPlugin.class);
-            assertApplied(ModelCompilerPlugin.class);
+            assertApplied(McJsPlugin.class);
+            assertApplied(McJavaPlugin.class);
         }
 
         @Test
@@ -342,7 +342,7 @@ class ExtensionTest {
         void noExclusions() {
             assertThat(dependencyTarget.exclusions()).isEmpty();
             extension.enableJava();
-            assertThat(dependencyTarget.exclusions()).containsExactly(protobufLite());
+            assertThat(dependencyTarget.exclusions()).containsExactly(protobufLite);
         }
 
         @Test
@@ -399,7 +399,7 @@ class ExtensionTest {
             DartExtension dartExtension = extension.enableDart();
             assertThat(dartExtension)
                     .isNotNull();
-            assertApplied(ProtoDartPlugin.class);
+            assertApplied(McDartPlugin.class);
         }
 
         @Test
@@ -523,25 +523,6 @@ class ExtensionTest {
                 });
                 assertTrue(executedAction.get());
             }
-
-            @Test
-            @DisplayName(WITH_A_CLOSURE)
-            void closure() {
-                AtomicBoolean executedClosure = new AtomicBoolean(false);
-                extension.enableJava(ConsumerClosure.<JavaExtension>closure(javaExtension -> {
-                    JavaCodegenExtension codegen = javaExtension.getCodegen();
-                    boolean defaultValue = codegen.getGrpc();
-                    assertThat(defaultValue).isFalse();
-
-                    codegen.setGrpc(true);
-
-                    boolean newValue = codegen.getGrpc();
-                    assertThat(newValue).isTrue();
-
-                    executedClosure.set(true);
-                }));
-                assertTrue(executedClosure.get());
-            }
         }
 
         @Nested
@@ -565,26 +546,6 @@ class ExtensionTest {
                     executedAction.set(true);
                 });
                 assertTrue(executedAction.get());
-            }
-
-            @Test
-            @DisplayName(WITH_A_CLOSURE)
-            void closure() {
-                AtomicBoolean executedClosure = new AtomicBoolean(false);
-                extension.enableJava()
-                         .codegen(ConsumerClosure.<JavaCodegenExtension>closure(
-                                 codegen -> {
-                                     boolean defaultValue = codegen.getSpine();
-                                     assertThat(defaultValue).isTrue();
-
-                                     codegen.setSpine(false);
-
-                                     boolean newValue = codegen.getSpine();
-                                     assertThat(newValue).isFalse();
-
-                                     executedClosure.set(true);
-                                 }));
-                assertTrue(executedClosure.get());
             }
         }
     }

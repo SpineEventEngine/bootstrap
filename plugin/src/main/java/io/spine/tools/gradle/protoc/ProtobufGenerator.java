@@ -33,7 +33,6 @@ import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
 import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
-import io.spine.tools.gradle.PluginId;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.PluginManager;
@@ -121,20 +120,22 @@ public final class ProtobufGenerator {
         protobufConfigurator().generateProtoTasks(forEachTask);
     }
 
+    @SuppressWarnings("deprecation") /* We have to use the deprecated Gradle Convention API
+        until Protobuf Gradle Plugin migrates to newer one. */
     private ProtobufConfigurator protobufConfigurator() {
-        ProtobufConfigurator protobuf = project.getConvention()
-                                               .getPlugin(ProtobufConvention.class)
-                                               .getProtobuf();
+        ProtobufConfigurator protobuf =
+                project.getConvention()
+                       .getPlugin(ProtobufConvention.class)
+                       .getProtobuf();
         return protobuf;
     }
 
     private void withProtobufPlugin(Runnable action) {
         PluginManager pluginManager = project.getPluginManager();
-        PluginId pluginId = gradlePlugin();
-        if (pluginManager.hasPlugin(pluginId.value())) {
+        if (pluginManager.hasPlugin(gradlePlugin.id)) {
             action.run();
         } else {
-            pluginManager.withPlugin(pluginId.value(), plugin -> action.run());
+            pluginManager.withPlugin(gradlePlugin.id, plugin -> action.run());
         }
     }
 

@@ -149,6 +149,11 @@ abstract class CodeGenExtension implements Logging {
 
     /**
      * An abstract builder for the {@code CodeGenExtension} subtypes.
+     *
+     * @param <E>
+     *         the type of the builder
+     * @param <B>
+     *         the type of the extension
      */
     abstract static class Builder<E extends CodeGenExtension, B extends Builder<E, B>> {
 

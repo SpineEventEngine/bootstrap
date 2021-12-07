@@ -27,12 +27,12 @@
 package io.spine.tools.gradle.bootstrap;
 
 import com.google.protobuf.gradle.ProtobufPlugin;
-import io.spine.dart.gradle.ProtoDartPlugin;
-import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.PluginScript;
-import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
 import io.spine.tools.gradle.project.PluginTarget;
+import io.spine.tools.mc.dart.gradle.McDartPlugin;
+import io.spine.tools.mc.java.gradle.plugins.McJavaPlugin;
+import io.spine.tools.mc.js.gradle.McJsPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPlugin;
@@ -97,26 +97,26 @@ public final class SpinePluginTarget implements PluginTarget {
     }
 
     /**
-     * Applies the {@link ModelCompilerPlugin}.
+     * Applies the {@link McJavaPlugin}.
      */
     public void applyModelCompiler() {
-        GradlePlugin<?> plugin = GradlePlugin.implementedIn(ModelCompilerPlugin.class);
+        GradlePlugin<?> plugin = GradlePlugin.implementedIn(McJavaPlugin.class);
         apply(plugin);
     }
 
     /**
-     * Applies the {@link ProtoJsPlugin}.
+     * Applies the {@link McJsPlugin}.
      */
     public void applyProtoJsPlugin() {
-        GradlePlugin<?> plugin = GradlePlugin.implementedIn(ProtoJsPlugin.class);
+        GradlePlugin<?> plugin = GradlePlugin.implementedIn(McJsPlugin.class);
         apply(plugin);
     }
 
     /**
-     * Applies the {@link ProtoDartPlugin}.
+     * Applies the {@link McDartPlugin}.
      */
     public void applyProtoDartPlugin() {
-        GradlePlugin<?> plugin = GradlePlugin.implementedIn(ProtoDartPlugin.class);
+        GradlePlugin<?> plugin = GradlePlugin.implementedIn(McDartPlugin.class);
         apply(plugin);
     }
 
