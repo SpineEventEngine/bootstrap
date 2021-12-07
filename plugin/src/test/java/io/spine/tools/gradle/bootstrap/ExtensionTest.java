@@ -41,7 +41,6 @@ import io.spine.tools.gradle.project.PlugableProject;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.testing.MemoizingDependant;
 import io.spine.tools.gradle.testing.MemoizingSourceSuperset;
-import io.spine.tools.groovy.ConsumerClosure;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -79,7 +78,9 @@ class ExtensionTest {
      */
     private static final
     Correspondence<@NonNull Task, @NonNull TaskName> names = Correspondence.from(
-            (@NonNull Task task, @NonNull TaskName name) -> task.getName().equals(name.name()),
+            (@NonNull Task task, @NonNull TaskName name) ->
+                    // Add the typecast to make IDEA happy about the "ambiguous" `equals()` call.
+                    ((String) task.getName()).equals(name.value()),
             "has name"
     );
 
@@ -94,8 +95,7 @@ class ExtensionTest {
     void setUp() {
         this.projectDir = TempDir.forClass(ExtensionTest.class).toPath();
         projectDir.toFile().deleteOnExit();
-        this.project = ProjectBuilder
-                .builder()
+        this.project = ProjectBuilder.builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir.toFile())
                 .build();
@@ -471,7 +471,6 @@ class ExtensionTest {
     class Configuration {
 
         private static final String WITH_AN_ACTION = "with an action";
-        private static final String WITH_A_CLOSURE = "with a closure";
 
         @Test
         @DisplayName("gRPC codegen")
