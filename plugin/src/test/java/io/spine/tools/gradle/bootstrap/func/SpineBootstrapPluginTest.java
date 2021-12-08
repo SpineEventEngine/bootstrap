@@ -115,6 +115,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("be applied to a project successfully")
     void apply() {
         noAdditionalConfig();
+        withRollerCoasterProto();
         setup.create()
              .executeTask(build);
     }
@@ -123,6 +124,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate no code if none requested")
     void generateNothing() {
         noAdditionalConfig();
+        withRollerCoasterProto();
         setup.create()
              .executeTask(build);
         Path compiledClasses = compiledJavaClasses();
@@ -132,11 +134,17 @@ class SpineBootstrapPluginTest {
         }
     }
 
+    private void withFiles(String... fileNames) {
+        setup.fromResources(RESOURCE_DIR, acceptingOnly(fileNames));
+    }
+
     private void withGeneralProtoFiles() {
-        setup.fromResources(RESOURCE_DIR, acceptingOnly(
-                "restaurant_rejections.proto",
-                "roller_coaster.proto"
-        ));
+        withFiles("restaurant_rejections.proto",
+                  "roller_coaster.proto");
+    }
+
+    private void withRollerCoasterProto() {
+        withFiles("roller_coaster.proto");
     }
 
     @Test
@@ -180,7 +188,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate JavaScript if requested")
     void generateJs() {
         configureJsGeneration();
-        setup.fromResources(RESOURCE_DIR, acceptingOnly("roller_coaster.proto"));
+        withRollerCoasterProto();
         project = setup.create();
         project.executeTask(build);
 
@@ -192,7 +200,9 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate Dart if requested")
     void generateDart() {
         configureDartGeneration();
-        setup.fromResources(RESOURCE_DIR, acceptingOnly("roller_coaster.proto"));
+        withRollerCoasterProto();
+        setup.withOptions("--info");
+
         project = setup.create();
         project.executeTask(build);
 
@@ -367,7 +377,7 @@ class SpineBootstrapPluginTest {
         writeConfigGradle(
                 "spine.enableJava().client()"
         );
-        setup.fromResources(RESOURCE_DIR, acceptingOnly("client.proto"));
+        withFiles("client.proto", "roller_coaster.proto");
     }
 
     @SuppressWarnings("CheckReturnValue")
@@ -375,7 +385,7 @@ class SpineBootstrapPluginTest {
         writeConfigGradle(
                 "spine.enableJava().server()"
         );
-        setup.fromResources(RESOURCE_DIR, acceptingOnly("server.proto"));
+        withFiles("server.proto", "roller_coaster.proto");
     }
 
     @SuppressWarnings("CheckReturnValue")
@@ -387,7 +397,7 @@ class SpineBootstrapPluginTest {
                 "    }",
                 "}"
         );
-        setup.fromResources(RESOURCE_DIR, acceptingOnly("restaurant.proto"));
+        withFiles("restaurant.proto", "roller_coaster.proto");
     }
 
     private void configureJavaWithoutGen() {
