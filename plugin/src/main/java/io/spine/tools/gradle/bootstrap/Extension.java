@@ -44,7 +44,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.task.JavaTaskName.compileJava;
 import static io.spine.tools.gradle.task.JavaTaskName.compileTestJava;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
-import static org.gradle.util.ConfigureUtil.configure;
 
 /**
  * The {@code spine} Gradle DSL extension.
@@ -108,10 +107,11 @@ public final class Extension {
      *         Groovy style configuration
      * @see #enableJava()
      */
-    public void enableJava(Closure configuration) {
+    public void enableJava(
+            @SuppressWarnings("rawtypes") /* For Gradle API. */ Closure configuration) {
         checkNotNull(configuration);
         enableJava();
-        configure(configuration, java);
+        project.configure(java, configuration);
     }
 
     /**
@@ -119,7 +119,7 @@ public final class Extension {
      *
      * <p>Enables the Java code generation from Protobuf. If the {@code spine-model-compiler} plugin
      * is not applied to this project, applies it immediately. Also adds the
-     * {@code io.spine:spine-testlib}
+     * {@code io.spine.tools:spine-testlib}
      */
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {

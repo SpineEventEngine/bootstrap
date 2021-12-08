@@ -51,7 +51,6 @@ import static io.spine.tools.gradle.config.SpineDependency.testUtilTime;
 import static io.spine.tools.gradle.config.SpineDependency.testlib;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
-import static org.gradle.util.ConfigureUtil.configure;
 
 /**
  * An extension which configures Java code generation.
@@ -124,7 +123,7 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     public void codegen(@SuppressWarnings("rawtypes") /* For Gradle API. */ Closure config) {
-        configure(config, codegen);
+        project.configure(codegen, config);
     }
 
     /**
