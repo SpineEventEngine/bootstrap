@@ -108,6 +108,7 @@ final class SpineBasedProject implements Dependant {
      */
     void prepareRepositories(ArtifactSnapshot artifacts) {
         RepositoryHandler repositories = project.getRepositories();
+        repositories.gradlePluginPortal();
         addSpineRepository(artifacts.spineRepository(),
                            MavenRepositoryContentDescriptor::releasesOnly);
         addSpineRepository(artifacts.spineSnapshotRepository(),
@@ -119,7 +120,7 @@ final class SpineBasedProject implements Dependant {
                                     Consumer<MavenRepositoryContentDescriptor> contentConfig) {
         project.getRepositories().maven(repo -> {
             repo.setUrl(repositoryUrl.getSpec());
-            repo.mavenContent(contentConfig::accept);
+//            repo.mavenContent(contentConfig::accept);
             repo.content(descriptor -> descriptor.includeGroupByRegex(SPINE_GROUP_PATTERN));
         });
     }
