@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.IterableSubject;
 import io.spine.code.proto.FileDescriptors;
+import io.spine.io.Resource;
 import io.spine.testing.SlowTest;
 import io.spine.testing.TempDir;
 import io.spine.tools.gradle.testing.GradleProject;
@@ -40,6 +41,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
@@ -59,35 +61,54 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("`io.spine.tools.gradle.bootstrap` plugin should")
 class SpineBootstrapPluginTest {
 
+    /**
+     * The build script prepared from {@code src/test/build.gradle.template} file.
+     *
+     * @see #copyBuildGradle()
+     */
+    private static final String BUILD_GRADLE = "build.gradle";
+
     private static final String ADDITIONAL_CONFIG_SCRIPT = "config.gradle";
     private static final String TRANSITIVE_JS_DEPENDENCY = "any_pb.js";
 
-    private GradleProjectSetup project;
     private Path projectDir;
+    private GradleProjectSetup setup;
+    private GradleProject project;
 
     @BeforeEach
-    void setUp() {
-        this.projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
+    void setUp() throws IOException {
+        projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
         projectDir.toFile().deleteOnExit();
-        this.project = GradleProject.setupAt(projectDir.toFile())
-                .fromResources("func-test")
-                .withPluginClasspath();
+        setup = GradleProject.setupAt(projectDir.toFile())
+                             .fromResources("func-test")
+                             .withPluginClasspath();
+        copyBuildGradle();
+    }
+
+    /**
+     * Copies the {@code build.gradle} file prepared by the {@code prepareBuildScript} task
+     * of the {@code :plugin:build.gradle.kts} before tests are to be executed.
+     */
+    private void copyBuildGradle() throws IOException {
+        Resource buildGradle = Resource.file(BUILD_GRADLE, getClass().getClassLoader());
+        String content = buildGradle.read();
+        setup.addFile(BUILD_GRADLE, ImmutableList.of(content));
     }
 
     @Test
     @DisplayName("be applied to a project successfully")
     void apply() {
         noAdditionalConfig();
-        project.create()
-               .executeTask(build);
+        setup.create()
+             .executeTask(build);
     }
 
     @Test
     @DisplayName("generate no code if none requested")
     void generateNothing() {
         noAdditionalConfig();
-        project.create()
-               .executeTask(build);
+        setup.create()
+             .executeTask(build);
         Path compiledClasses = compiledJavaClasses();
         if (exists(compiledClasses)) {
             File compiledClassesDirectory = compiledClasses.toFile();
@@ -99,7 +120,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate Java if requested")
     void generateJava() {
         configureJavaGeneration();
-        GradleProject project = this.project.create();
+        project = setup.create();
         project.executeTask(build);
 
         Collection<String> packageContents = generatedClassFileNames();
@@ -114,7 +135,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("apply 'spine-model-compiler' plugin, generating descriptor set files")
     void applyModelCompiler() {
         configureJavaGeneration();
-        GradleProject project = this.project.create();
+        project = this.setup.create();
         project.executeTask(build);
 
         Collection<String> resourceFiles = assembledResources();
@@ -134,7 +155,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate JavaScript if requested")
     void generateJs() {
         configureJsGeneration();
-        GradleProject project = this.project.create();
+        project = setup.create();
         project.executeTask(build);
 
         Collection<String> jsFileNames = generatedJsFileNames();
@@ -145,7 +166,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate Dart if requested")
     void generateDart() {
         configureDartGeneration();
-        GradleProject project = this.project.create();
+        project = setup.create();
         project.executeTask(build);
 
         Collection<String> dartFileNames = generatedDartFileNames();
@@ -164,7 +185,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate an `index.js` file")
     void generateIndexJs() {
         configureJsGeneration();
-        GradleProject project = this.project.create();
+        project = setup.create();
         project.executeTask(build);
 
         Collection<String> jsFileNames = generatedJsFileNames();
@@ -175,7 +196,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("not generate transitive Spine dependencies for pure JS projects")
     void skipTransitiveProtos() {
         configureJsGeneration();
-        GradleProject project = this.project.create();
+        project = setup.create();
         project.executeTask(build);
 
         Collection<String> jsFileNames = generatedJsFileNames();
@@ -186,7 +207,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("not generate transitive Spine dependencies for mixed projects")
     void skipTransitiveProtosForMixed() {
         configureJavaAndJs();
-        GradleProject project = this.project.create();
+        project = setup.create();
         project.executeTask(build);
         assertThat(generatedJsFileNames()).doesNotContain(TRANSITIVE_JS_DEPENDENCY);
         assertThat(generatedClassFileNames()).doesNotContain("Any.class");
@@ -196,7 +217,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("apply 'spine-proto-js-plugin'")
     void applyJsPlugin() {
         configureJsGeneration();
-        GradleProject project = this.project.create();
+        project = setup.create();
         BuildResult result = project.executeTask(build);
 
         assertThat(result.task(generateJsonParsers.path())
@@ -207,7 +228,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("add client dependencies to the project")
     void clientDeps() {
         configureJavaClient();
-        GradleProject project = this.project.create();
+        GradleProject project = this.setup.create();
         project.executeTask(build);
         assertThat(generatedClassFileNames())
                 .contains("ReceivedQuery.class");
@@ -217,7 +238,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("add server dependencies to the project")
     void serverDeps() {
         configureJavaServer();
-        GradleProject project = this.project.create();
+        project = this.setup.create();
         project.executeTask(build);
         assertThat(generatedClassFileNames())
                 .contains("Nonevent.class");
@@ -227,7 +248,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate gRPC stubs if required")
     void generateGrpc() {
         configureGrpc();
-        GradleProject project = this.project.create();
+        project = setup.create();
         project.executeTask(build);
         assertThat(generatedClassFileNames())
                 .containsAtLeast("OrderServiceGrpc.class",
@@ -241,8 +262,7 @@ class SpineBootstrapPluginTest {
         configureJavaGeneration();
         String resourceName = "foo.txt";
         Set<String> emptyFile = emptySet();
-        GradleProject project =
-                this.project.addFile("generated/main/resources/" + resourceName, emptyFile)
+        project = setup.addFile("generated/main/resources/" + resourceName, emptyFile)
                             .create();
         project.executeTask(build);
         Collection<String> resourceFiles = assembledResources();
@@ -269,7 +289,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("disable rejection throwable generation")
     void ignoreRejections() {
         configureJavaWithoutProtoOrSpine();
-        GradleProject project = this.project
+        project = setup
 //                .addProtoFile("restaurant_rejections.proto")
                 .create();
         project.executeTask(build);
@@ -281,7 +301,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate no code for projects that only define the model")
     void noJsForModelProjects() {
         configureModelProject();
-        GradleProject project = this.project.create();
+        project = setup.create();
         project.executeTask(build);
 
         assertThat(generatedFiles().toFile()
@@ -375,7 +395,7 @@ class SpineBootstrapPluginTest {
 
     @SuppressWarnings("CheckReturnValue")
     private void writeConfigGradle(String... lines) {
-        project.addFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.copyOf(lines));
+        setup.addFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.copyOf(lines));
     }
 
     private Collection<String> assembledResources() {
