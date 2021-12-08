@@ -117,6 +117,7 @@ final class SpineBasedProject implements Dependant {
     }
 
     private void addSpineRepository(Url repositoryUrl,
+                                    @SuppressWarnings("unused")
                                     Consumer<MavenRepositoryContentDescriptor> contentConfig) {
         project.getRepositories().maven(repo -> {
             repo.setUrl(repositoryUrl.getSpec());
