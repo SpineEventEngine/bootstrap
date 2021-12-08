@@ -30,6 +30,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.Correspondence;
 import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
+import io.spine.tools.groovy.ConsumerClosure;
 import io.spine.tools.mc.dart.gradle.McDartPlugin;
 import io.spine.tools.mc.js.gradle.McJsPlugin;
 import io.spine.tools.mc.java.gradle.plugins.McJavaPlugin;
@@ -470,6 +471,7 @@ class ExtensionTest {
     class Configuration {
 
         private static final String WITH_AN_ACTION = "with an action";
+        private static final String WITH_A_CLOSURE = "with a closure";
 
         @Test
         @DisplayName("gRPC codegen")
@@ -521,6 +523,26 @@ class ExtensionTest {
                 });
                 assertTrue(executedAction.get());
             }
+
+
+            @Test
+            @DisplayName(WITH_A_CLOSURE)
+            void closure() {
+                AtomicBoolean executedClosure = new AtomicBoolean(false);
+                extension.enableJava(ConsumerClosure.<JavaExtension>closure(javaExtension -> {
+                    JavaCodegenExtension codegen = javaExtension.getCodegen();
+                    boolean defaultValue = codegen.getGrpc();
+                    assertThat(defaultValue).isFalse();
+
+                    codegen.setGrpc(true);
+
+                    boolean newValue = codegen.getGrpc();
+                    assertThat(newValue).isTrue();
+
+                    executedClosure.set(true);
+                }));
+                assertTrue(executedClosure.get());
+            }
         }
 
         @Nested
@@ -545,6 +567,27 @@ class ExtensionTest {
                 });
                 assertTrue(executedAction.get());
             }
+        }
+
+
+        @Test
+        @DisplayName(WITH_A_CLOSURE)
+        void closure() {
+            AtomicBoolean executedClosure = new AtomicBoolean(false);
+            extension.enableJava()
+                     .codegen(ConsumerClosure.<JavaCodegenExtension>closure(
+                             codegen -> {
+                                 boolean defaultValue = codegen.getSpine();
+                                 assertThat(defaultValue).isTrue();
+
+                                 codegen.setSpine(false);
+
+                                 boolean newValue = codegen.getSpine();
+                                 assertThat(newValue).isFalse();
+
+                                 executedClosure.set(true);
+                             }));
+            assertTrue(executedClosure.get());
         }
     }
 

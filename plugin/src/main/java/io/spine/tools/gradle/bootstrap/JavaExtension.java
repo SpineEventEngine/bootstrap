@@ -28,6 +28,7 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
+import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.GeneratedSourceRoot;
@@ -50,6 +51,7 @@ import static io.spine.tools.gradle.config.SpineDependency.testUtilTime;
 import static io.spine.tools.gradle.config.SpineDependency.testlib;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
+import static org.gradle.util.ConfigureUtil.configure;
 
 /**
  * An extension which configures Java code generation.
@@ -119,6 +121,10 @@ public final class JavaExtension extends CodeGenExtension {
     @SuppressWarnings("unused")
     public void codegen(Action<JavaCodegenExtension> config) {
         config.execute(codegen);
+    }
+
+    public void codegen(@SuppressWarnings("rawtypes") /* For Gradle API. */ Closure config) {
+        configure(config, codegen);
     }
 
     /**

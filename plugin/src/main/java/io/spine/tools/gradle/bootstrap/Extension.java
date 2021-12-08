@@ -27,6 +27,7 @@
 package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import groovy.lang.Closure;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -43,6 +44,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.task.JavaTaskName.compileJava;
 import static io.spine.tools.gradle.task.JavaTaskName.compileTestJava;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
+import static org.gradle.util.ConfigureUtil.configure;
 
 /**
  * The {@code spine} Gradle DSL extension.
@@ -97,6 +99,19 @@ public final class Extension {
         checkNotNull(configuration);
         enableJava();
         configuration.execute(java);
+    }
+
+    /**
+     * Marks this project as a Java project and configures the Java code generation.
+     *
+     * @param configuration
+     *         Groovy style configuration
+     * @see #enableJava()
+     */
+    public void enableJava(Closure configuration) {
+        checkNotNull(configuration);
+        enableJava();
+        configure(configuration, java);
     }
 
     /**
