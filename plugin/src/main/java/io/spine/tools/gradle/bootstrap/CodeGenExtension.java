@@ -38,6 +38,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.gradle.JavaConfigurationName.compileOnly;
 import static io.spine.tools.gradle.config.SpineDependency.base;
 import static io.spine.tools.gradle.config.SpineDependency.time;
 
@@ -76,8 +77,8 @@ abstract class CodeGenExtension implements Logging {
     @OverridingMethodsMustInvokeSuper
     void enableGeneration() {
         pluginTarget.applyJavaPlugin();
-        dependant.compile(base().ofVersion(artifactSnapshot.spineBaseVersion()));
-        dependant.compile(time().ofVersion(artifactSnapshot.spineTimeVersion()));
+        dependant.depend(compileOnly, base().ofVersion(artifactSnapshot.spineBaseVersion()));
+        dependant.depend(compileOnly, time().ofVersion(artifactSnapshot.spineTimeVersion()));
         if (codeGenJob != null) {
             pluginTarget.applyProtobufPlugin();
             protobufGenerator.enableBuiltIn(codeGenJob);
