@@ -64,7 +64,7 @@ import static org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS;
 public final class DartExtension extends CodeGenExtension {
 
     public static final String TYPES_FILE = "types.dart";
-    private static final String DART_TOOL_NAME = "protoc-gen-dart";
+    private static final String DART_TOOL_NAME = "dart_code_gen";
     private static final Joiner commandJoiner = Joiner.on(' ');
 
     private final Project project;
