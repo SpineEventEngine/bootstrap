@@ -90,20 +90,6 @@ public final class Extension {
      * Marks this project as a Java project and configures the Java code generation.
      *
      * @param configuration
-     *         Java/Kotlin style configuration
-     * @see #enableJava()
-     */
-    @SuppressWarnings("unused")
-    public void enableJava(Action<JavaExtension> configuration) {
-        checkNotNull(configuration);
-        enableJava();
-        configuration.execute(java);
-    }
-
-    /**
-     * Marks this project as a Java project and configures the Java code generation.
-     *
-     * @param configuration
      *         Groovy style configuration
      * @see #enableJava()
      */
@@ -112,6 +98,20 @@ public final class Extension {
         checkNotNull(configuration);
         enableJava();
         project.configure(java, configuration);
+    }
+
+    /**
+     * Marks this project as a Java project and configures the Java code generation.
+     *
+     * @param configuration
+     *         Java/Kotlin style configuration
+     * @see #enableJava()
+     */
+    @SuppressWarnings("unused")
+    public void enableJava(Action<JavaExtension> configuration) {
+        checkNotNull(configuration);
+        enableJava();
+        configuration.execute(java);
     }
 
     /**
