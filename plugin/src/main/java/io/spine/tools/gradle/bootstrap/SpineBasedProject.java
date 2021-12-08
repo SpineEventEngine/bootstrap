@@ -60,7 +60,7 @@ final class SpineBasedProject implements Dependant {
     /**
      * Wraps the given Gradle project.
      */
-    static SpineBasedProject from(Project project) {
+    static SpineBasedProject newInstance(Project project) {
         checkNotNull(project);
         DependantProject dependantProject = DependantProject.newInstance(project);
         return new SpineBasedProject(dependantProject, project);
