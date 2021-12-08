@@ -62,6 +62,18 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Integration tests for the Bootstrap Plugin.
+ *
+ * <p>The following commands should be executed for configuring Protobuf for Dart before
+ * running this test suite:
+ * <pre>
+ * $ ./config/scripts/update-apt.sh
+ * $ sudo apt-get install dart
+ * $ pub global activate protoc_plugin
+ * $ pub global activate dart_code_gen
+ * </pre>
+ */
 @SlowTest
 @DisplayName("`io.spine.tools.gradle.bootstrap` plugin should")
 class SpineBootstrapPluginTest {
