@@ -38,14 +38,14 @@
 val baseVersion: String by extra("2.0.0-SNAPSHOT.77")
 val baseTypesVersion: String by extra("2.0.0-SNAPSHOT.75")
 val timeVersion: String by extra("2.0.0-SNAPSHOT.76")
-val coreJavaVersion: String by extra("2.0.0-SNAPSHOT.87")
+val coreJavaVersion: String by extra("2.0.0-SNAPSHOT.88")
 
 val webVersion: String by extra("2.0.0-SNAPSHOT.76")
 val gCloudVersion: String by extra("2.0.0-SNAPSHOT.63")
 
-val toolBaseVersion: String by extra("2.0.0-SNAPSHOT.82")
+val toolBaseVersion: String by extra("2.0.0-SNAPSHOT.84")
 val mcVersion: String by extra("2.0.0-SNAPSHOT.86")
-val mcJavaVersion: String by extra("2.0.0-SNAPSHOT.82")
+val mcJavaVersion: String by extra("2.0.0-SNAPSHOT.83")
 val mcJsVersion: String by extra("2.0.0-SNAPSHOT.82")
 val mcDartVersion: String by extra("2.0.0-SNAPSHOT.82")
 
