@@ -31,7 +31,6 @@ import com.google.protobuf.gradle.GenerateProtoTask;
 import com.google.protobuf.gradle.GenerateProtoTask.PluginOptions;
 import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
-import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
@@ -42,6 +41,7 @@ import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ProtobufDependencies.gradlePlugin;
+import static io.spine.tools.gradle.project.Projects.getProtobufConvention;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
 
 /**
@@ -107,7 +107,7 @@ public final class ProtobufGenerator {
      */
     public void useCompiler(String artifactSpec) {
         checkNotNull(artifactSpec);
-        withProtobufPlugin(() -> protobufConfigurator().protoc(closure(
+        withProtobufPlugin(() -> configurator().protoc(closure(
                 (ExecutableLocator locator) -> locator.setArtifact(artifactSpec))
         ));
     }
@@ -117,16 +117,11 @@ public final class ProtobufGenerator {
                 (GenerateProtoTaskCollection tasks) -> tasks.all()
                                                             .forEach(config)
         );
-        protobufConfigurator().generateProtoTasks(forEachTask);
+        configurator().generateProtoTasks(forEachTask);
     }
 
-    @SuppressWarnings("deprecation") /* We have to use the deprecated Gradle Convention API
-        until Protobuf Gradle Plugin migrates to newer one. */
-    private ProtobufConfigurator protobufConfigurator() {
-        ProtobufConfigurator protobuf =
-                project.getConvention()
-                       .getPlugin(ProtobufConvention.class)
-                       .getProtobuf();
+    private ProtobufConfigurator configurator() {
+        ProtobufConfigurator protobuf = getProtobufConvention(project).getProtobuf();
         return protobuf;
     }
 
