@@ -35,6 +35,7 @@ import io.spine.testing.SlowTest;
 import io.spine.testing.TempDir;
 import io.spine.tools.gradle.testing.GradleProject;
 import io.spine.tools.gradle.testing.GradleProjectSetup;
+import kotlin.jvm.functions.Function1;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,9 +44,12 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.task.BaseTaskName.build;
 import static io.spine.tools.mc.js.gradle.McJsTaskName.generateJsonParsers;
@@ -70,6 +74,7 @@ class SpineBootstrapPluginTest {
 
     private static final String ADDITIONAL_CONFIG_SCRIPT = "config.gradle";
     private static final String TRANSITIVE_JS_DEPENDENCY = "any_pb.js";
+    private static final String RESOURCE_DIR = "func-test";
 
     private Path projectDir;
     private GradleProjectSetup setup;
@@ -80,7 +85,6 @@ class SpineBootstrapPluginTest {
         projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
         projectDir.toFile().deleteOnExit();
         setup = GradleProject.setupAt(projectDir.toFile())
-                             .fromResources("func-test")
                              .withPluginClasspath();
         copyBuildGradle();
     }
@@ -93,6 +97,17 @@ class SpineBootstrapPluginTest {
         Resource buildGradle = Resource.file(BUILD_GRADLE, getClass().getClassLoader());
         String content = buildGradle.read();
         setup.addFile(BUILD_GRADLE, ImmutableList.of(content));
+    }
+
+    private static Function1<Path, Boolean> acceptingOnly(String... fileNames) {
+        var files = Stream.of(fileNames)
+                          .map(Paths::get)
+                          .collect(toImmutableList());
+        Function1<Path, Boolean> matching = path -> {
+            var isWantedJavaFile = files.stream().anyMatch(path::endsWith);
+            return isWantedJavaFile;
+        };
+        return matching;
     }
 
     @Test
@@ -289,9 +304,8 @@ class SpineBootstrapPluginTest {
     @DisplayName("disable rejection throwable generation")
     void ignoreRejections() {
         configureJavaWithoutProtoOrSpine();
-        project = setup
-//                .addProtoFile("restaurant_rejections.proto")
-                .create();
+        setup.fromResources(RESOURCE_DIR, acceptingOnly("restaurant_rejections.proto"));
+        project = setup.create();
         project.executeTask(build);
         Path compiledClasses = compiledJavaClasses();
         assertFalse(exists(compiledClasses));
@@ -338,7 +352,7 @@ class SpineBootstrapPluginTest {
         writeConfigGradle(
                 "spine.enableJava().client()"
         );
-//        project.addProtoFile("client.proto");
+        setup.fromResources(RESOURCE_DIR, acceptingOnly("client.proto"));
     }
 
     @SuppressWarnings("CheckReturnValue")
@@ -346,7 +360,7 @@ class SpineBootstrapPluginTest {
         writeConfigGradle(
                 "spine.enableJava().server()"
         );
-//        project.addProtoFile("server.proto");
+        setup.fromResources(RESOURCE_DIR, acceptingOnly("server.proto"));
     }
 
     @SuppressWarnings("CheckReturnValue")
@@ -358,7 +372,7 @@ class SpineBootstrapPluginTest {
                 "    }",
                 "}"
         );
-//        project.addProtoFile("restaurant.proto");
+        setup.fromResources(RESOURCE_DIR, acceptingOnly("restaurant.proto"));
     }
 
     private void configureJavaWithoutGen() {
