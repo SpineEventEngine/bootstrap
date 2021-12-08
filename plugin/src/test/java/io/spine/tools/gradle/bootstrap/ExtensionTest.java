@@ -422,7 +422,7 @@ class ExtensionTest {
         }
 
         private String testUtilServerDependency() {
-            return "io.spine:spine-testutil-server:" + spineVersion;
+            return "io.spine.tools:spine-testutil-server:" + spineVersion;
         }
 
         private String clientDependency() {
@@ -430,15 +430,15 @@ class ExtensionTest {
         }
 
         private String testUtilClientDependency() {
-            return "io.spine:spine-testutil-client:" + spineVersion;
+            return "io.spine.tools:spine-testutil-client:" + spineVersion;
         }
 
         private String testlibDependency() {
-            return "io.spine:spine-testlib:" + spineVersion;
+            return "io.spine.tools:spine-testlib:" + spineVersion;
         }
 
         private String testUtilTimeDependency() {
-            return "io.spine:spine-testutil-time:" + spineVersion;
+            return "io.spine.tools:spine-testutil-time:" + spineVersion;
         }
 
         private String webDependency() {

@@ -75,7 +75,7 @@ public final class JavaExtension extends CodeGenExtension {
         dependOn(testlib().ofVersion(artifacts.spineBaseVersion()), testImplementation);
         dependOn(testUtilTime().ofVersion(artifacts.spineTimeVersion()), testImplementation);
         pluginTarget().applyModelCompiler();
-        pluginTarget().apply(SpinePluginScripts.modelCompilerConfig());
+//        pluginTarget().apply(SpinePluginScripts.modelCompilerConfig());
         addSourceSets();
         excludeProtobufLite();
         pluginTarget().withIdeaPlugin(JavaExtension::configureIdea);
