@@ -79,8 +79,7 @@ class ExtensionTest {
      */
     private static final
     Correspondence<@NonNull Task, @NonNull TaskName> names = Correspondence.from(
-            (@NonNull Task task, @NonNull TaskName name) ->
-                    task.getName().equals(name.value()),
+            (@NonNull Task task, @NonNull TaskName name) -> task.getName().equals(name.value()),
             "has name"
     );
 
