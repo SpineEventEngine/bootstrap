@@ -54,6 +54,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.task.BaseTaskName.build;
 import static io.spine.tools.mc.js.gradle.McJsTaskName.generateJsonParsers;
 import static io.spine.tools.gradle.bootstrap.DartExtension.TYPES_FILE;
+import static java.lang.String.format;
 import static java.nio.file.Files.exists;
 import static java.util.Collections.emptySet;
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
@@ -131,10 +132,18 @@ class SpineBootstrapPluginTest {
         }
     }
 
+    private void withGeneralProtoFiles() {
+        setup.fromResources(RESOURCE_DIR, acceptingOnly(
+                "restaurant_rejections.proto",
+                "roller_coaster.proto"
+        ));
+    }
+
     @Test
     @DisplayName("generate Java if requested")
     void generateJava() {
         configureJavaGeneration();
+        withGeneralProtoFiles();
         project = setup.create();
         project.executeTask(build);
 
@@ -147,10 +156,11 @@ class SpineBootstrapPluginTest {
     }
 
     @Test
-    @DisplayName("apply 'spine-model-compiler' plugin, generating descriptor set files")
+    @DisplayName("apply 'spine-mc-java' plugin, generating descriptor set files")
     void applyModelCompiler() {
         configureJavaGeneration();
-        project = this.setup.create();
+        withGeneralProtoFiles();
+        project = setup.create();
         project.executeTask(build);
 
         Collection<String> resourceFiles = assembledResources();
@@ -170,6 +180,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate JavaScript if requested")
     void generateJs() {
         configureJsGeneration();
+        setup.fromResources(RESOURCE_DIR, acceptingOnly("roller_coaster.proto"));
         project = setup.create();
         project.executeTask(build);
 
@@ -181,6 +192,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate Dart if requested")
     void generateDart() {
         configureDartGeneration();
+        setup.fromResources(RESOURCE_DIR, acceptingOnly("roller_coaster.proto"));
         project = setup.create();
         project.executeTask(build);
 
@@ -200,6 +212,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate an `index.js` file")
     void generateIndexJs() {
         configureJsGeneration();
+        withGeneralProtoFiles();
         project = setup.create();
         project.executeTask(build);
 
@@ -211,6 +224,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("not generate transitive Spine dependencies for pure JS projects")
     void skipTransitiveProtos() {
         configureJsGeneration();
+        withGeneralProtoFiles();
         project = setup.create();
         project.executeTask(build);
 
@@ -222,6 +236,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("not generate transitive Spine dependencies for mixed projects")
     void skipTransitiveProtosForMixed() {
         configureJavaAndJs();
+        withGeneralProtoFiles();
         project = setup.create();
         project.executeTask(build);
         assertThat(generatedJsFileNames()).doesNotContain(TRANSITIVE_JS_DEPENDENCY);
@@ -318,8 +333,8 @@ class SpineBootstrapPluginTest {
         project = setup.create();
         project.executeTask(build);
 
-        assertThat(generatedFiles().toFile()
-                                   .exists()).isFalse();
+        Path generatedFiles = generatedFiles();
+        assertNotExists(generatedFiles);
     }
 
     private void noAdditionalConfig() {
@@ -416,8 +431,8 @@ class SpineBootstrapPluginTest {
         Path resourcePath = projectDir.resolve("build")
                                       .resolve("resources")
                                       .resolve("main");
+        assertExists(resourcePath);
         File resourceDir = resourcePath.toFile();
-        assertTrue(resourceDir.exists());
         assertTrue(resourceDir.isDirectory());
         String[] resources = resourceDir.list();
         assertNotNull(resources);
@@ -426,8 +441,8 @@ class SpineBootstrapPluginTest {
 
     private Collection<String> generatedClassFileNames() {
         Path compiledJavaClasses = compiledJavaClasses();
+        assertExists(compiledJavaClasses);
         File compiledClassesDir = compiledJavaClasses.toFile();
-        assertTrue(compiledClassesDir.exists());
         assertTrue(compiledClassesDir.isDirectory());
         @SuppressWarnings("ConstantConditions")
         ImmutableSet<String> dirContents = ImmutableSet.copyOf(compiledClassesDir.list());
@@ -470,10 +485,18 @@ class SpineBootstrapPluginTest {
                                   .resolve("test");
     }
 
+    private static void assertExists(Path path) {
+        assertTrue(path.toFile().exists(), format("Expected to exist: `%s`.", path));
+    }
+
+    private static void assertNotExists(Path path) {
+        assertFalse(path.toFile().exists(), format("Expected to NOT exist: `%s`.", path));
+    }
+    
     private Collection<String> generatedJsFileNames() {
-        Path compiledJsFiles = generatedJsFiles();
-        File compiledJsDir = compiledJsFiles.toFile();
-        assertTrue(compiledJsDir.exists());
+        Path generatedJsFiles = generatedJsFiles();
+        assertExists(generatedJsFiles);
+        File compiledJsDir = generatedJsFiles.toFile();
         assertTrue(compiledJsDir.isDirectory());
         @SuppressWarnings("ConstantConditions")
         ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledJsDir.list());
@@ -482,8 +505,8 @@ class SpineBootstrapPluginTest {
 
     private Collection<String> generatedDartFileNames() {
         Path libDir = projectDir.resolve("lib");
+        assertExists(libDir);
         File libDirFile = libDir.toFile();
-        assertTrue(libDirFile.exists());
         assertTrue(libDirFile.isDirectory());
         @SuppressWarnings("ConstantConditions")
         ImmutableSet<String> packageContents = ImmutableSet.copyOf(libDirFile.list());
