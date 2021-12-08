@@ -67,7 +67,7 @@ import org.gradle.kotlin.dsl.findByType
  *  1. [JsEnvironment.projectDir] –> `project.projectDir`.
  *  2. [JsEnvironment.moduleVersion] —> `project.extra["versionToPublishJs"]`.
  *
- * There two ways to modify the environment:
+ * There are two ways to modify the environment:
  *
  *  1. Update [JsEnvironment] directly. Go with this option when it is a global change
  *     that should affect all projects which use this extension.
