@@ -79,8 +79,7 @@ class ExtensionTest {
     private static final
     Correspondence<@NonNull Task, @NonNull TaskName> names = Correspondence.from(
             (@NonNull Task task, @NonNull TaskName name) ->
-                    // Add the typecast to make IDEA happy about the "ambiguous" `equals()` call.
-                    ((String) task.getName()).equals(name.value()),
+                    task.getName().equals(name.value()),
             "has name"
     );
 
