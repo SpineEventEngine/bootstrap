@@ -270,16 +270,14 @@ public final class ArtifactSnapshot {
         }
 
         public Builder setSpineRepository(String repositoryUrl) {
-            this.spineRepository = Url
-                    .newBuilder()
+            this.spineRepository = Url.newBuilder()
                     .setSpec(repositoryUrl)
                     .build();
             return this;
         }
 
         public Builder setSpineSnapshotRepository(String repositoryUrl) {
-            this.spineSnapshotRepository = Url
-                    .newBuilder()
+            this.spineSnapshotRepository = Url.newBuilder()
                     .setSpec(repositoryUrl)
                     .build();
             return this;
