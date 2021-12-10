@@ -43,7 +43,7 @@ val coreJavaVersion: String by extra("2.0.0-SNAPSHOT.88")
 val webVersion: String by extra("2.0.0-SNAPSHOT.76")
 val gCloudVersion: String by extra("2.0.0-SNAPSHOT.63")
 
-val toolBaseVersion: String by extra("2.0.0-SNAPSHOT.84")
+val toolBaseVersion: String by extra("2.0.0-SNAPSHOT.85")
 val mcVersion: String by extra("2.0.0-SNAPSHOT.86")
 val mcJavaVersion: String by extra("2.0.0-SNAPSHOT.83")
 val mcJsVersion: String by extra("2.0.0-SNAPSHOT.82")
