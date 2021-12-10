@@ -80,7 +80,7 @@ public final class DartExtension extends CodeGenExtension {
         super.enableGeneration();
         pluginTarget().applyProtobufPlugin();
         protobufGenerator().enablePlugin(called(dart));
-        pluginTarget().applyProtoDartPlugin();
+        pluginTarget().applyMcDartPlugin();
         createGenerationTasks();
     }
 

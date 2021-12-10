@@ -73,7 +73,7 @@ public final class JavaExtension extends CodeGenExtension {
         super.enableGeneration();
         dependOn(testlib().ofVersion(artifacts.spineBaseVersion()), testImplementation);
         dependOn(testUtilTime().ofVersion(artifacts.spineTimeVersion()), testImplementation);
-        pluginTarget().applyModelCompiler();
+        pluginTarget().applyMcJavaPlugin();
         addSourceSets();
         excludeProtobufLite();
     }

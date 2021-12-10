@@ -98,6 +98,8 @@ class SpineBootstrapPluginTest {
         projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
         projectDir.toFile().deleteOnExit();
         setup = GradleProject.setupAt(projectDir.toFile())
+                             //TODO:2021-12-09:alexander.yevsyukov: Remove after debug.
+                             .enableRunnerDebug()
                              .withPluginClasspath();
         copyBuildGradle();
     }
@@ -167,12 +169,13 @@ class SpineBootstrapPluginTest {
         project = setup.create();
         project.executeTask(build);
 
-        Collection<String> packageContents = generatedClassFileNames();
-        IterableSubject assertPackageContents = assertThat(packageContents);
-        assertPackageContents.containsAtLeast("LunaParkProto.class",
-                                              "RollerCoaster.class",
-                                              "Wagon.class",
-                                              "Altitude.class");
+        var packageContents = generatedClassFileNames();
+        assertThat(packageContents).containsAtLeast(
+                "LunaParkProto.class",
+                "RollerCoaster.class",
+                "Wagon.class",
+                "Altitude.class"
+        );
     }
 
     @Test
@@ -230,6 +233,12 @@ class SpineBootstrapPluginTest {
                 );
     }
 
+    /**
+     * Verifies that {@code index.js} file is generated.
+     *
+     * <p>The creation of the file is one of the steps performed by the {@code generateJsonParsers}
+     * task performed by the {@code mc-js} plugin.
+     */
     @Test
     @DisplayName("generate an `index.js` file")
     void generateIndexJs() {

@@ -99,7 +99,7 @@ public final class SpinePluginTarget implements PluginTarget {
     /**
      * Applies the {@link McJavaPlugin}.
      */
-    public void applyModelCompiler() {
+    public void applyMcJavaPlugin() {
         GradlePlugin<?> plugin = GradlePlugin.implementedIn(McJavaPlugin.class);
         apply(plugin);
     }
@@ -107,7 +107,7 @@ public final class SpinePluginTarget implements PluginTarget {
     /**
      * Applies the {@link McJsPlugin}.
      */
-    public void applyProtoJsPlugin() {
+    public void applyMcJsPlugin() {
         GradlePlugin<?> plugin = GradlePlugin.implementedIn(McJsPlugin.class);
         apply(plugin);
     }
@@ -115,16 +115,8 @@ public final class SpinePluginTarget implements PluginTarget {
     /**
      * Applies the {@link McDartPlugin}.
      */
-    public void applyProtoDartPlugin() {
+    public void applyMcDartPlugin() {
         GradlePlugin<?> plugin = GradlePlugin.implementedIn(McDartPlugin.class);
         apply(plugin);
-    }
-
-    /**
-     * Checks if the {@code idea} plugin is applied to this project.
-     */
-    public void withIdeaPlugin(Consumer<IdeaModel> action) {
-        GradlePlugin<IdeaPlugin> plugin = GradlePlugin.implementedIn(IdeaPlugin.class);
-        with(plugin, idea -> action.accept(idea.getModel()));
     }
 }
