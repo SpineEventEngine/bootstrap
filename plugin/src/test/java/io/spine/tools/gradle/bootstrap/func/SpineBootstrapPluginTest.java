@@ -36,7 +36,6 @@ import io.spine.testing.TempDir;
 import io.spine.tools.gradle.testing.GradleProject;
 import io.spine.tools.gradle.testing.GradleProjectSetup;
 import kotlin.jvm.functions.Function1;
-import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,9 +50,9 @@ import java.util.stream.Stream;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.truth.Truth.assertThat;
+import static io.spine.tools.gradle.bootstrap.DartExtension.TYPES_FILE;
 import static io.spine.tools.gradle.task.BaseTaskName.build;
 import static io.spine.tools.mc.js.gradle.McJsTaskName.generateJsonParsers;
-import static io.spine.tools.gradle.bootstrap.DartExtension.TYPES_FILE;
 import static java.lang.String.format;
 import static java.nio.file.Files.exists;
 import static java.util.Collections.emptySet;
@@ -98,8 +97,6 @@ class SpineBootstrapPluginTest {
         projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
         projectDir.toFile().deleteOnExit();
         setup = GradleProject.setupAt(projectDir.toFile())
-                             //TODO:2021-12-09:alexander.yevsyukov: Remove after debug.
-                             .enableRunnerDebug()
                              .withPluginClasspath();
         copyBuildGradle();
     }
@@ -109,8 +106,8 @@ class SpineBootstrapPluginTest {
      * of the {@code :plugin:build.gradle.kts} before tests are to be executed.
      */
     private void copyBuildGradle() throws IOException {
-        Resource buildGradle = Resource.file(BUILD_GRADLE, getClass().getClassLoader());
-        String content = buildGradle.read();
+        var buildGradle = Resource.file(BUILD_GRADLE, getClass().getClassLoader());
+        var content = buildGradle.read();
         setup.addFile(BUILD_GRADLE, ImmutableList.of(content));
     }
 
@@ -186,9 +183,9 @@ class SpineBootstrapPluginTest {
         project = setup.create();
         project.executeTask(build);
 
-        Collection<String> resourceFiles = assembledResources();
-        String projectDir = this.projectDir.getFileName()
-                                           .toString();
+        var resourceFiles = assembledResources();
+        var projectDir = this.projectDir.getFileName()
+                                        .toString();
         boolean containsDescriptorSetFile =
                 resourceFiles.stream()
                              .filter(f -> f.endsWith(FileDescriptors.DESC_EXTENSION))
@@ -207,7 +204,7 @@ class SpineBootstrapPluginTest {
         project = setup.create();
         project.executeTask(build);
 
-        Collection<String> jsFileNames = generatedJsFileNames();
+        var jsFileNames = generatedJsFileNames();
         assertThat(jsFileNames).contains("roller_coaster_pb.js");
     }
 
@@ -221,8 +218,8 @@ class SpineBootstrapPluginTest {
         project = setup.create();
         project.executeTask(build);
 
-        Collection<String> dartFileNames = generatedDartFileNames();
-        String protoName = "roller_coaster";
+        var dartFileNames = generatedDartFileNames();
+        var protoName = "roller_coaster";
         assertThat(dartFileNames)
                 .containsExactly(
                         TYPES_FILE,
@@ -247,7 +244,7 @@ class SpineBootstrapPluginTest {
         project = setup.create();
         project.executeTask(build);
 
-        Collection<String> jsFileNames = generatedJsFileNames();
+        var jsFileNames = generatedJsFileNames();
         assertThat(jsFileNames).contains("index.js");
     }
 
@@ -259,7 +256,7 @@ class SpineBootstrapPluginTest {
         project = setup.create();
         project.executeTask(build);
 
-        Collection<String> jsFileNames = generatedJsFileNames();
+        var jsFileNames = generatedJsFileNames();
         assertThat(jsFileNames).doesNotContain(TRANSITIVE_JS_DEPENDENCY);
     }
 
@@ -279,7 +276,7 @@ class SpineBootstrapPluginTest {
     void applyJsPlugin() {
         configureJsGeneration();
         project = setup.create();
-        BuildResult result = project.executeTask(build);
+        var result = project.executeTask(build);
 
         assertThat(result.task(generateJsonParsers.path())
                          .getOutcome()).isEqualTo(SUCCESS);
@@ -321,12 +318,11 @@ class SpineBootstrapPluginTest {
     @DisplayName("register `generated/main/resources` as a resource directory")
     void includeResources() {
         configureJavaGeneration();
-        String resourceName = "foo.txt";
-        Set<String> emptyFile = emptySet();
-        project = setup.addFile("generated/main/resources/" + resourceName, emptyFile)
-                            .create();
+        var resourceName = "foo.txt";
+        Set<String> noLines = emptySet();
+        project = setup.addFile("generated/main/resources/" + resourceName, noLines).create();
         project.executeTask(build);
-        Collection<String> resourceFiles = assembledResources();
+        var resourceFiles = assembledResources();
         assertThat(resourceFiles).contains(resourceName);
     }
 
@@ -334,7 +330,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("disable Java codegen")
     void disableJava() {
         configureJavaWithoutGen();
-        Path compiledClasses = compiledJavaClasses();
+        var compiledClasses = compiledJavaClasses();
         assertFalse(exists(compiledClasses));
     }
 
@@ -342,7 +338,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("disable Java codegen and ignore gRPC settings")
     void disableJavaAndGrpc() {
         configureJavaAndGrpcWithoutGen();
-        Path compiledClasses = compiledJavaClasses();
+        var compiledClasses = compiledJavaClasses();
         assertFalse(exists(compiledClasses));
     }
 
@@ -353,7 +349,7 @@ class SpineBootstrapPluginTest {
         setup.fromResources(RESOURCE_DIR, acceptingOnly("restaurant_rejections.proto"));
         project = setup.create();
         project.executeTask(build);
-        Path compiledClasses = compiledJavaClasses();
+        var compiledClasses = compiledJavaClasses();
         assertFalse(exists(compiledClasses));
     }
 
@@ -364,7 +360,7 @@ class SpineBootstrapPluginTest {
         project = setup.create();
         project.executeTask(build);
 
-        Path generatedFiles = generatedFiles();
+        var generatedFiles = generatedFiles();
         assertNotExists(generatedFiles);
     }
 

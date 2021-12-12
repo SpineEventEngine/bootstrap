@@ -27,7 +27,7 @@
 package io.spine.tools.gradle.bootstrap;
 
 import io.spine.logging.Logging;
-import io.spine.tools.gradle.SourceSetName;
+import io.spine.tools.code.SourceSetName;
 import io.spine.tools.gradle.task.TaskName;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
