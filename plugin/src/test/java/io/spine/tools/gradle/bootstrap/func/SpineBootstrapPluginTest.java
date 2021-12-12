@@ -74,7 +74,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * </pre>
  */
 @SlowTest
-@DisplayName("`io.spine.tools.gradle.bootstrap` plugin should")
+@DisplayName("`io.spine.bootstrap` plugin should")
 class SpineBootstrapPluginTest {
 
     /**

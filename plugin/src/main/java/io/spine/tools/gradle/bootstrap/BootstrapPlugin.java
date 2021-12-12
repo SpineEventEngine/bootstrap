@@ -49,7 +49,7 @@ import org.gradle.api.Project;
  *     // -- build.gradle --
  *
  *     plugins {
- *         id 'io.spine.tools.gradle.bootstrap'
+ *         id 'io.spine.bootstrap'
  *     }
  *
  *     spine {

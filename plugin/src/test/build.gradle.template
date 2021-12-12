@@ -25,7 +25,7 @@
  */
 
 plugins {
-    id 'io.spine.tools.gradle.bootstrap' version '@spine-version@'
+    id 'io.spine.bootstrap' version '@spine-version@'
 }
 
 repositories {

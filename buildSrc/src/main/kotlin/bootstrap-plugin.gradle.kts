@@ -32,7 +32,7 @@ plugins {
 gradlePlugin {
     plugins {
         create("spineBootstrapPlugin") {
-            id = "io.spine.tools.gradle.bootstrap"
+            id = "io.spine.bootstrap"
             implementationClass = "io.spine.tools.gradle.bootstrap.BootstrapPlugin"
             displayName = "Spine Bootstrap"
             description = "Prepares a Gradle project for development on Spine."

@@ -12,7 +12,7 @@ In order to apply the plugin to a Gradle project, in `build.gralde` add the foll
 
 ```gradle
 plugins {
-    id("io.spine.tools.gradle.bootstrap").version("1.7.0")
+    id("io.spine.bootstrap").version("${spineVersion}")
 }
 ```
 
@@ -65,7 +65,7 @@ For example, adding testing utilities would look like this:
 ```gradle
 dependencies {
    //...
-   testImplementation("io.spine:spine-testutil-server:${spine.version()}")   
+   testImplementation("io.spine.tools:spine-testutil-server:${spine.version()}")   
 }   
 ```
 
