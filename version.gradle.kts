@@ -35,7 +35,7 @@
  * already in the root directory.
  */
 
-val baseVersion: String by extra("2.0.0-SNAPSHOT.79")
+val baseVersion: String by extra("2.0.0-SNAPSHOT.80")
 val baseTypesVersion: String by extra("2.0.0-SNAPSHOT.75")
 val timeVersion: String by extra("2.0.0-SNAPSHOT.76")
 val coreJavaVersion: String by extra("2.0.0-SNAPSHOT.88")
