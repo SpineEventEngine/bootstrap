@@ -102,11 +102,7 @@ public final class JavaCodegenExtension implements Logging {
      */
     public void setProtobuf(boolean protobuf) {
         this.protobuf = protobuf;
-        if (protobuf) {
-            protobufGenerator.enableBuiltIn(JAVA_PLUGIN);
-        } else {
-            protobufGenerator.disableBuiltIn(JAVA_PLUGIN);
-        }
+        protobufGenerator.switchBuiltIn(JAVA_PLUGIN, protobuf);
     }
 
     /**

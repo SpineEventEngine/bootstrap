@@ -57,13 +57,6 @@ public final class ProtobufGenerator {
     }
 
     /**
-     * Enables code generation with the given {@code protoc} built-in.
-     */
-    public void enableBuiltIn(ProtocPlugin builtIn) {
-        enableIn(builtIn, GenerateProtoTask::getBuiltins);
-    }
-
-    /**
      * Sets the state of the specified protoc plugin.
      *
      * @param plugin
@@ -77,6 +70,29 @@ public final class ProtobufGenerator {
         } else {
             disablePlugin(plugin);
         }
+    }
+
+    /**
+     * Sets the state of the code generation of the given protoc built-in.
+     *
+     * @param builtIn
+     *         the built-in to configure
+     * @param enabled
+     *         the desired state of the code generation
+     */
+    public void switchBuiltIn(ProtocPlugin builtIn, boolean enabled) {
+        if (enabled) {
+            enablePlugin(builtIn);
+        } else {
+            disableBuiltIn(builtIn);
+        }
+    }
+
+    /**
+     * Enables code generation with the given {@code protoc} built-in.
+     */
+    public void enableBuiltIn(ProtocPlugin builtIn) {
+        enableIn(builtIn, GenerateProtoTask::getBuiltins);
     }
 
     /**
