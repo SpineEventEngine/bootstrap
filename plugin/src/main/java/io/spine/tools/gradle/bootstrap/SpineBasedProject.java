@@ -35,7 +35,6 @@ import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.DependantProject;
 import org.checkerframework.checker.regex.qual.Regex;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor;
 
 import java.util.function.Consumer;
@@ -62,7 +61,7 @@ final class SpineBasedProject implements Dependant {
      */
     static SpineBasedProject newInstance(Project project) {
         checkNotNull(project);
-        DependantProject dependantProject = DependantProject.newInstance(project);
+        var dependantProject = DependantProject.newInstance(project);
         return new SpineBasedProject(dependantProject, project);
     }
 
@@ -103,11 +102,11 @@ final class SpineBasedProject implements Dependant {
      * <ol>
      *     <li>Spine releases repository for Spine artifacts;
      *     <li>Spine snapshots repository for Spine artifacts;
-     *     <li>JCenter repository for third-party artifacts.
+     *     <li>Maven Central repository for third-party artifacts.
      * </ol>
      */
     void prepareRepositories(ArtifactSnapshot artifacts) {
-        RepositoryHandler repositories = project.getRepositories();
+        var repositories = project.getRepositories();
         repositories.gradlePluginPortal();
         addSpineRepository(artifacts.spineRepository(),
                            MavenRepositoryContentDescriptor::releasesOnly);
@@ -121,7 +120,11 @@ final class SpineBasedProject implements Dependant {
                                     Consumer<MavenRepositoryContentDescriptor> contentConfig) {
         project.getRepositories().maven(repo -> {
             repo.setUrl(repositoryUrl.getSpec());
-//            repo.mavenContent(contentConfig::accept);
+
+            /* Temporarily switch off content filtering as it causes artifact lookup to fail.
+               See the issue https://github.com/SpineEventEngine/bootstrap/issues/82 for details.
+            */ // repo.mavenContent(contentConfig::accept);
+
             repo.content(descriptor -> descriptor.includeGroupByRegex(SPINE_GROUP_PATTERN));
         });
     }
