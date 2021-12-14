@@ -48,8 +48,9 @@ import io.spine.internal.gradle.publish.PublishingRepos
 import io.spine.internal.gradle.publish.PublishingRepos.cloudArtifactRegistry
 import io.spine.internal.gradle.publish.PublishingRepos.cloudRepo
 import io.spine.internal.gradle.publish.spinePublishing
-import io.spine.internal.gradle.report.coverage.JacocoConfig.Companion
+import io.spine.internal.gradle.report.coverage.JacocoConfig
 import io.spine.internal.gradle.report.license.LicenseReporter
+import io.spine.internal.gradle.report.pom.PomGenerator
 import io.spine.internal.gradle.testing.configureLogging
 import io.spine.internal.gradle.testing.exposeTestArtifacts
 import io.spine.internal.gradle.testing.registerTestTasks
