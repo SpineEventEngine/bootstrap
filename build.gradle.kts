@@ -204,9 +204,3 @@ subprojects {
     publishProtoArtifact(project)
     LicenseReporter.generateReportIn(project)
 }
-
-//TODO:2021-12-07:alexander.yevsyukov: Restore after the referenced task is found.
-//rootProject.afterEvaluate {
-//    val pluginProject = project(":plugin")
-//    pluginProject.tasks["publish"].dependsOn(pluginProject.tasks["publishPlugins"])
-//}

@@ -135,3 +135,7 @@ tasks.shadowJar {
 artifacts {
     archives(tasks.shadowJar)
 }
+
+tasks.publish {
+    dependsOn(tasks.publishPlugins)
+}
