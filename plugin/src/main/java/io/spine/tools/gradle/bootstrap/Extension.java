@@ -35,10 +35,7 @@ import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.tasks.TaskContainer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.task.JavaTaskName.compileJava;
@@ -259,7 +256,7 @@ public final class Extension {
      */
     private void disableTransitiveProtos() {
         project.configurations(closure((ConfigurationContainer container) -> {
-            Configuration protobuf = container.findByName("protobuf");
+            var protobuf = container.findByName("protobuf");
             if (protobuf != null) {
                 protobuf.setTransitive(false);
             }
@@ -273,9 +270,9 @@ public final class Extension {
      * <p>If such tasks could not be found in the project, performs no action.
      */
     private void toggleCompileJavaTasks(boolean enabled) {
-        TaskContainer tasks = project.getTasks();
-        Task compileJavaTask = tasks.findByPath(compileJava.name());
-        Task compileTestJavaTask = tasks.findByPath(compileTestJava.name());
+        var tasks = project.getTasks();
+        var compileJavaTask = tasks.findByPath(compileJava.name());
+        var compileTestJavaTask = tasks.findByPath(compileTestJava.name());
         if (compileJavaTask != null) {
             compileJavaTask.setEnabled(enabled);
         }
@@ -338,7 +335,7 @@ public final class Extension {
         }
 
         private JavaExtension buildJavaExtension() {
-            JavaExtension javaExtension = JavaExtension.newBuilder()
+            var javaExtension = JavaExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -350,7 +347,7 @@ public final class Extension {
         }
 
         private JavaScriptExtension buildJavaScriptExtension() {
-            JavaScriptExtension javaScriptExtension = JavaScriptExtension.newBuilder()
+            var javaScriptExtension = JavaScriptExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -361,7 +358,7 @@ public final class Extension {
         }
 
         private DartExtension buildDartExtension() {
-            DartExtension dartExtension = DartExtension.newBuilder()
+            var dartExtension = DartExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -372,7 +369,7 @@ public final class Extension {
         }
 
         private ModelExtension buildModelExtension() {
-            ModelExtension modelExtension = ModelExtension.newBuilder()
+            var modelExtension = ModelExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)

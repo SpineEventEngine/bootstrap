@@ -71,7 +71,7 @@ public final class BootstrapPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
-        ArtifactSnapshot artifacts = ArtifactSnapshot.fromResources();
+        var artifacts = ArtifactSnapshot.fromResources();
         applyExtension(project, artifacts);
         configureProtocArtifact(project, artifacts);
     }
@@ -79,9 +79,9 @@ public final class BootstrapPlugin implements Plugin<Project> {
     private static void applyExtension(Project project, ArtifactSnapshot artifacts) {
         PluginTarget plugableProject = new PlugableProject(project);
         SourceSuperset layout = ProjectSourceSuperset.of(project);
-        SpineBasedProject dependant = SpineBasedProject.newInstance(project);
+        var dependant = SpineBasedProject.newInstance(project);
         dependant.prepareRepositories(artifacts);
-        Extension extension = Extension.newBuilder()
+        var extension = Extension.newBuilder()
                 .setProject(project)
                 .setDependencyTarget(dependant)
                 .setPluginTarget(plugableProject)
@@ -94,7 +94,7 @@ public final class BootstrapPlugin implements Plugin<Project> {
     }
 
     private static void configureProtocArtifact(Project project, ArtifactSnapshot artifacts) {
-        ProtobufGenerator generator = new ProtobufGenerator(project);
+        var generator = new ProtobufGenerator(project);
         generator.useCompiler(artifacts.protoc());
     }
 }

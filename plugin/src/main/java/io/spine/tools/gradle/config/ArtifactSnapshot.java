@@ -31,7 +31,6 @@ import io.spine.io.Resource;
 import io.spine.net.Url;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -87,16 +86,16 @@ public final class ArtifactSnapshot {
      * @return loaded {@code ArtifactSnapshot}
      */
     private static ArtifactSnapshot load() {
-        Resource file = Resource.file(
+        var file = Resource.file(
                 "artifact-snapshot.properties", ArtifactSnapshot.class.getClassLoader()
         );
-        Properties properties = new Properties();
-        try (InputStream resource = file.open()) {
+        var properties = new Properties();
+        try (var resource = file.open()) {
             properties.load(resource);
         } catch (IOException e) {
             throw illegalStateWithCauseOf(e);
         }
-        ArtifactSnapshot snapshot = newBuilder()
+        var snapshot = newBuilder()
                 .setSpineCoreVersion(properties.getProperty("spine.version.core"))
                 .setSpineBaseVersion(properties.getProperty("spine.version.base"))
                 .setSpineTimeVersion(properties.getProperty("spine.version.time"))

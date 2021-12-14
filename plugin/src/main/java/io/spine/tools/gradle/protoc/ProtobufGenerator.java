@@ -34,7 +34,6 @@ import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollecti
 import groovy.lang.Closure;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.PluginManager;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -65,6 +64,22 @@ public final class ProtobufGenerator {
     }
 
     /**
+     * Sets the state of the specified protoc plugin.
+     *
+     * @param plugin
+     *         the plugin to turn on or off
+     * @param enabled
+     *         the desired state of the plugin
+     */
+    public void switchPlugin(ProtocPlugin plugin, boolean enabled) {
+        if (enabled) {
+            enablePlugin(plugin);
+        } else {
+            disablePlugin(plugin);
+        }
+    }
+
+    /**
      * Enables code generation with the given {@code protoc} built-in.
      */
     public void enablePlugin(ProtocPlugin builtIn) {
@@ -73,7 +88,7 @@ public final class ProtobufGenerator {
 
     private void enableIn(ProtocPlugin plugin, ContainerSelector selector) {
         withProtobufPlugin(() -> configureTasks(task -> {
-            NamedDomainObjectContainer<PluginOptions> plugins = selector.apply(task);
+            var plugins = selector.apply(task);
             plugin.createIn(plugins);
         }));
     }
@@ -94,7 +109,7 @@ public final class ProtobufGenerator {
 
     private void disableIn(ProtocPlugin plugin, ContainerSelector selector) {
         withProtobufPlugin(() -> configureTasks(task -> {
-            NamedDomainObjectContainer<PluginOptions> plugins = selector.apply(task);
+            var plugins = selector.apply(task);
             plugin.removeFrom(plugins);
         }));
     }
@@ -121,12 +136,12 @@ public final class ProtobufGenerator {
     }
 
     private ProtobufConfigurator configurator() {
-        ProtobufConfigurator protobuf = getProtobufConvention(project).getProtobuf();
+        var protobuf = getProtobufConvention(project).getProtobuf();
         return protobuf;
     }
 
     private void withProtobufPlugin(Runnable action) {
-        PluginManager pluginManager = project.getPluginManager();
+        var pluginManager = project.getPluginManager();
         if (pluginManager.hasPlugin(gradlePlugin.id)) {
             action.run();
         } else {

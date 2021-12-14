@@ -60,14 +60,14 @@ public final class ProtocPlugin {
 
     public void createIn(NamedDomainObjectContainer<GenerateProtoTask.PluginOptions> plugins) {
         checkNotNull(plugins);
-        GenerateProtoTask.PluginOptions options = plugins.maybeCreate(name.name());
+        var options = plugins.maybeCreate(name.name());
         if (option != null) {
             options.option(option);
         }
     }
 
     public void removeFrom(NamedDomainObjectContainer<GenerateProtoTask.PluginOptions> plugins) {
-        String name = this.name.name();
+        var name = this.name.name();
         plugins.removeIf(taskBuiltIn -> name.equals(taskBuiltIn.getName()));
     }
 
