@@ -58,9 +58,7 @@ plugins {
     `java-library`
     idea
     jacoco
-    io.spine.internal.dependency.ErrorProne.GradlePlugin.apply {
-        id(id)
-    }
+    id(io.spine.internal.dependency.ErrorProne.GradlePlugin.id)
     kotlin("jvm")
 }
 
