@@ -29,6 +29,8 @@ jobs:
           echo "$PATH"
 
       - name: Activate Dart protoc plugin
+        shell: bash
+        run: |
           pub global activate protoc_plugin
           pub global activate dart_code_gen
 
