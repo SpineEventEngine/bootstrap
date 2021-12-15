@@ -44,9 +44,9 @@ import io.spine.internal.gradle.javadoc.JavadocConfig
 import io.spine.internal.gradle.kotlin.applyJvmToolchain
 import io.spine.internal.gradle.kotlin.setFreeCompilerArgs
 import io.spine.internal.gradle.publish.Publish.Companion.publishProtoArtifact
-import io.spine.internal.gradle.publish.PublishingRepos
 import io.spine.internal.gradle.publish.PublishingRepos.cloudArtifactRegistry
 import io.spine.internal.gradle.publish.PublishingRepos.cloudRepo
+import io.spine.internal.gradle.publish.PublishingRepos.gitHub
 import io.spine.internal.gradle.publish.spinePublishing
 import io.spine.internal.gradle.report.coverage.JacocoConfig
 import io.spine.internal.gradle.report.license.LicenseReporter
@@ -69,7 +69,7 @@ spinePublishing {
     targetRepositories.addAll(
         cloudRepo,
         cloudArtifactRegistry,
-        PublishingRepos.gitHub("bootstrap")
+        gitHub("bootstrap")
     )
     spinePrefix.set(true)
 }
@@ -83,14 +83,16 @@ allprojects {
         plugin("jacoco")
         plugin("idea")
         plugin("project-report")
-        apply(from = "$rootDir/version.gradle.kts")
     }
     apply(from = "$rootDir/version.gradle.kts")
 
     repositories {
-        PublishingRepos.gitHub("base")
-        PublishingRepos.gitHub("tool-base")
-        PublishingRepos.gitHub("model-compiler")
+        gitHub("base")
+        gitHub("tool-base")
+        gitHub("model-compiler")
+        gitHub("mc-java")
+        gitHub("mc-js")
+        gitHub("mc-dart")
         applyStandard()
     }
 
