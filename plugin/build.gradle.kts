@@ -53,6 +53,7 @@ val bootstrapVersion: String by extra
 
 dependencies {
     implementation(gradleApi())
+    implementation(gradleKotlinDsl())
     implementation(Protobuf.GradlePlugin.lib)
 
     implementation("io.spine:spine-base:$baseVersion")
