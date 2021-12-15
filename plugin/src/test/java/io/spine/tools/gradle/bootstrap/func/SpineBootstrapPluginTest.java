@@ -28,27 +28,21 @@ package io.spine.tools.gradle.bootstrap.func;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.truth.IterableSubject;
 import io.spine.code.proto.FileDescriptors;
 import io.spine.io.Resource;
 import io.spine.testing.SlowTest;
 import io.spine.testing.TempDir;
 import io.spine.tools.gradle.testing.GradleProject;
 import io.spine.tools.gradle.testing.GradleProjectSetup;
-import kotlin.jvm.functions.Function1;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Set;
-import java.util.stream.Stream;
 
-import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.bootstrap.DartExtension.TYPES_FILE;
 import static io.spine.tools.gradle.task.BaseTaskName.build;
@@ -111,17 +105,6 @@ class SpineBootstrapPluginTest {
         setup.addFile(BUILD_GRADLE, ImmutableList.of(content));
     }
 
-    private static Function1<Path, Boolean> acceptingOnly(String... fileNames) {
-        var files = Stream.of(fileNames)
-                          .map(Paths::get)
-                          .collect(toImmutableList());
-        Function1<Path, Boolean> matching = path -> {
-            var isWantedJavaFile = files.stream().anyMatch(path::endsWith);
-            return isWantedJavaFile;
-        };
-        return matching;
-    }
-
     @Test
     @DisplayName("be applied to a project successfully")
     void apply() {
@@ -138,15 +121,15 @@ class SpineBootstrapPluginTest {
         withRollerCoasterProto();
         setup.create()
              .executeTask(build);
-        Path compiledClasses = compiledJavaClasses();
+        var compiledClasses = compiledJavaClasses();
         if (exists(compiledClasses)) {
-            File compiledClassesDirectory = compiledClasses.toFile();
+            var compiledClassesDirectory = compiledClasses.toFile();
             assertThat(compiledClassesDirectory.list()).isEmpty();
         }
     }
 
     private void withFiles(String... fileNames) {
-        setup.fromResources(RESOURCE_DIR, acceptingOnly(fileNames));
+        setup.fromResources(RESOURCE_DIR, fileNames);
     }
 
     private void withGeneralProtoFiles() {
@@ -186,10 +169,9 @@ class SpineBootstrapPluginTest {
         var resourceFiles = assembledResources();
         var projectDir = this.projectDir.getFileName()
                                         .toString();
-        boolean containsDescriptorSetFile =
-                resourceFiles.stream()
-                             .filter(f -> f.endsWith(FileDescriptors.DESC_EXTENSION))
-                             .anyMatch(f -> f.contains(projectDir));
+        var containsDescriptorSetFile = resourceFiles.stream()
+                .filter(f -> f.endsWith(FileDescriptors.DESC_EXTENSION))
+                .anyMatch(f -> f.contains(projectDir));
         assertThat(containsDescriptorSetFile)
                 .isTrue();
         assertThat(resourceFiles)
@@ -286,7 +268,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("add client dependencies to the project")
     void clientDeps() {
         configureJavaClient();
-        GradleProject project = this.setup.create();
+        var project = this.setup.create();
         project.executeTask(build);
         assertThat(generatedClassFileNames())
                 .contains("ReceivedQuery.class");
@@ -346,7 +328,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("disable rejection throwable generation")
     void ignoreRejections() {
         configureJavaWithoutProtoOrSpine();
-        setup.fromResources(RESOURCE_DIR, acceptingOnly("restaurant_rejections.proto"));
+        setup.fromResources(RESOURCE_DIR, "restaurant_rejections.proto");
         project = setup.create();
         project.executeTask(build);
         var compiledClasses = compiledJavaClasses();
@@ -455,50 +437,50 @@ class SpineBootstrapPluginTest {
     }
 
     private Collection<String> assembledResources() {
-        Path resourcePath = projectDir.resolve("build")
-                                      .resolve("resources")
-                                      .resolve("main");
+        var resourcePath = projectDir.resolve("build")
+                                     .resolve("resources")
+                                     .resolve("main");
         assertExists(resourcePath);
-        File resourceDir = resourcePath.toFile();
+        var resourceDir = resourcePath.toFile();
         assertTrue(resourceDir.isDirectory());
-        String[] resources = resourceDir.list();
+        var resources = resourceDir.list();
         assertNotNull(resources);
         return ImmutableList.copyOf(resources);
     }
 
     private Collection<String> generatedClassFileNames() {
-        Path compiledJavaClasses = compiledJavaClasses();
+        var compiledJavaClasses = compiledJavaClasses();
         assertExists(compiledJavaClasses);
-        File compiledClassesDir = compiledJavaClasses.toFile();
+        var compiledClassesDir = compiledJavaClasses.toFile();
         assertTrue(compiledClassesDir.isDirectory());
         @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> dirContents = ImmutableSet.copyOf(compiledClassesDir.list());
-        IterableSubject assertCompiledClassesDir = assertThat(dirContents);
+        var dirContents = ImmutableSet.copyOf(compiledClassesDir.list());
+        var assertCompiledClassesDir = assertThat(dirContents);
         assertCompiledClassesDir.isNotEmpty();
         assertCompiledClassesDir.containsExactly("io");
 
-        Path compiledClassesPackage = resolveClassesInPackage(compiledJavaClasses);
+        var compiledClassesPackage = resolveClassesInPackage(compiledJavaClasses);
         @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledClassesPackage.toFile()
-                                                                                         .list());
+        var packageContents = ImmutableSet.copyOf(compiledClassesPackage.toFile()
+                                                                        .list());
         return packageContents;
     }
 
     private Path compiledJavaClasses() {
-        Path compiledClasses = projectDir.resolve("build")
-                                         .resolve("classes")
-                                         .resolve("java")
-                                         .resolve("main");
+        var compiledClasses = projectDir.resolve("build")
+                                        .resolve("classes")
+                                        .resolve("java")
+                                        .resolve("main");
         return compiledClasses;
     }
 
     private Path generatedFiles() {
-        Path generated = projectDir.resolve("generated");
+        var generated = projectDir.resolve("generated");
         return generated;
     }
 
     private Path generatedJsFiles() {
-        Path compiledJsFiles = generatedFiles()
+        var compiledJsFiles = generatedFiles()
                 .resolve("main")
                 .resolve("js");
         return compiledJsFiles;
@@ -521,22 +503,22 @@ class SpineBootstrapPluginTest {
     }
     
     private Collection<String> generatedJsFileNames() {
-        Path generatedJsFiles = generatedJsFiles();
+        var generatedJsFiles = generatedJsFiles();
         assertExists(generatedJsFiles);
-        File compiledJsDir = generatedJsFiles.toFile();
+        var compiledJsDir = generatedJsFiles.toFile();
         assertTrue(compiledJsDir.isDirectory());
         @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledJsDir.list());
+        var packageContents = ImmutableSet.copyOf(compiledJsDir.list());
         return packageContents;
     }
 
     private Collection<String> generatedDartFileNames() {
-        Path libDir = projectDir.resolve("lib");
+        var libDir = projectDir.resolve("lib");
         assertExists(libDir);
-        File libDirFile = libDir.toFile();
+        var libDirFile = libDir.toFile();
         assertTrue(libDirFile.isDirectory());
         @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> packageContents = ImmutableSet.copyOf(libDirFile.list());
+        var packageContents = ImmutableSet.copyOf(libDirFile.list());
         return packageContents;
     }
 }
