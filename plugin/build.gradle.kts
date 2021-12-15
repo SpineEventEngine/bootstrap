@@ -119,8 +119,6 @@ pluginBundle {
         version = bootstrapVersion
     }
 
-    withDependencies { clear() }
-
     plugins {
         named(pluginName) {
             version = bootstrapVersion
