@@ -25,6 +25,7 @@ jobs:
           ./config/scripts/update-apt.sh
           sudo apt-get install dart
           echo "/usr/lib/dart/bin" >> $GITHUB_PATH
+          echo $PATH
           pub global activate protoc_plugin
           pub global activate dart_code_gen
 
