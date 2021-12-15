@@ -21,4 +21,9 @@ jobs:
       - name: Build project and run tests
         shell: cmd
         # For the reason on `--no-daemon` see https://github.com/actions/cache/issues/454
-        run: gradlew.bat build --stacktrace --no-daemon
+        run: >
+          choco install dart-sdk --limitoutput
+          && refreshenv
+          && pub global activate protoc_plugin
+          && pub global activate dart_code_gen
+          && gradlew.bat build --stacktrace --no-daemon
