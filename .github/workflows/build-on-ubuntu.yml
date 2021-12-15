@@ -18,6 +18,16 @@ jobs:
       - name: Pull config
         run: git submodule update --init --recursive
 
+      - name: Install Dart SDK and Protobuf
+        shell: bash
+        run: |
+          chmod +x ./config/scripts/update-apt.sh
+          ./config/scripts/update-apt.sh
+          sudo apt-get install dart
+          pub global activate protoc_plugin
+          pub global activate dart_code_gen
+          echo "/usr/lib/dart/bin" >> $GITHUB_PATH
+
       - name: Build project and run tests
         shell: bash
         run: ./gradlew build --stacktrace
