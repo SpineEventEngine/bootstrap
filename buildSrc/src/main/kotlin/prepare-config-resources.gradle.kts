@@ -87,12 +87,12 @@ val writeDependencies by tasks.registering {
         artifacts.setProperty("grpc.stub", Grpc.stub)
         artifacts.setProperty("grpc.protobuf", Grpc.protobuf)
         artifacts.setProperty("repository.spine.release",
-            io.spine.internal.gradle.Repos.spine
-//            cloudArtifactRegistry.releases
+//            io.spine.internal.gradle.Repos.spine
+            cloudArtifactRegistry.releases
         )
         artifacts.setProperty("repository.spine.snapshot",
-            io.spine.internal.gradle.Repos.spineSnapshots
-//            cloudArtifactRegistry.snapshots
+//            io.spine.internal.gradle.Repos.spineSnapshots
+            cloudArtifactRegistry.snapshots
         )
 
         FileWriter(versionSnapshot).use {
