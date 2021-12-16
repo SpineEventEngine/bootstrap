@@ -91,6 +91,8 @@ class SpineBootstrapPluginTest {
         projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
         projectDir.toFile().deleteOnExit();
         setup = GradleProject.setupAt(projectDir.toFile())
+//TODO:2021-12-15:alexander.yevsyukov: Remove after fixing the issue.
+                .enableRunnerDebug()
                              .withPluginClasspath();
         copyBuildGradle();
     }
