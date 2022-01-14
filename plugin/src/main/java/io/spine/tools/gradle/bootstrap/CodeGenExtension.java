@@ -29,6 +29,7 @@ package io.spine.tools.gradle.bootstrap;
 import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import io.spine.logging.Logging;
+import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -38,6 +39,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Project;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static io.spine.tools.gradle.ConfigurationName.compileOnly;
 import static io.spine.tools.gradle.config.SpineDependency.base;
 import static io.spine.tools.gradle.config.SpineDependency.time;
 
@@ -76,8 +78,8 @@ abstract class CodeGenExtension implements Logging {
     @OverridingMethodsMustInvokeSuper
     void enableGeneration() {
         pluginTarget.applyJavaPlugin();
-        dependant.compile(base().ofVersion(artifactSnapshot.spineBaseVersion()));
-        dependant.compile(time().ofVersion(artifactSnapshot.spineTimeVersion()));
+        dependant.depend(compileOnly, base().ofVersion(artifactSnapshot.spineBaseVersion()).notation());
+        dependant.depend(compileOnly, time().ofVersion(artifactSnapshot.spineTimeVersion()).notation());
         if (codeGenJob != null) {
             pluginTarget.applyProtobufPlugin();
             protobufGenerator.enableBuiltIn(codeGenJob);
