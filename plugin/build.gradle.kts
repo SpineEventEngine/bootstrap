@@ -27,12 +27,11 @@
 
 import io.spine.internal.dependency.Grpc
 import io.spine.internal.dependency.Protobuf
-import io.spine.internal.gradle.IncrementGuard
+import io.spine.internal.gradle.publish.IncrementGuard
 import io.spine.internal.gradle.isSnapshot
 import io.spine.internal.gradle.publish.PublishingRepos.cloudArtifactRegistry
 import java.io.FileWriter
 import java.util.Properties
-import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id(io.spine.internal.dependency.Protobuf.GradlePlugin.id)
@@ -73,21 +72,6 @@ dependencies {
 }
 
 val targetResourceDir = "$buildDir/compiledResources/"
-
-val prepareBuildScript by tasks.registering(Copy::class) {
-    description = "Creates the `build.gradle` script which is executed " +
-            "in functional tests of the plugin."
-
-    from("$projectDir/src/test/build.gradle.template")
-    into(targetResourceDir)
-
-    rename { "build.gradle" }
-    filter(mapOf("tokens" to mapOf("spine-version" to bootstrapVersion)), ReplaceTokens::class.java)
-}
-
-tasks.processTestResources {
-    dependsOn(prepareBuildScript)
-}
 
 sourceSets {
     test {
@@ -227,6 +211,8 @@ val publishPlugins: Task by tasks.getting {
     enabled = !bootstrapVersion.isSnapshot()
 }
 
-tasks.publish {
-    dependsOn(tasks.publishPlugins)
+project.afterEvaluate {
+    val publish: Task by tasks.getting {
+        dependsOn(tasks.publishPlugins)
+    }
 }

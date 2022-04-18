@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2022, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,42 +24,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle.bootstrap;
-
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
-
-import java.io.File;
-
-import static com.google.common.truth.Truth.assertThat;
-
-@DisplayName("`BootstrapPlugin` should")
-class BootstrapPluginTest {
-
-    private Project project;
-
-    @BeforeEach
-    void setUp(@TempDir File projectDir) {
-        project = ProjectBuilder.builder()
-                .withName(BootstrapPluginTest.class.getSimpleName())
-                .withProjectDir(projectDir)
-                .build();
-    }
-
-    @Test
-    @DisplayName("register `spine` extension")
-    void registerExtension() {
-        var plugin = new BootstrapPlugin();
-        plugin.apply(project);
-
-        var extension = project.getExtensions()
-                               .getByName(Extension.NAME);
-        var assertExtension = assertThat(extension);
-        assertExtension.isNotNull();
-        assertExtension.isInstanceOf(Extension.class);
+pluginManagement {
+    repositories {
+        mavenLocal()
     }
 }

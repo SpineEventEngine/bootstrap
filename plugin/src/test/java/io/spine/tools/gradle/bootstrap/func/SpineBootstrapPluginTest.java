@@ -28,20 +28,21 @@ package io.spine.tools.gradle.bootstrap.func;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import io.spine.code.proto.FileDescriptors;
-import io.spine.io.Resource;
 import io.spine.testing.SlowTest;
-import io.spine.testing.TempDir;
 import io.spine.tools.gradle.testing.GradleProject;
 import io.spine.tools.gradle.testing.GradleProjectSetup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import java.io.IOException;
+import java.io.File;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static com.google.common.truth.Truth.assertThat;
 import static io.spine.tools.gradle.bootstrap.DartExtension.TYPES_FILE;
@@ -71,13 +72,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("`io.spine.bootstrap` plugin should")
 class SpineBootstrapPluginTest {
 
-    /**
-     * The build script prepared from {@code src/test/build.gradle.template} file.
-     *
-     * @see #copyBuildGradle()
-     */
-    private static final String BUILD_GRADLE = "build.gradle";
-
     private static final String ADDITIONAL_CONFIG_SCRIPT = "config.gradle";
     private static final String TRANSITIVE_JS_DEPENDENCY = "any_pb.js";
     private static final String RESOURCE_DIR = "func-test";
@@ -87,24 +81,13 @@ class SpineBootstrapPluginTest {
     private GradleProject project;
 
     @BeforeEach
-    void setUp() throws IOException {
-        projectDir = TempDir.forClass(SpineBootstrapPluginTest.class).toPath();
-        projectDir.toFile().deleteOnExit();
-        setup = GradleProject.setupAt(projectDir.toFile())
-//TODO:2021-12-15:alexander.yevsyukov: Remove after fixing the issue.
-                .enableRunnerDebug()
+    void setUp(@TempDir File projectDir) {
+        this.projectDir = projectDir.toPath();
+        //TODO:2022-04-18:alexander.yevsyukov: Load version from resources.
+        var version = "2.0.0-SNAPSHOT.87";
+        setup = GradleProject.setupAt(projectDir)
+                             .replace("@spine-version@", version)
                              .withPluginClasspath();
-        copyBuildGradle();
-    }
-
-    /**
-     * Copies the {@code build.gradle} file prepared by the {@code prepareBuildScript} task
-     * of the {@code :plugin:build.gradle.kts} before tests are to be executed.
-     */
-    private void copyBuildGradle() throws IOException {
-        var buildGradle = Resource.file(BUILD_GRADLE, getClass().getClassLoader());
-        var content = buildGradle.read();
-        setup.addFile(BUILD_GRADLE, ImmutableList.of(content));
     }
 
     @Test
@@ -131,7 +114,11 @@ class SpineBootstrapPluginTest {
     }
 
     private void withFiles(String... fileNames) {
-        setup.fromResources(RESOURCE_DIR, fileNames);
+        var withBuildScript = Lists.newArrayList(fileNames);
+        withBuildScript.add("build.gradle");
+        withBuildScript.add("settings.gradle");
+        var predicate = (Predicate<Path>) path -> withBuildScript.stream().anyMatch(path::endsWith);
+        setup.fromResources(RESOURCE_DIR, predicate);
     }
 
     private void withGeneralProtoFiles() {
@@ -259,6 +246,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("apply 'spine-proto-js-plugin'")
     void applyJsPlugin() {
         configureJsGeneration();
+        withProjectFiles();
         project = setup.create();
         var result = project.executeTask(build);
 
@@ -266,11 +254,19 @@ class SpineBootstrapPluginTest {
                          .getOutcome()).isEqualTo(SUCCESS);
     }
 
+    private void withProjectFiles() {
+        setup.fromResources(
+                RESOURCE_DIR,
+                "build.gradle",
+                "settings.gradle"
+        );
+    }
+
     @Test
     @DisplayName("add client dependencies to the project")
     void clientDeps() {
         configureJavaClient();
-        var project = this.setup.create();
+        project = this.setup.create();
         project.executeTask(build);
         assertThat(generatedClassFileNames())
                 .contains("ReceivedQuery.class");
@@ -314,6 +310,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("disable Java codegen")
     void disableJava() {
         configureJavaWithoutGen();
+        withProjectFiles();
         var compiledClasses = compiledJavaClasses();
         assertFalse(exists(compiledClasses));
     }
@@ -322,6 +319,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("disable Java codegen and ignore gRPC settings")
     void disableJavaAndGrpc() {
         configureJavaAndGrpcWithoutGen();
+        withProjectFiles();
         var compiledClasses = compiledJavaClasses();
         assertFalse(exists(compiledClasses));
     }
@@ -330,7 +328,12 @@ class SpineBootstrapPluginTest {
     @DisplayName("disable rejection throwable generation")
     void ignoreRejections() {
         configureJavaWithoutProtoOrSpine();
-        setup.fromResources(RESOURCE_DIR, "restaurant_rejections.proto");
+        setup.fromResources(
+                RESOURCE_DIR,
+                "restaurant_rejections.proto",
+                "build.gradle",
+                "settings.gradle"
+        );
         project = setup.create();
         project.executeTask(build);
         var compiledClasses = compiledJavaClasses();
@@ -341,6 +344,7 @@ class SpineBootstrapPluginTest {
     @DisplayName("generate no code for projects that only define the model")
     void noJsForModelProjects() {
         configureModelProject();
+        withProjectFiles();
         project = setup.create();
         project.executeTask(build);
 
