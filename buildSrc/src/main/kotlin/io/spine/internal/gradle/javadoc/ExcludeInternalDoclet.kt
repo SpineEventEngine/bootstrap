@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2022, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class ExcludeInternalDoclet(val version: String) {
     }
 
     /**
-     * Creates a custom Javadoc task for the [project] which excludes the the types
+     * Creates a custom Javadoc task for the [project] which excludes the types
      * annotated as `@Internal`.
      *
      * The task is registered under [taskName].

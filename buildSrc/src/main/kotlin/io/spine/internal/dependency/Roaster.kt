@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2022, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@
 package io.spine.internal.dependency
 
 // https://github.com/forge/roaster
+@Suppress("unused")
 object Roaster {
 
     /**
@@ -36,7 +37,7 @@ object Roaster {
      *
      * Please see [this issue][https://github.com/SpineEventEngine/config/issues/220] for details.
      */
-    private const val version = "2.22.2.Final"
+    private const val version = "2.24.0.Final"
 
     const val api = "org.jboss.forge.roaster:roaster-api:${version}"
     const val jdt = "org.jboss.forge.roaster:roaster-jdt:${version}"

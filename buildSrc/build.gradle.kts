@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2022, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,6 @@
  * This script uses two declarations of the constant [licenseReportVersion] because
  * currently there is no way to define a constant _before_ a build script of `buildSrc`.
  * We cannot use imports or do something else before the `buildscript` or `plugin` clauses.
- *
- * Therefore, when a version of [io.spine.internal.dependency.LicenseReport] changes, it should be
- * changed in the Kotlin object _and_ in this file below twice.
  */
 
 plugins {
@@ -38,7 +35,7 @@ plugins {
     groovy
     `kotlin-dsl`
     pmd
-    val licenseReportVersion = "2.0"
+    val licenseReportVersion = "2.1"
     id("com.github.jk1.dependency-license-report").version(licenseReportVersion)
 }
 
@@ -57,29 +54,29 @@ repositories {
 val jacksonVersion = "2.13.0"
 
 val googleAuthToolVersion = "2.1.2"
-val licenseReportVersion = "2.0"
+val licenseReportVersion = "2.1"
 val grGitVersion = "3.1.1"
 
 /**
  * The version of the Kotlin Gradle plugin.
  *
  * Please check that this value matches one defined in
- *  `io.spine.internal.dependency.Kotlin.version`.
+ *  [io.spine.internal.dependency.Kotlin.version].
  */
-val kotlinVersion = "1.6.0"
+val kotlinVersion = "1.6.20"
 
 /**
  * The version of Guava used in `buildSrc`.
  *
- * Always use the same version as the one specified in `io.spine.internal.dependency.Guava`.
+ * Always use the same version as the one specified in [io.spine.internal.dependency.Guava].
  * Otherwise, when testing Gradle plugins, clashes may occur.
  */
-val guavaVersion = "30.1.1-jre"
+val guavaVersion = "31.0.1-jre"
 
 /**
  * The version of ErrorProne Gradle plugin.
  *
- * Please keep in sync. with `io.spine.internal.dependency.ErrorProne.GradlePlugin.version`.
+ * Please keep in sync. with [io.spine.internal.dependency.ErrorProne.GradlePlugin.version].
  *
  * @see <a href="https://github.com/tbroyer/gradle-errorprone-plugin/releases">
  *     Error Prone Gradle Plugin Releases</a>
@@ -89,12 +86,22 @@ val errorProneVersion = "2.0.2"
 /**
  * The version of Protobuf Gradle Plugin.
  *
- * Please keep in sync. with `io.spine.internal.dependency.Protobuf.GradlePlugin.version`.
+ * Please keep in sync. with [io.spine.internal.dependency.Protobuf.GradlePlugin.version].
  *
  * @see <a href="https://github.com/google/protobuf-gradle-plugin/releases">
  *     Protobuf Gradle Plugins Releases</a>
  */
-val protobufPluginVersion = "0.8.17"
+val protobufPluginVersion = "0.8.18"
+
+/**
+ * The version of Dokka Gradle Plugins.
+ *
+ * Please keep in sync with [io.spine.internal.dependency.Dokka.version].
+ *
+ * @see <a href="https://github.com/Kotlin/dokka/releases">
+ *     Dokka Releases</a>
+ */
+val dokkaVersion = "1.6.20"
 
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
@@ -108,4 +115,6 @@ dependencies {
     implementation("net.ltgt.gradle:gradle-errorprone-plugin:${errorProneVersion}")
     implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
     implementation("gradle.plugin.com.google.protobuf:protobuf-gradle-plugin:$protobufPluginVersion")
+    implementation("org.jetbrains.dokka:dokka-gradle-plugin:${dokkaVersion}")
+    implementation("org.jetbrains.dokka:dokka-base:${dokkaVersion}")
 }

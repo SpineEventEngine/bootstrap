@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2022, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,11 @@ package io.spine.internal.dependency
 // https://github.com/JetBrains/kotlin
 // https://github.com/Kotlin
 object Kotlin {
+    /**
+    * When changing the version, also change the version used in the `buildSrc/build.gradle.kts`.
+    */
     @Suppress("MemberVisibilityCanBePrivate") // used directly from outside
-    const val version      = "1.6.0"
+    const val version      = "1.6.20"
     const val reflect      = "org.jetbrains.kotlin:kotlin-reflect:${version}"
     const val stdLib       = "org.jetbrains.kotlin:kotlin-stdlib:${version}"
     const val stdLibCommon = "org.jetbrains.kotlin:kotlin-stdlib-common:${version}"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2022, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,11 +41,9 @@ pmd {
     // Disable the default rule set to use the custom rules (see below).
     ruleSets = listOf()
 
-    // Load PMD settings from a file in `buildSrc/resources/`.
-    val classLoader = Pmd.javaClass.classLoader
-    val settingsResource = classLoader.getResource("pmd.xml")!!
-    val pmdSettings: String = settingsResource.readText()
-    val textResource: TextResource = resources.text.fromString(pmdSettings)
+    // Load PMD settings.
+    val pmdSettings = file("$rootDir/config/quality/pmd.xml")
+    val textResource: TextResource = resources.text.fromFile(pmdSettings)
     ruleSetConfig = textResource
 
     reportsDir = file("build/reports/pmd")

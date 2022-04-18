@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2022, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import org.gradle.process.CommandLineArgumentProvider
  * }
  *```
  */
+@Suppress("unused")
 fun JavaCompile.configureErrorProne() {
     options.errorprone
         .errorproneArgumentProviders
@@ -67,7 +68,8 @@ private object ErrorProneConfig {
         listOf(
 
             // Exclude generated sources from being analyzed by ErrorProne.
-            "-XepExcludedPaths:.*/generated/.*",
+            // Include all directories started from `generated`, such as `generated-proto`.
+            "-XepExcludedPaths:.*/generated.*/.*",
 
             // Turn the check off until ErrorProne can handle `@Nested` JUnit classes.
             // See issue: https://github.com/google/error-prone/issues/956

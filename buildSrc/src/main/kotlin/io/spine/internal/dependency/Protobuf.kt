@@ -1,5 +1,5 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2022, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,14 @@ package io.spine.internal.dependency
 // https://github.com/protocolbuffers/protobuf
 @Suppress("MemberVisibilityCanBePrivate") // used directly from outside
 object Protobuf {
-    const val version    = "3.18.0"
+    private const val group = "com.google.protobuf"
+    const val version       = "3.20.0"
     val libs = listOf(
-        "com.google.protobuf:protobuf-java:${version}",
-        "com.google.protobuf:protobuf-java-util:${version}"
+        "${group}:protobuf-java:${version}",
+        "${group}:protobuf-java-util:${version}",
+        "${group}:protobuf-kotlin:${version}"
     )
-    const val compiler = "com.google.protobuf:protoc:${version}"
+    const val compiler = "${group}:protoc:${version}"
 
     // https://github.com/google/protobuf-gradle-plugin/releases
     object GradlePlugin {
@@ -44,8 +46,8 @@ object Protobuf {
          *
          * When changing the version, also change the version used in the `build.gradle.kts`.
          */
-        const val version = "0.8.17"
+        const val version = "0.8.18"
         const val id = "com.google.protobuf"
-        const val lib = "com.google.protobuf:protobuf-gradle-plugin:${version}"
+        const val lib = "${group}:protobuf-gradle-plugin:${version}"
     }
 }
