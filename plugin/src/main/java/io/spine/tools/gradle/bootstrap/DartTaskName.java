@@ -26,7 +26,7 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import io.spine.tools.gradle.TaskName;
+import io.spine.tools.gradle.task.TaskName;
 
 /**
  * Tasks which launch the `dart_code_gen` tool.

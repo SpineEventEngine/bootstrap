@@ -35,9 +35,19 @@
  * already in the root directory.
  */
 
-val spineVersion: String by extra("1.8.0")
-val spineBaseVersion: String by extra("1.8.0")
-val spineTimeVersion: String by extra(spineVersion)
-val spineWebVersion: String by extra(spineVersion)
-val spineGCloudVersion: String by extra(spineVersion)
-val pluginVersion: String by extra(spineVersion)
+val baseVersion: String by extra("2.0.0-SNAPSHOT.88")
+val baseTypesVersion: String by extra("2.0.0-SNAPSHOT.89")
+val timeVersion: String by extra("2.0.0-SNAPSHOT.88")
+val coreJavaVersion: String by extra("2.0.0-SNAPSHOT.94")
+
+val webVersion: String by extra("2.0.0-SNAPSHOT.73")
+val gCloudVersion: String by extra("2.0.0-SNAPSHOT.94")
+
+val toolBaseVersion: String by extra("2.0.0-SNAPSHOT.88")
+val mcVersion: String by extra("2.0.0-SNAPSHOT.87")
+val mcJavaVersion: String by extra("2.0.0-SNAPSHOT.88")
+val mcJsVersion: String by extra("2.0.0-SNAPSHOT.87")
+val mcDartVersion: String by extra("2.0.0-SNAPSHOT.87")
+
+// The version of the Spine Bootstrap plugin to publish.
+val bootstrapVersion: String by extra("2.0.0-SNAPSHOT.87")

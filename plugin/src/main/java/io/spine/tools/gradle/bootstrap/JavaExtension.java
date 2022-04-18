@@ -32,27 +32,23 @@ import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.compiler.Extension;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.SourceSuperset;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.plugins.ide.idea.model.IdeaModel;
-import org.gradle.plugins.ide.idea.model.IdeaModule;
 
 import java.io.File;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ConfigurationName.implementation;
-import static io.spine.tools.gradle.ConfigurationName.testImplementation;
+import static io.spine.tools.gradle.JavaConfigurationName.implementation;
+import static io.spine.tools.gradle.JavaConfigurationName.testImplementation;
 import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.config.SpineDependency.testUtilTime;
 import static io.spine.tools.gradle.config.SpineDependency.testlib;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
-import static org.gradle.util.ConfigureUtil.configure;
 
 /**
  * An extension which configures Java code generation.
@@ -77,52 +73,33 @@ public final class JavaExtension extends CodeGenExtension {
         super.enableGeneration();
         dependOn(testlib().ofVersion(artifacts.spineBaseVersion()), testImplementation);
         dependOn(testUtilTime().ofVersion(artifacts.spineTimeVersion()), testImplementation);
-        pluginTarget().applyModelCompiler();
-        pluginTarget().apply(SpinePluginScripts.modelCompilerConfig());
+        pluginTarget().applyMcJavaPlugin();
         addSourceSets();
         excludeProtobufLite();
-        pluginTarget().withIdeaPlugin(this::configureIdea);
     }
 
-    private void configureIdea(IdeaModel idea) {
-        IdeaModule module = idea.getModule();
-
-        Set<File> mainSrc = module.getSourceDirs();
-        Set<File> mainGenerated = module.getGeneratedSourceDirs();
-        add(mainSrc, Extension.getMainProtoSrcDir(project));
-        add(mainGenerated, Extension.getMainGenProtoDir(project));
-        add(mainGenerated, Extension.getMainGenGrpcDir(project));
-        add(mainGenerated, Extension.getTargetGenColumnsRootDir(project));
-        add(mainGenerated, Extension.getTargetGenRejectionsRootDir(project));
-
-        Set<File> testSrc = module.getTestSourceDirs();
-        add(testSrc, Extension.getTestProtoSrcDir(project));
-        add(testSrc, Extension.getTestGenProtoDir(project));
-        add(testSrc, Extension.getTestGenGrpcDir(project));
-
-        module.setDownloadJavadoc(true);
-        module.setDownloadSources(true);
-    }
-
+    @SuppressWarnings("unused")
     private static void add(Set<File> files, String path) {
         File file = new File(path);
         files.add(file);
     }
 
     private void excludeProtobufLite() {
-        dependant().exclude(protobufLite());
+        dependant().exclude(protobufLite);
     }
 
+    @SuppressWarnings("unused")
     public JavaCodegenExtension getCodegen() {
         return codegen;
     }
 
+    @SuppressWarnings("unused")
     public void codegen(Action<JavaCodegenExtension> config) {
         config.execute(codegen);
     }
 
     public void codegen(@SuppressWarnings("rawtypes") /* For Gradle API. */ Closure config) {
-        configure(config, codegen);
+        project.configure(codegen, config);
     }
 
     /**
@@ -131,6 +108,7 @@ public final class JavaExtension extends CodeGenExtension {
      * <p>Adds the {@code io.spine:spine-client} and {@code io.spine:spine-testuil-client}
      * dependencies to the project.
      */
+    @SuppressWarnings("unused")
     public void client() {
         dependOnCore(SpineDependency.client(), implementation);
         dependOnCore(SpineDependency.testUtilClient(), testImplementation);
@@ -153,6 +131,7 @@ public final class JavaExtension extends CodeGenExtension {
      * <p>Additionally to the {@linkplain #server() server} dependencies, adds a dependency on
      * {@code io.spine:spine-web}.
      */
+    @SuppressWarnings("unused")
     public void webServer() {
         dependOnWeb(SpineDependency.web());
     }
@@ -163,6 +142,7 @@ public final class JavaExtension extends CodeGenExtension {
      * <p>Additionally to the {@linkplain #server() server} dependencies, adds a dependency on
      * {@code io.spine.gcloud:spine-firebase-web}.
      */
+    @SuppressWarnings("unused")
     public void firebaseWebServer() {
         dependOnWeb(SpineDependency.firebaseWeb());
     }
@@ -171,6 +151,7 @@ public final class JavaExtension extends CodeGenExtension {
      * Marks this project as a part of a Java server and adds the Google Cloud Datastore storage
      * dependency to the project.
      */
+    @SuppressWarnings("unused")
     public void withDatastore() {
         server();
         Artifact dependency = SpineDependency.datastore()

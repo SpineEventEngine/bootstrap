@@ -28,7 +28,6 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
-import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -36,16 +35,12 @@ import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.tasks.TaskContainer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.JavaTaskName.compileJava;
-import static io.spine.tools.gradle.JavaTaskName.compileTestJava;
+import static io.spine.tools.gradle.task.JavaTaskName.compileJava;
+import static io.spine.tools.gradle.task.JavaTaskName.compileTestJava;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
-import static org.gradle.util.ConfigureUtil.configure;
 
 /**
  * The {@code spine} Gradle DSL extension.
@@ -95,10 +90,11 @@ public final class Extension {
      *         Groovy style configuration
      * @see #enableJava()
      */
-    public void enableJava(Closure configuration) {
+    public void enableJava(
+            @SuppressWarnings("rawtypes") /* For Gradle API. */ Closure configuration) {
         checkNotNull(configuration);
         enableJava();
-        configure(configuration, java);
+        project.configure(java, configuration);
     }
 
     /**
@@ -108,6 +104,7 @@ public final class Extension {
      *         Java/Kotlin style configuration
      * @see #enableJava()
      */
+    @SuppressWarnings("unused")
     public void enableJava(Action<JavaExtension> configuration) {
         checkNotNull(configuration);
         enableJava();
@@ -119,7 +116,7 @@ public final class Extension {
      *
      * <p>Enables the Java code generation from Protobuf. If the {@code spine-model-compiler} plugin
      * is not applied to this project, applies it immediately. Also adds the
-     * {@code io.spine:spine-testlib}
+     * {@code io.spine.tools:spine-testlib}
      */
     @CanIgnoreReturnValue
     public JavaExtension enableJava() {
@@ -135,6 +132,7 @@ public final class Extension {
      * <p>Enables the JS code generation from Protobuf. If the {@code spine-proto-js-plugin} is
      * not applied to this project, applies it immediately.
      */
+    @SuppressWarnings("unused")
     @CanIgnoreReturnValue
     public JavaScriptExtension enableJavaScript() {
         javaScript.enableGeneration();
@@ -151,6 +149,7 @@ public final class Extension {
      * <p>Enables the Dart code generation from Protobuf. If the {@code spine-proto-dart-plugin} is
      * not applied to this project, applies it immediately.
      */
+    @SuppressWarnings("unused")
     @CanIgnoreReturnValue
     public DartExtension enableDart() {
         dart.enableGeneration();
@@ -167,6 +166,7 @@ public final class Extension {
      * <p>Enables the {@code protobuf} and {@code java} plugins. Also adds the generated source
      * sets.
      */
+    @SuppressWarnings("unused")
     public void assembleModel() {
         this.modelExtension.enableGeneration();
     }
@@ -177,6 +177,7 @@ public final class Extension {
      * <p>If the option is enabled, certain dependencies will be forced to resolve to the versions
      * needed by the Spine Bootstrap plugin.
      */
+    @SuppressWarnings("unused")
     public boolean getForceDependencies() {
         return forceDependencies;
     }
@@ -248,14 +249,14 @@ public final class Extension {
     }
 
     /**
-     * If the {@code protobuf} configuration is present, disables its transitibity.
+     * If the {@code protobuf} configuration is present, disables its transitivity.
      *
      * <p>Disabling transitivity leads to exclusion of {@code spine} and
      * {@code com.google.protobuf} dependencies.
      */
     private void disableTransitiveProtos() {
         project.configurations(closure((ConfigurationContainer container) -> {
-            Configuration protobuf = container.findByName(ConfigurationName.protobuf.name());
+            var protobuf = container.findByName("protobuf");
             if (protobuf != null) {
                 protobuf.setTransitive(false);
             }
@@ -269,9 +270,9 @@ public final class Extension {
      * <p>If such tasks could not be found in the project, performs no action.
      */
     private void toggleCompileJavaTasks(boolean enabled) {
-        TaskContainer tasks = project.getTasks();
-        Task compileJavaTask = tasks.findByPath(compileJava.name());
-        Task compileTestJavaTask = tasks.findByPath(compileTestJava.name());
+        var tasks = project.getTasks();
+        var compileJavaTask = tasks.findByPath(compileJava.name());
+        var compileTestJavaTask = tasks.findByPath(compileTestJava.name());
         if (compileJavaTask != null) {
             compileJavaTask.setEnabled(enabled);
         }
@@ -334,8 +335,7 @@ public final class Extension {
         }
 
         private JavaExtension buildJavaExtension() {
-            JavaExtension javaExtension = JavaExtension
-                    .newBuilder()
+            var javaExtension = JavaExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -347,8 +347,7 @@ public final class Extension {
         }
 
         private JavaScriptExtension buildJavaScriptExtension() {
-            JavaScriptExtension javaScriptExtension = JavaScriptExtension
-                    .newBuilder()
+            var javaScriptExtension = JavaScriptExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -359,8 +358,7 @@ public final class Extension {
         }
 
         private DartExtension buildDartExtension() {
-            DartExtension dartExtension = DartExtension
-                    .newBuilder()
+            var dartExtension = DartExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -371,8 +369,7 @@ public final class Extension {
         }
 
         private ModelExtension buildModelExtension() {
-            ModelExtension modelExtension = ModelExtension
-                    .newBuilder()
+            var modelExtension = ModelExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)

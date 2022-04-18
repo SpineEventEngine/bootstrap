@@ -46,7 +46,7 @@ final class JavaScriptExtension extends CodeGenExtension {
     @Override
     void enableGeneration() {
         super.enableGeneration();
-        pluginTarget().applyProtoJsPlugin();
+        pluginTarget().applyMcJsPlugin();
     }
 
     static Builder newBuilder() {

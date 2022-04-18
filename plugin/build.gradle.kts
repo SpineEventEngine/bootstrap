@@ -23,57 +23,72 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+@file:Suppress("RemoveRedundantQualifierName") // To prevent IDEA replacing FQN imports.
 
-import io.spine.gradle.internal.Deps
-import io.spine.gradle.internal.IncrementGuard
-import org.apache.tools.ant.filters.ReplaceTokens
+import io.spine.internal.dependency.Grpc
+import io.spine.internal.dependency.Protobuf
+import io.spine.internal.gradle.publish.IncrementGuard
+import io.spine.internal.gradle.isSnapshot
+import io.spine.internal.gradle.publish.PublishingRepos.cloudArtifactRegistry
+import java.io.FileWriter
+import java.util.Properties
 
 plugins {
-    id("com.gradle.plugin-publish").version("0.12.0")
-    id("com.github.johnrengelman.shadow").version("6.1.0")
-    `bootstrap-plugin`
-    `prepare-config-resources`
+    id(io.spine.internal.dependency.Protobuf.GradlePlugin.id)
+    `java-gradle-plugin`
+    id("com.gradle.plugin-publish").version("0.18.0")
+    id("com.github.johnrengelman.shadow").version("7.1.0")
 }
 
 apply<IncrementGuard>()
 
-val spineVersion: String by extra
-val spineBaseVersion: String by extra
-val pluginVersion: String by extra
+val baseVersion: String by extra
+val baseTypesVersion: String by extra
+val toolBaseVersion: String by extra
+val mcVersion: String by extra
+val mcJavaVersion: String by extra
+val mcJsVersion: String by extra
+val mcDartVersion: String by extra
+
+val bootstrapVersion: String by extra
 
 dependencies {
     implementation(gradleApi())
-    implementation(Deps.build.gradlePlugins.protobuf)
-    implementation("io.spine:spine-base:$spineBaseVersion")
-    implementation("io.spine.tools:spine-plugin-base:$spineBaseVersion")
-    implementation("io.spine.tools:spine-model-compiler:$spineBaseVersion")
-    implementation("io.spine.tools:spine-proto-js-plugin:$spineBaseVersion")
-    implementation("io.spine.tools:spine-proto-dart-plugin:$spineBaseVersion")
+    implementation(gradleKotlinDsl())
+    implementation(Protobuf.GradlePlugin.lib)
 
-    testImplementation("io.spine:spine-testlib:$spineBaseVersion")
-    testImplementation("io.spine.tools:spine-plugin-testlib:$spineBaseVersion")
+    implementation("io.spine:spine-base:$baseVersion")
+    implementation("io.spine:spine-base-types:$baseTypesVersion")
+
+    implementation("io.spine.tools:spine-plugin-base:$toolBaseVersion")
+    implementation("io.spine.tools:spine-model-compiler:$mcVersion")
+    implementation("io.spine.tools:spine-mc-java:$mcJavaVersion")
+    implementation("io.spine.tools:spine-mc-java-base:$mcJavaVersion")
+    implementation("io.spine.tools:spine-mc-js:$mcJsVersion")
+    implementation("io.spine.tools:spine-mc-dart:$mcDartVersion")
+
+    testImplementation("io.spine.tools:spine-testlib:$baseVersion")
+    testImplementation("io.spine.tools:spine-plugin-testlib:$toolBaseVersion")
 }
 
 val targetResourceDir = "$buildDir/compiledResources/"
 
-val prepareBuildScript by tasks.registering(Copy::class) {
-    description = "Creates the `build.gradle` script which is executed " +
-            "in functional tests of the plugin."
-
-    from("$projectDir/src/test/build.gradle.template")
-    into(targetResourceDir)
-
-    rename { "build.gradle" }
-    filter(mapOf("tokens" to mapOf("spine-version" to spineVersion)), ReplaceTokens::class.java)
-}
-
-tasks.processTestResources {
-    dependsOn(prepareBuildScript)
-}
-
 sourceSets {
     test {
         resources.srcDir(targetResourceDir)
+    }
+}
+
+val pluginName = "spineBootstrapPlugin"
+
+gradlePlugin {
+    plugins {
+        create(pluginName) {
+            id = "io.spine.bootstrap"
+            implementationClass = "io.spine.tools.gradle.bootstrap.BootstrapPlugin"
+            displayName = "Spine Bootstrap"
+            description = "Prepares a Gradle project for development on Spine."
+        }
     }
 }
 
@@ -85,21 +100,19 @@ pluginBundle {
     mavenCoordinates {
         groupId = "io.spine.tools"
         artifactId = "spine-bootstrap"
-        version = pluginVersion
+        version = bootstrapVersion
     }
 
-    withDependencies { clear() }
-
     plugins {
-        named("spineBootstrapPlugin") {
-            version = pluginVersion
+        named(pluginName) {
+            version = bootstrapVersion
         }
     }
 }
 
 /*
  * In order to simplify the Bootstrap plugin usage, the plugin should have no external dependencies
- * which cannot be found in the Plugin portal or in JCenter. Spine core modules are not published to
+ * which cannot be found in the Plugin portal. Spine core modules are not published to
  * either of those repositories. Thus, we publish the "fat" JAR.
  *
  * As Gradle Plugin plugin always publishes the JAR artifact with the empty classifier, we add
@@ -114,8 +127,92 @@ tasks.jar {
 
 tasks.shadowJar {
     archiveClassifier.set("")
+    isZip64 = true
 }
 
 artifacts {
     archives(tasks.shadowJar)
+}
+
+val bootstrapDir = file("$buildDir/bootstrap")
+
+sourceSets.main {
+    resources.srcDir(bootstrapDir)
+}
+
+val versionSnapshot = file("$bootstrapDir/artifact-snapshot.properties")
+val configDir = file("$rootDir/config")
+
+val timeVersion: String by extra
+val coreJavaVersion: String by extra
+val webVersion: String by extra
+val gCloudVersion: String by extra
+
+/*
+  This task creates the `artifact-snapshot.properties` file which is later added to the classpath of
+  the Bootstrap plugin. The file contains versions, artifact notations, repositories, etc. used in
+  the Gradle scripts which should also be used in the runtime of the Bootstrap plugin.
+
+  The keys for the `artifact-snapshot.properties` file are duplicated in
+  the `io.spine.tools.gradle.config.ArtifactSnapshot` class, where the file is parsed.
+ */
+val writeDependencies by tasks.registering {
+    group = "Spine bootstrapping"
+
+    inputs.dir(configDir)
+    inputs.property("version", bootstrapVersion)
+    outputs.file(versionSnapshot)
+
+    doFirst {
+        bootstrapDir.mkdirs()
+        if (!versionSnapshot.exists()) {
+            versionSnapshot.createNewFile()
+        }
+    }
+
+    doLast {
+        val artifacts = Properties()
+
+        artifacts.setProperty("spine.version.base", baseVersion)
+        artifacts.setProperty("spine.version.time", timeVersion)
+        artifacts.setProperty("spine.version.core", coreJavaVersion)
+        artifacts.setProperty("spine.version.web", webVersion)
+        artifacts.setProperty("spine.version.gcloud", gCloudVersion)
+        artifacts.setProperty("protobuf.compiler", Protobuf.compiler)
+        artifacts.setProperty("protobuf.java", Protobuf.libs[0])
+        artifacts.setProperty("grpc.stub", Grpc.stub)
+        artifacts.setProperty("grpc.protobuf", Grpc.protobuf)
+        artifacts.setProperty(
+            "repository.spine.release",
+            cloudArtifactRegistry.releases
+        )
+        artifacts.setProperty(
+            "repository.spine.snapshot",
+            cloudArtifactRegistry.snapshots
+        )
+
+        FileWriter(versionSnapshot).use {
+            artifacts.store(it, "Dependencies and versions required by Spine.")
+        }
+    }
+}
+
+tasks.processResources {
+    dependsOn(writeDependencies)
+}
+
+/**
+ * Publish the plugin at Gradle Plugin Portal only if it's not a snapshot version.
+ *
+ * See rules for publishing in the Gradle documentation
+ * ["How do I publish my plugin to the Plugin Portal?"](https://plugins.gradle.org/docs/publish-plugin).
+ */
+val publishPlugins: Task by tasks.getting {
+    enabled = !bootstrapVersion.isSnapshot()
+}
+
+project.afterEvaluate {
+    val publish: Task by tasks.getting {
+        dependsOn(tasks.publishPlugins)
+    }
 }

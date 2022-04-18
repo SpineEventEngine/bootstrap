@@ -28,28 +28,29 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
-import io.spine.dart.PubCache;
-import io.spine.dart.gradle.Extension;
-import io.spine.tools.gradle.TaskName;
+import io.spine.tools.code.SourceSetName;
+import io.spine.tools.dart.fs.PubCache;
+import io.spine.tools.gradle.task.TaskName;
+import io.spine.tools.mc.dart.gradle.Projects;
 import org.apache.tools.ant.taskdefs.condition.Os;
 import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.TaskContainer;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import static io.spine.tools.gradle.BaseTaskName.assemble;
-import static io.spine.tools.gradle.ProtobufTaskName.generateProto;
-import static io.spine.tools.gradle.ProtobufTaskName.generateTestProto;
 import static io.spine.tools.gradle.bootstrap.DartTaskName.generateDart;
 import static io.spine.tools.gradle.bootstrap.DartTaskName.generateTestDart;
+import static io.spine.tools.gradle.project.Projects.descriptorSetFile;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.dart;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
+import static io.spine.tools.gradle.task.BaseTaskName.assemble;
+import static io.spine.tools.gradle.task.ProtobufTaskName.generateProto;
+import static io.spine.tools.gradle.task.ProtobufTaskName.generateTestProto;
 import static java.lang.String.format;
 import static java.nio.file.Files.exists;
 import static org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS;
@@ -57,6 +58,7 @@ import static org.apache.tools.ant.taskdefs.condition.Os.FAMILY_WINDOWS;
 /**
  * An extension which configures Dart code generation.
  */
+@SuppressWarnings("UseOfProcessBuilder")
 @VisibleForTesting // Would be package private, but needed for integration tests.
 public final class DartExtension extends CodeGenExtension {
 
@@ -77,21 +79,19 @@ public final class DartExtension extends CodeGenExtension {
         super.enableGeneration();
         pluginTarget().applyProtobufPlugin();
         protobufGenerator().enablePlugin(called(dart));
-        pluginTarget().applyProtoDartPlugin();
+        pluginTarget().applyMcDartPlugin();
         createGenerationTasks();
     }
 
     private void createGenerationTasks() {
-        Extension protoDart = project.getExtensions()
-                                     .getByType(Extension.class);
-        Task mainTask = createTask(generateDart,
-                                   protoDart.getMainDescriptorSet(),
-                                   protoDart.getLibDir());
-        Task testTask = createTask(generateTestDart,
-                                   protoDart.getTestDescriptorSet(),
-                                   protoDart.getTestDir());
-        Task assembleTask = project.getTasks()
-                                   .getByName(assemble.name());
+        var mainDescriptorSetFile = descriptorSetFile(project, SourceSetName.main);
+        var testDescriptorSetFile = descriptorSetFile(project, SourceSetName.test);
+
+        var options = Projects.getMcDart(project);
+        var mainTask = createTask(generateDart, mainDescriptorSetFile, options.getLibDir());
+        var testTask = createTask(generateTestDart, testDescriptorSetFile, options.getTestDir());
+        var assembleTask = project.getTasks()
+                                  .getByName(assemble.name());
         project.afterEvaluate((p) -> {
             mainTask.dependsOn(generateProto.name());
             testTask.dependsOn(generateTestProto.name());
@@ -100,27 +100,24 @@ public final class DartExtension extends CodeGenExtension {
         testTask.shouldRunAfter(mainTask);
     }
 
-    private Task createTask(TaskName name,
-                            Property<Object> descriptorFile,
-                            DirectoryProperty dartDir) {
-        TaskContainer tasks = project.getTasks();
-        Task foundTask = tasks.findByName(name.name());
+    private Task createTask(TaskName name, File descriptorFile, DirectoryProperty dartDir) {
+        var tasks = project.getTasks();
+        var foundTask = tasks.findByName(name.name());
         if (foundTask != null) {
             return foundTask;
         }
-        Task task = tasks.create(name.name());
+        var task = tasks.create(name.name());
         task.doLast(t -> runDartTool(descriptorFile, dartDir));
         return task;
     }
 
-    private void runDartTool(Property<Object> descriptorFile, DirectoryProperty dartDir) {
+    private void runDartTool(File descriptorFile, DirectoryProperty dartDir) {
         if (project.file(descriptorFile)
                    .exists()) {
-            @SuppressWarnings("UseOfProcessBuilder")
-            ProcessBuilder processBuilder = buildDartToolProcess(descriptorFile, dartDir);
+            var processBuilder = buildDartToolProcess(descriptorFile, dartDir);
             int exitCode;
             try {
-                Process dartToolProcess = processBuilder.start();
+                var dartToolProcess = processBuilder.start();
                 exitCode = dartToolProcess.waitFor();
             } catch (IOException | InterruptedException e) {
                 throw new GradleException(format("Failed to execute `%s`.", DART_TOOL_NAME), e);
@@ -131,11 +128,9 @@ public final class DartExtension extends CodeGenExtension {
         }
     }
 
-    private ProcessBuilder buildDartToolProcess(Property<Object> descriptorFile,
-                                                DirectoryProperty dartDir) {
-        Path command = dartCodeGenCommand();
-        @SuppressWarnings("UseOfProcessBuilder")
-        ProcessBuilder processBuilder = new ProcessBuilder(
+    private ProcessBuilder buildDartToolProcess(File descriptorFile, DirectoryProperty dartDir) {
+        var command = dartCodeGenCommand();
+        var processBuilder = new ProcessBuilder(
                 command.toString(),
                 "--descriptor", project.file(descriptorFile)
                                        .getAbsolutePath(),
@@ -149,18 +144,15 @@ public final class DartExtension extends CodeGenExtension {
         return processBuilder;
     }
 
-    private static GradleException onProcessError(
-            @SuppressWarnings("UseOfProcessBuilder") ProcessBuilder processBuilder,
-            int exitCode
-    ) {
-        String command = commandJoiner.join(processBuilder.command());
+    private static GradleException onProcessError(ProcessBuilder processBuilder, int exitCode) {
+        var command = commandJoiner.join(processBuilder.command());
         throw new GradleException(format("Command `%s` exited with code %s.", command, exitCode));
     }
 
     private Path dartCodeGenCommand() {
-        String extension = Os.isFamily(FAMILY_WINDOWS) ? ".bat" : "";
-        Path command = PubCache.bin()
-                               .resolve(DART_TOOL_NAME + extension);
+        var extension = Os.isFamily(FAMILY_WINDOWS) ? ".bat" : "";
+        var command = PubCache.bin()
+                              .resolve(DART_TOOL_NAME + extension);
         if (!exists(command)) {
             _warn().log("Cannot locate `dart_code_gen` under `%s`. " +
                                 "To install, run `pub global activate %s`.",

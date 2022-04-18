@@ -31,18 +31,16 @@ import com.google.protobuf.gradle.GenerateProtoTask;
 import com.google.protobuf.gradle.GenerateProtoTask.PluginOptions;
 import com.google.protobuf.gradle.ProtobufConfigurator;
 import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
-import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
-import io.spine.tools.gradle.PluginId;
 import org.gradle.api.NamedDomainObjectContainer;
 import org.gradle.api.Project;
-import org.gradle.api.plugins.PluginManager;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.ProtobufDependencies.gradlePlugin;
+import static io.spine.tools.gradle.project.Projects.getProtobufConvention;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
 
 /**
@@ -56,6 +54,38 @@ public final class ProtobufGenerator {
 
     public ProtobufGenerator(Project project) {
         this.project = checkNotNull(project);
+    }
+
+    /**
+     * Sets the state of the specified protoc plugin.
+     *
+     * @param plugin
+     *         the plugin to turn on or off
+     * @param enabled
+     *         the desired state of the plugin
+     */
+    public void switchPlugin(ProtocPlugin plugin, boolean enabled) {
+        if (enabled) {
+            enablePlugin(plugin);
+        } else {
+            disablePlugin(plugin);
+        }
+    }
+
+    /**
+     * Sets the state of the code generation of the given protoc built-in.
+     *
+     * @param builtIn
+     *         the built-in to configure
+     * @param enabled
+     *         the desired state of the code generation
+     */
+    public void switchBuiltIn(ProtocPlugin builtIn, boolean enabled) {
+        if (enabled) {
+            enablePlugin(builtIn);
+        } else {
+            disableBuiltIn(builtIn);
+        }
     }
 
     /**
@@ -74,7 +104,7 @@ public final class ProtobufGenerator {
 
     private void enableIn(ProtocPlugin plugin, ContainerSelector selector) {
         withProtobufPlugin(() -> configureTasks(task -> {
-            NamedDomainObjectContainer<PluginOptions> plugins = selector.apply(task);
+            var plugins = selector.apply(task);
             plugin.createIn(plugins);
         }));
     }
@@ -95,7 +125,7 @@ public final class ProtobufGenerator {
 
     private void disableIn(ProtocPlugin plugin, ContainerSelector selector) {
         withProtobufPlugin(() -> configureTasks(task -> {
-            NamedDomainObjectContainer<PluginOptions> plugins = selector.apply(task);
+            var plugins = selector.apply(task);
             plugin.removeFrom(plugins);
         }));
     }
@@ -108,7 +138,7 @@ public final class ProtobufGenerator {
      */
     public void useCompiler(String artifactSpec) {
         checkNotNull(artifactSpec);
-        withProtobufPlugin(() -> protobufConfigurator().protoc(closure(
+        withProtobufPlugin(() -> configurator().protoc(closure(
                 (ExecutableLocator locator) -> locator.setArtifact(artifactSpec))
         ));
     }
@@ -118,23 +148,20 @@ public final class ProtobufGenerator {
                 (GenerateProtoTaskCollection tasks) -> tasks.all()
                                                             .forEach(config)
         );
-        protobufConfigurator().generateProtoTasks(forEachTask);
+        configurator().generateProtoTasks(forEachTask);
     }
 
-    private ProtobufConfigurator protobufConfigurator() {
-        ProtobufConfigurator protobuf = project.getConvention()
-                                               .getPlugin(ProtobufConvention.class)
-                                               .getProtobuf();
+    private ProtobufConfigurator configurator() {
+        var protobuf = getProtobufConvention(project).getProtobuf();
         return protobuf;
     }
 
     private void withProtobufPlugin(Runnable action) {
-        PluginManager pluginManager = project.getPluginManager();
-        PluginId pluginId = gradlePlugin();
-        if (pluginManager.hasPlugin(pluginId.value())) {
+        var pluginManager = project.getPluginManager();
+        if (pluginManager.hasPlugin(gradlePlugin.id)) {
             action.run();
         } else {
-            pluginManager.withPlugin(pluginId.value(), plugin -> action.run());
+            pluginManager.withPlugin(gradlePlugin.id, plugin -> action.run());
         }
     }
 

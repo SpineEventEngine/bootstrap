@@ -26,29 +26,25 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import com.google.common.truth.Subject;
-import io.spine.testing.TempDir;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
 import static com.google.common.truth.Truth.assertThat;
 
-@DisplayName("BootstrapPlugin should")
+@DisplayName("`BootstrapPlugin` should")
 class BootstrapPluginTest {
 
     private Project project;
 
     @BeforeEach
-    void setUp() {
-        File projectDir = TempDir.forClass(BootstrapPluginTest.class);
-        projectDir.deleteOnExit();
-        project = ProjectBuilder
-                .builder()
+    void setUp(@TempDir File projectDir) {
+        project = ProjectBuilder.builder()
                 .withName(BootstrapPluginTest.class.getSimpleName())
                 .withProjectDir(projectDir)
                 .build();
@@ -57,12 +53,12 @@ class BootstrapPluginTest {
     @Test
     @DisplayName("register `spine` extension")
     void registerExtension() {
-        BootstrapPlugin plugin = new BootstrapPlugin();
+        var plugin = new BootstrapPlugin();
         plugin.apply(project);
 
-        Object extension = project.getExtensions()
-                                  .getByName(Extension.NAME);
-        Subject assertExtension = assertThat(extension);
+        var extension = project.getExtensions()
+                               .getByName(Extension.NAME);
+        var assertExtension = assertThat(extension);
         assertExtension.isNotNull();
         assertExtension.isInstanceOf(Extension.class);
     }

@@ -27,18 +27,17 @@
 package io.spine.tools.gradle.bootstrap;
 
 import io.spine.logging.Logging;
-import io.spine.tools.gradle.TaskName;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
 import io.spine.tools.gradle.protoc.ProtocPlugin.Name;
+import io.spine.tools.gradle.task.TaskName;
+import io.spine.tools.mc.java.gradle.McJavaTaskName;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ModelCompilerTaskName.generateRejections;
-import static io.spine.tools.gradle.ModelCompilerTaskName.generateTestRejections;
+import static io.spine.tools.gradle.project.Projects.getSourceSetNames;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 
 /**
@@ -77,7 +76,7 @@ public final class JavaCodegenExtension implements Logging {
                                           ArtifactSnapshot artifacts) {
         checkNotNull(project);
         checkNotNull(dependant);
-        ProtobufGenerator generator = new ProtobufGenerator(project);
+        var generator = new ProtobufGenerator(project);
         return new JavaCodegenExtension(project, generator, dependant, artifacts);
     }
 
@@ -85,6 +84,7 @@ public final class JavaCodegenExtension implements Logging {
         return protobuf;
     }
 
+    @SuppressWarnings("unused")
     public boolean getGrpc() {
         return grpc;
     }
@@ -102,11 +102,7 @@ public final class JavaCodegenExtension implements Logging {
      */
     public void setProtobuf(boolean protobuf) {
         this.protobuf = protobuf;
-        if (protobuf) {
-            protobufGenerator.enableBuiltIn(JAVA_PLUGIN);
-        } else {
-            protobufGenerator.disableBuiltIn(JAVA_PLUGIN);
-        }
+        protobufGenerator.switchBuiltIn(JAVA_PLUGIN, protobuf);
     }
 
     /**
@@ -116,9 +112,10 @@ public final class JavaCodegenExtension implements Logging {
      *
      * @param grpc {@code true} to enable, {@code false} to disable
      */
+    @SuppressWarnings("unused")
     public void setGrpc(boolean grpc) {
         this.grpc = grpc;
-        switchPlugin(GRPC_PLUGIN, grpc);
+        protobufGenerator.switchPlugin(GRPC_PLUGIN, grpc);
         if (grpc) {
             addGrpcDependencies();
         }
@@ -141,26 +138,22 @@ public final class JavaCodegenExtension implements Logging {
      */
     public void setSpine(boolean spine) {
         this.spine = spine;
-        switchPlugin(SPINE_PLUGIN, spine);
-        updateModelCompilerTask(generateRejections);
-        updateModelCompilerTask(generateTestRejections);
+        protobufGenerator.switchPlugin(SPINE_PLUGIN, spine);
+        var sourceSetNames = getSourceSetNames(project);
+        sourceSetNames.stream()
+                .map(McJavaTaskName::generateRejections)
+                .forEach(this::updateModelCompilerTask);
     }
 
     private void updateModelCompilerTask(TaskName taskName) {
-        Task task = project.getTasks()
-                           .findByName(taskName.name());
+        var task = project.getTasks()
+                          .findByName(taskName.name());
         if (task != null) {
             task.setEnabled(spine);
         } else {
-            _debug().log("Task `%s` not found in project `%s`.", taskName, project.getPath());
-        }
-    }
-
-    private void switchPlugin(ProtocPlugin plugin, boolean enabled) {
-        if (enabled) {
-            protobufGenerator.enablePlugin(plugin);
-        } else {
-            protobufGenerator.disablePlugin(plugin);
+            _debug().log("Unable to find a task named `%s` in the project `%s`.",
+                         taskName,
+                         project.getPath());
         }
     }
 }

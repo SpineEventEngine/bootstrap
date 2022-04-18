@@ -34,6 +34,7 @@ import io.spine.tools.gradle.Dependency;
 public final class SpineDependency implements Dependency {
 
     private static final String DEFAULT_GROUP = "io.spine";
+    private static final String TOOLS_GROUP = DEFAULT_GROUP + ".tools";
     private static final String G_CLOUD_GROUP = DEFAULT_GROUP + ".gcloud";
 
     private static final String SPINE_PREFIX = "spine-";
@@ -47,13 +48,13 @@ public final class SpineDependency implements Dependency {
     private static final SpineDependency SERVER =
             new SpineDependency("server");
     private static final SpineDependency TEST_UTIL_SERVER =
-            new SpineDependency("testutil-server");
+            new SpineDependency(TOOLS_GROUP, "testutil-server");
     private static final SpineDependency TEST_UTIL_CLIENT =
-            new SpineDependency("testutil-client");
+            new SpineDependency(TOOLS_GROUP, "testutil-client");
     private static final SpineDependency TESTLIB =
-            new SpineDependency("testlib");
+            new SpineDependency(TOOLS_GROUP, "testlib");
     private static final SpineDependency TEST_UTIL_TIME =
-            new SpineDependency("testutil-time");
+            new SpineDependency(TOOLS_GROUP, "testutil-time");
     private static final SpineDependency WEB =
             new SpineDependency("web");
     private static final SpineDependency FIREBASE_WEB =
