@@ -32,7 +32,7 @@ import io.spine.internal.dependency.FindBugs
 import io.spine.internal.dependency.Guava
 import io.spine.internal.dependency.JUnit
 import io.spine.internal.dependency.Truth
-import io.spine.internal.gradle.IncrementGuard
+import io.spine.internal.gradle.publish.IncrementGuard
 import io.spine.internal.gradle.VersionWriter
 import io.spine.internal.gradle.applyStandard
 import io.spine.internal.gradle.checkstyle.CheckStyleConfig
@@ -43,16 +43,16 @@ import io.spine.internal.gradle.javac.configureJavac
 import io.spine.internal.gradle.javadoc.JavadocConfig
 import io.spine.internal.gradle.kotlin.applyJvmToolchain
 import io.spine.internal.gradle.kotlin.setFreeCompilerArgs
-import io.spine.internal.gradle.publish.Publish.Companion.publishProtoArtifact
+import io.spine.internal.gradle.publish.PublishingRepos
 import io.spine.internal.gradle.publish.PublishingRepos.cloudArtifactRegistry
 import io.spine.internal.gradle.publish.PublishingRepos.cloudRepo
 import io.spine.internal.gradle.publish.PublishingRepos.gitHub
+import io.spine.internal.gradle.publish.SpinePublishing
 import io.spine.internal.gradle.publish.spinePublishing
 import io.spine.internal.gradle.report.coverage.JacocoConfig
 import io.spine.internal.gradle.report.license.LicenseReporter
 import io.spine.internal.gradle.report.pom.PomGenerator
 import io.spine.internal.gradle.testing.configureLogging
-import io.spine.internal.gradle.testing.exposeTestArtifacts
 import io.spine.internal.gradle.testing.registerTestTasks
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -65,13 +65,11 @@ plugins {
 }
 
 spinePublishing {
-    projectsToPublish.addAll(subprojects.map { it.path })
-    targetRepositories.addAll(
-        cloudRepo,
-        cloudArtifactRegistry,
-        gitHub("bootstrap")
+    modules = setOf("plugin")
+    destinations = setOf(
+        PublishingRepos.cloudArtifactRegistry,
+        PublishingRepos.gitHub("bootstrap")
     )
-    spinePrefix.set(true)
 }
 
 apply(from = "$rootDir/version.gradle.kts")
@@ -145,9 +143,9 @@ subprojects {
         }
     }
 
-    java {
-        exposeTestArtifacts()
-    }
+//    java {
+//        exposeTestArtifacts()
+//    }
 
     tasks.withType<JavaCompile> {
         configureJavac()
@@ -203,7 +201,6 @@ subprojects {
 
     apply<IncrementGuard>()
     apply<VersionWriter>()
-    publishProtoArtifact(project)
     LicenseReporter.generateReportIn(project)
 }
 
