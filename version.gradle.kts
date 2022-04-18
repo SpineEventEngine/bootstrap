@@ -35,15 +35,15 @@
  * already in the root directory.
  */
 
-val baseVersion: String by extra("2.0.0-SNAPSHOT.80")
-val baseTypesVersion: String by extra("2.0.0-SNAPSHOT.75")
-val timeVersion: String by extra("2.0.0-SNAPSHOT.76")
-val coreJavaVersion: String by extra("2.0.0-SNAPSHOT.88")
+val baseVersion: String by extra("2.0.0-SNAPSHOT.88")
+val baseTypesVersion: String by extra("2.0.0-SNAPSHOT.89")
+val timeVersion: String by extra("2.0.0-SNAPSHOT.88")
+val coreJavaVersion: String by extra("2.0.0-SNAPSHOT.94")
 
-val webVersion: String by extra("2.0.0-SNAPSHOT.76")
-val gCloudVersion: String by extra("2.0.0-SNAPSHOT.63")
+val webVersion: String by extra("2.0.0-SNAPSHOT.73")
+val gCloudVersion: String by extra("2.0.0-SNAPSHOT.94")
 
-val toolBaseVersion: String by extra("2.0.0-SNAPSHOT.85")
+val toolBaseVersion: String by extra("2.0.0-SNAPSHOT.88")
 val mcVersion: String by extra("2.0.0-SNAPSHOT.87")
 val mcJavaVersion: String by extra("2.0.0-SNAPSHOT.88")
 val mcJsVersion: String by extra("2.0.0-SNAPSHOT.87")
