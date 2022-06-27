@@ -20,13 +20,26 @@ jobs:
           java-version: 8
           distribution: zulu
 
-      - name: Run tests with Gradle
+      - name: Update APT
         shell: bash
         run: chmod +x ./config/scripts/update-apt.sh
-          && ./config/scripts/update-apt.sh \
-          && sudo apt-get install dart \
-          && pub global activate protoc_plugin \
-          && pub global activate dart_code_gen \
-          && ./gradlew build
+          && ./config/scripts/update-apt.sh
+
+      - name: Install Dart
+        shell: bash
+        run: sudo apt-get install dart
+
+      - name: Active `protoc-plugin`
+        shell: bash
+        run: pub global activate protoc_plugin
+
+      - name: Active `dart_code_gen`
+        shell: bash
+        run: pub global activate dart_code_gen
+
+      - name: Run Gradle build
+        shell: bash
+        run: ./gradlew build
+
 
 
