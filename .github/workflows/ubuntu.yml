@@ -29,13 +29,13 @@ jobs:
         shell: bash
         run: sudo apt-get install dart
 
-      - name: Active `protoc-plugin`
+      - name: Activate `protoc-plugin`
         shell: bash
-        run: pub global activate protoc_plugin
+        run: dart pub global activate protoc_plugin
 
-      - name: Active `dart_code_gen`
+      - name: Activate `dart_code_gen`
         shell: bash
-        run: pub global activate dart_code_gen
+        run: dart pub global activate dart_code_gen
 
       - name: Run Gradle build
         shell: bash
