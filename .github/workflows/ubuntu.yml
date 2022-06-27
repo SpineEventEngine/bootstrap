@@ -1,4 +1,4 @@
-name: Tests on Windows
+name: Build under Ubuntu
 
 on:
   pull_request:
@@ -8,8 +8,7 @@ on:
 
 jobs:
   build:
-
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
@@ -22,10 +21,11 @@ jobs:
           distribution: zulu
 
       - name: Run tests with Gradle
-        shell: cmd
-        run: >
-          choco install dart-sdk --limitoutput
-          && refreshenv
-          && pub global activate protoc_plugin
-          && pub global activate dart_code_gen
-          && gradlew.bat build
+        shell: bash
+        run: ./config/scripts/update-apt.sh \
+          && sudo apt-get install dart \
+          && pub global activate protoc_plugin \
+          && pub global activate dart_code_gen \
+          && ./gradlew build
+
+
