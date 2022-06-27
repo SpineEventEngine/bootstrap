@@ -22,7 +22,8 @@ jobs:
 
       - name: Run tests with Gradle
         shell: bash
-        run: ./config/scripts/update-apt.sh \
+        run: chmod +x ./config/scripts/update-apt.sh
+          && ./config/scripts/update-apt.sh \
           && sudo apt-get install dart \
           && pub global activate protoc_plugin \
           && pub global activate dart_code_gen \
