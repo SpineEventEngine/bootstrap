@@ -16,7 +16,7 @@ plugins {
 }
 ```
 
-See [this Gradle doc][gradle-plugins-dsl] on how to apply a plugin only to certain to subprojects.
+See [this Gradle doc][gradle-plugins-dsl] on how to apply a plugin only to certain subprojects.
 
 [gradle-plugins-dsl]: https://docs.gradle.org/current/userguide/plugins.html#sec:subprojects_plugins_dsl
 
