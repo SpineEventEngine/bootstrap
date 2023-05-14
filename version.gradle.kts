@@ -40,4 +40,5 @@ val spineBaseVersion: String by extra("1.8.0")
 val spineTimeVersion: String by extra(spineVersion)
 val spineWebVersion: String by extra(spineVersion)
 val spineGCloudVersion: String by extra(spineVersion)
-val pluginVersion: String by extra(spineVersion)
+
+val pluginVersion: String by extra("1.9.0-SNAPSHOT.1")
