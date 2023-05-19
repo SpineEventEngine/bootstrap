@@ -55,6 +55,12 @@ To do that, apply the following configuration:
 This config will add required dependencies for developing a Spine-based Java client and server 
 respectively.
 
+**Important:** If the plugin is applied to child Gradle projects via `subprojects` 
+or `allprojects` section, 
+please make sure each of the matched projects performs its consequent configuration. 
+Otherwise, some side effects may follow, as the plugin does some preparational job
+upon applying.
+
 ### Obtaining the version when adding other dependencies
 
 In order to use the same version for other Spine libraries, please use `spine.version()`. 
