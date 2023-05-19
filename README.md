@@ -1,7 +1,5 @@
 # bootstrap
 
-[![Build Status][badge]](https://travis-ci.com/SpineEventEngine/bootstrap)
-
 The Gradle plugin for bootstrapping projects built with Spine.
 
 [badge]: https://travis-ci.com/SpineEventEngine/bootstrap.svg?branch=master
@@ -12,7 +10,7 @@ In order to apply the plugin to a Gradle project, in `build.gralde` add the foll
 
 ```gradle
 plugins {
-    id("io.spine.tools.gradle.bootstrap").version("1.8.0")
+    id("io.spine.tools.gradle.bootstrap").version("1.9.0")
 }
 ```
 
