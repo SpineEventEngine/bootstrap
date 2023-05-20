@@ -35,9 +35,10 @@
  * already in the root directory.
  */
 
-val spineVersion: String by extra("1.8.2")
-val spineBaseVersion: String by extra("1.8.2")
-val spineTimeVersion: String by extra(spineVersion)
-val spineWebVersion: String by extra(spineVersion)
-val spineGCloudVersion: String by extra(spineVersion)
-val pluginVersion: String by extra(spineVersion)
+val spineVersion: String by extra("1.9.0")
+val spineBaseVersion: String by extra("1.9.0")
+val spineTimeVersion: String by extra("1.9.0")
+val spineWebVersion: String by extra("1.9.0")
+val spineGCloudVersion: String by extra("1.9.0")
+
+val pluginVersion: String by extra("1.9.0")

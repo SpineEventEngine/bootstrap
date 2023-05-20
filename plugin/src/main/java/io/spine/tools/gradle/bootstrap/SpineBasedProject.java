@@ -103,7 +103,7 @@ final class SpineBasedProject implements Dependant {
      * <ol>
      *     <li>Spine releases repository for Spine artifacts;
      *     <li>Spine snapshots repository for Spine artifacts;
-     *     <li>JCenter repository for third-party artifacts.
+     *     <li>Maven Central repository for third-party artifacts.
      * </ol>
      */
     void prepareRepositories(ArtifactSnapshot artifacts) {
@@ -112,7 +112,7 @@ final class SpineBasedProject implements Dependant {
                            MavenRepositoryContentDescriptor::releasesOnly);
         addSpineRepository(artifacts.spineSnapshotRepository(),
                            MavenRepositoryContentDescriptor::snapshotsOnly);
-        repositories.jcenter();
+        repositories.mavenCentral();
     }
 
     @SuppressWarnings("UnstableApiUsage")

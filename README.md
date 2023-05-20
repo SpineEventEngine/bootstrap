@@ -1,7 +1,5 @@
 # bootstrap
 
-[![Build Status][badge]](https://travis-ci.com/SpineEventEngine/bootstrap)
-
 The Gradle plugin for bootstrapping projects built with Spine.
 
 [badge]: https://travis-ci.com/SpineEventEngine/bootstrap.svg?branch=master
@@ -12,11 +10,11 @@ In order to apply the plugin to a Gradle project, in `build.gralde` add the foll
 
 ```gradle
 plugins {
-    id("io.spine.tools.gradle.bootstrap").version("1.8.2")
+    id("io.spine.tools.gradle.bootstrap").version("1.9.0")
 }
 ```
 
-See [this Gradle doc][gradle-plugins-dsl] on how to apply a plugin only to certain to subprojects.
+See [this Gradle doc][gradle-plugins-dsl] on how to apply a plugin only to certain subprojects.
 
 [gradle-plugins-dsl]: https://docs.gradle.org/current/userguide/plugins.html#sec:subprojects_plugins_dsl
 
@@ -56,6 +54,12 @@ To do that, apply the following configuration:
 
 This config will add required dependencies for developing a Spine-based Java client and server 
 respectively.
+
+**Important:** If the plugin is applied to child Gradle projects via `subprojects` 
+or `allprojects` section, 
+please make sure each of the matched projects performs its consequent configuration. 
+Otherwise, some side effects may follow, as the plugin does some preparational job
+upon applying.
 
 ### Obtaining the version when adding other dependencies
 
