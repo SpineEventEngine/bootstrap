@@ -12,7 +12,7 @@ In order to apply the plugin to a Gradle project, in `build.gralde` add the foll
 
 ```gradle
 plugins {
-    id("io.spine.tools.gradle.bootstrap").version("1.8.0")
+    id("io.spine.tools.gradle.bootstrap").version("1.9.0")
 }
 ```
 
