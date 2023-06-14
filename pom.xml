@@ -28,7 +28,7 @@ all modules and does not describe the project structure per-subproject.
   <dependency>
     <groupId>com.google.guava</groupId>
     <artifactId>guava</artifactId>
-    <version>30.0-jre</version>
+    <version>32.0.0-jre</version>
     <scope>compile</scope>
   </dependency>
   <dependency>
