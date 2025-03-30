@@ -27,11 +27,9 @@
 package io.spine.tools.gradle.bootstrap;
 
 import com.google.protobuf.gradle.ProtobufPlugin;
-import io.spine.dart.gradle.ProtoDartPlugin;
-import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.tools.gradle.GradlePlugin;
 import io.spine.tools.gradle.PluginScript;
-import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
+import io.spine.tools.mc.gradle.McPlugin;
 import io.spine.tools.gradle.project.PluginTarget;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -97,26 +95,10 @@ public final class SpinePluginTarget implements PluginTarget {
     }
 
     /**
-     * Applies the {@link ModelCompilerPlugin}.
+     * Applies the {@code ModelCompilerPlugin}.
      */
     public void applyModelCompiler() {
-        GradlePlugin<?> plugin = GradlePlugin.implementedIn(ModelCompilerPlugin.class);
-        apply(plugin);
-    }
-
-    /**
-     * Applies the {@link ProtoJsPlugin}.
-     */
-    public void applyProtoJsPlugin() {
-        GradlePlugin<?> plugin = GradlePlugin.implementedIn(ProtoJsPlugin.class);
-        apply(plugin);
-    }
-
-    /**
-     * Applies the {@link ProtoDartPlugin}.
-     */
-    public void applyProtoDartPlugin() {
-        GradlePlugin<?> plugin = GradlePlugin.implementedIn(ProtoDartPlugin.class);
+        GradlePlugin<?> plugin = GradlePlugin.implementedIn(McPlugin.class);
         apply(plugin);
     }
 
@@ -124,7 +106,7 @@ public final class SpinePluginTarget implements PluginTarget {
      * Checks if the {@code idea} plugin is applied to this project.
      */
     public void withIdeaPlugin(Consumer<IdeaModel> action) {
-        GradlePlugin<IdeaPlugin> plugin = GradlePlugin.implementedIn(IdeaPlugin.class);
+        var plugin = GradlePlugin.implementedIn(IdeaPlugin.class);
         with(plugin, idea -> action.accept(idea.getModel()));
     }
 }

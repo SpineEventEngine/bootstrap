@@ -29,9 +29,6 @@ package io.spine.tools.gradle.protoc;
 import com.google.protobuf.gradle.ExecutableLocator;
 import com.google.protobuf.gradle.GenerateProtoTask;
 import com.google.protobuf.gradle.GenerateProtoTask.PluginOptions;
-import com.google.protobuf.gradle.ProtobufConfigurator;
-import com.google.protobuf.gradle.ProtobufConfigurator.GenerateProtoTaskCollection;
-import com.google.protobuf.gradle.ProtobufConvention;
 import groovy.lang.Closure;
 import io.spine.tools.gradle.PluginId;
 import org.gradle.api.NamedDomainObjectContainer;
@@ -42,7 +39,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ProtobufDependencies.gradlePlugin;
+import static io.spine.tools.gradle.protobuf.ProtobufDependencies.gradlePlugin;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
 
 /**
@@ -107,35 +104,35 @@ public final class ProtobufGenerator {
      *         Protobuf compiler artifact spec
      */
     public void useCompiler(String artifactSpec) {
-        checkNotNull(artifactSpec);
-        withProtobufPlugin(() -> protobufConfigurator().protoc(closure(
-                (ExecutableLocator locator) -> locator.setArtifact(artifactSpec))
-        ));
+//        checkNotNull(artifactSpec);
+//        withProtobufPlugin(() -> protobufConfigurator().protoc(closure(
+//                (ExecutableLocator locator) -> locator.setArtifact(artifactSpec))
+//        ));
     }
 
     private void configureTasks(Consumer<GenerateProtoTask> config) {
-        Closure<?> forEachTask = closure(
-                (GenerateProtoTaskCollection tasks) -> tasks.all()
-                                                            .forEach(config)
-        );
-        protobufConfigurator().generateProtoTasks(forEachTask);
+//        Closure<?> forEachTask = closure(
+//                (GenerateProtoTaskCollection tasks) -> tasks.all()
+//                                                            .forEach(config)
+//        );
+//        protobufConfigurator().generateProtoTasks(forEachTask);
     }
 
-    private ProtobufConfigurator protobufConfigurator() {
-        ProtobufConfigurator protobuf = project.getConvention()
-                                               .getPlugin(ProtobufConvention.class)
-                                               .getProtobuf();
-        return protobuf;
-    }
+//    private ProtobufConfigurator protobufConfigurator() {
+//        ProtobufConfigurator protobuf = project.getConvention()
+//                                               .getPlugin(ProtobufConvention.class)
+//                                               .getProtobuf();
+//        return protobuf;
+//    }
 
     private void withProtobufPlugin(Runnable action) {
-        PluginManager pluginManager = project.getPluginManager();
-        PluginId pluginId = gradlePlugin();
-        if (pluginManager.hasPlugin(pluginId.value())) {
-            action.run();
-        } else {
-            pluginManager.withPlugin(pluginId.value(), plugin -> action.run());
-        }
+//        PluginManager pluginManager = project.getPluginManager();
+//        PluginId pluginId = gradlePlugin();
+//        if (pluginManager.hasPlugin(pluginId.value())) {
+//            action.run();
+//        } else {
+//            pluginManager.withPlugin(pluginId.value(), plugin -> action.run());
+//        }
     }
 
     private interface ContainerSelector

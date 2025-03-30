@@ -28,7 +28,7 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
-import io.spine.logging.Logging;
+import io.spine.logging.WithLogging;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -46,7 +46,7 @@ import static io.spine.tools.gradle.config.SpineDependency.time;
  *
  * <p>One extension is responsible for one programming language to generate code in.
  */
-abstract class CodeGenExtension implements Logging {
+abstract class CodeGenExtension implements WithLogging {
 
     private final ProtobufGenerator protobufGenerator;
 

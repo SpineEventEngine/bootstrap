@@ -26,25 +26,21 @@
 
 package io.spine.tools.gradle.bootstrap;
 
-import io.spine.logging.Logging;
-import io.spine.tools.gradle.TaskName;
+import io.spine.logging.WithLogging;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import io.spine.tools.gradle.protoc.ProtocPlugin;
 import io.spine.tools.gradle.protoc.ProtocPlugin.Name;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ModelCompilerTaskName.generateRejections;
-import static io.spine.tools.gradle.ModelCompilerTaskName.generateTestRejections;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 
 /**
  * A Gradle extension nested in {@link JavaExtension} which configures Java code generation.
  */
-public final class JavaCodegenExtension implements Logging {
+public final class JavaCodegenExtension implements WithLogging {
 
     private static final ProtocPlugin JAVA_PLUGIN = called(Name.java);
     private static final ProtocPlugin GRPC_PLUGIN = called(Name.grpc);
@@ -77,7 +73,7 @@ public final class JavaCodegenExtension implements Logging {
                                           ArtifactSnapshot artifacts) {
         checkNotNull(project);
         checkNotNull(dependant);
-        ProtobufGenerator generator = new ProtobufGenerator(project);
+        var generator = new ProtobufGenerator(project);
         return new JavaCodegenExtension(project, generator, dependant, artifacts);
     }
 
@@ -142,18 +138,6 @@ public final class JavaCodegenExtension implements Logging {
     public void setSpine(boolean spine) {
         this.spine = spine;
         switchPlugin(SPINE_PLUGIN, spine);
-        updateModelCompilerTask(generateRejections);
-        updateModelCompilerTask(generateTestRejections);
-    }
-
-    private void updateModelCompilerTask(TaskName taskName) {
-        Task task = project.getTasks()
-                           .findByName(taskName.name());
-        if (task != null) {
-            task.setEnabled(spine);
-        } else {
-            _debug().log("Task `%s` not found in project `%s`.", taskName, project.getPath());
-        }
     }
 
     private void switchPlugin(ProtocPlugin plugin, boolean enabled) {

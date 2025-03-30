@@ -112,7 +112,7 @@ final class SpineBasedProject implements Dependant {
                            MavenRepositoryContentDescriptor::releasesOnly);
         addSpineRepository(artifacts.spineSnapshotRepository(),
                            MavenRepositoryContentDescriptor::snapshotsOnly);
-        repositories.jcenter();
+        repositories.mavenCentral();
     }
 
     @SuppressWarnings("UnstableApiUsage")

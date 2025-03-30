@@ -40,8 +40,8 @@ import static io.spine.util.Exceptions.illegalStateWithCauseOf;
 /**
  * A snapshot of Spine-related dependencies which may be used in Spine-based projects.
  *
- * <p>In order to guarantee absence of collisions, the plugin uses the same versions, repositories,
- * artifacts, etc. as does the Spine core code.
+ * <p>In order to guarantee the absence of collisions, the plugin uses the same versions,
+ * repositories, artifacts, etc. as does the Spine core code.
  */
 public final class ArtifactSnapshot {
 
@@ -270,16 +270,14 @@ public final class ArtifactSnapshot {
         }
 
         public Builder setSpineRepository(String repositoryUrl) {
-            this.spineRepository = Url
-                    .newBuilder()
+            this.spineRepository = Url.newBuilder()
                     .setSpec(repositoryUrl)
                     .build();
             return this;
         }
 
         public Builder setSpineSnapshotRepository(String repositoryUrl) {
-            this.spineSnapshotRepository = Url
-                    .newBuilder()
+            this.spineSnapshotRepository = Url.newBuilder()
                     .setSpec(repositoryUrl)
                     .build();
             return this;

@@ -24,37 +24,92 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.gradle.internal.Deps
-import io.spine.gradle.internal.IncrementGuard
+import io.spine.dependency.lib.Kotlin
+import io.spine.dependency.lib.Protobuf
+import io.spine.dependency.local.Base
+import io.spine.dependency.local.BaseTypes
+import io.spine.dependency.local.ModelCompiler
+import io.spine.dependency.local.TestLib
+import io.spine.dependency.local.ToolBase
+import io.spine.dependency.local.Validation
+import io.spine.dependency.test.JUnit
+import io.spine.gradle.isSnapshot
+import io.spine.gradle.publish.IncrementGuard
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id("com.gradle.plugin-publish").version("0.12.0")
-    id("com.github.johnrengelman.shadow").version("6.1.0")
-    `bootstrap-plugin`
+    module
+    `java-gradle-plugin`
+    `maven-publish`
+    id("com.gradle.plugin-publish").version("1.2.1")
+//    id("com.github.johnrengelman.shadow")
     `prepare-config-resources`
+    `version-to-resources`
+    `write-manifest`
+    idea
 }
 
 apply<IncrementGuard>()
+
+@Suppress(
+    "UnstableApiUsage" /* testing suites feature */
+)
+testing {
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter(JUnit.version)
+            dependencies {
+                implementation(Kotlin.GradlePlugin.lib)
+                implementation(gradleKotlinDsl())
+                implementation(Protobuf.GradlePlugin.lib)
+                implementation(ToolBase.pluginBase)
+                implementation(ToolBase.pluginTestlib)
+            }
+        }
+
+        val functionalTest by registering(JvmTestSuite::class) {
+            useJUnitJupiter(JUnit.version)
+            dependencies {
+                implementation(Kotlin.GradlePlugin.lib)
+                implementation(Kotlin.testJUnit5)
+                implementation(ToolBase.pluginBase)
+                implementation(TestLib.lib)
+                implementation(ToolBase.pluginTestlib)
+                implementation(project(":plugin"))
+            }
+        }
+    }
+}
+
+dependencies {
+    compileOnlyApi(gradleApi())
+    compileOnlyApi(Protobuf.GradlePlugin.lib)
+    implementation(Base.lib)
+    implementation(BaseTypes.lib)
+    implementation(Validation.runtime)
+    implementation(ToolBase.pluginTestlib)
+    implementation(ModelCompiler.lib)
+
+    testImplementation(TestLib.lib)
+    testImplementation(ToolBase.pluginTestlib)
+}
+
+/**
+ * Make functional tests depend on publishing all the submodules to Maven Local so that
+ * the Gradle plugin can get all the dependencies when it's applied to the test projects.
+ */
+val functionalTest: Task by tasks.getting {
+    val task = this
+    productionModules.forEach { subproject ->
+        task.dependsOn(":${subproject.name}:publishToMavenLocal")
+    }
+}
 
 val spineVersion: String by extra
 val spineBaseVersion: String by extra
 val pluginVersion: String by extra
 
-dependencies {
-    implementation(gradleApi())
-    implementation(Deps.build.gradlePlugins.protobuf)
-    implementation("io.spine:spine-base:$spineBaseVersion")
-    implementation("io.spine.tools:spine-plugin-base:$spineBaseVersion")
-    implementation("io.spine.tools:spine-model-compiler:$spineBaseVersion")
-    implementation("io.spine.tools:spine-proto-js-plugin:$spineBaseVersion")
-    implementation("io.spine.tools:spine-proto-dart-plugin:$spineBaseVersion")
-
-    testImplementation("io.spine:spine-testlib:$spineBaseVersion")
-    testImplementation("io.spine.tools:spine-plugin-testlib:$spineBaseVersion")
-}
-
-val targetResourceDir = "$buildDir/compiledResources/"
+val targetResourceDir = layout.buildDirectory.dir("compiledResources/").get()
 
 val prepareBuildScript by tasks.registering(Copy::class) {
     description = "Creates the `build.gradle` script which is executed " +
@@ -77,45 +132,57 @@ sourceSets {
     }
 }
 
-pluginBundle {
-    website = "https://spine.io/"
-    vcsUrl = "https://github.com/SpineEventEngine/bootstrap.git"
-    tags = listOf("spine", "event-sourcing", "ddd", "cqrs", "bootstrap")
-
-    mavenCoordinates {
-        groupId = "io.spine.tools"
-        artifactId = "spine-bootstrap"
-        version = pluginVersion
-    }
-
-    withDependencies { clear() }
-
+gradlePlugin {
+    website.set("https://spine.io/")
+    vcsUrl.set("https://github.com/SpineEventEngine/ProtoData.git")
     plugins {
-        named("spineBootstrapPlugin") {
-            version = pluginVersion
+        create("spineBootstrapPlugin") {
+            id = "io.spine.bootstrap"
+            implementationClass = "io.spine.tools.gradle.bootstrap.BootstrapPlugin"
+            displayName = "Spine Bootstrap Gradle Plugin"
+            description = "Prepares a Gradle project for development on Spine SDK."
+            tags.set(listOf("spine", "event-sourcing", "ddd", "cqrs", "bootstrap"))
         }
     }
+    val functionalTest by sourceSets.getting
+    testSourceSets(
+        functionalTest
+    )
 }
 
-/*
- * In order to simplify the Bootstrap plugin usage, the plugin should have no external dependencies
- * which cannot be found in the Plugin portal or in JCenter. Spine core modules are not published to
- * either of those repositories. Thus, we publish the "fat" JAR.
- *
- * As Gradle Plugin plugin always publishes the JAR artifact with the empty classifier, we add
- * the "pure" classifier to the default JAR artifact and generate the "fat" JAR with an empty
- * classifier.
+val bootstrapVersion: String by extra
+
+val publishPlugins: Task by tasks.getting {
+    enabled = !bootstrapVersion.isSnapshot()
+}
+
+val publish: Task by tasks.getting {
+    dependsOn(publishPlugins)
+}
+
+tasks {
+    check {
+        dependsOn(testing.suites.named("functionalTest"))
+    }
+
+    ideaModule {
+        notCompatibleWithConfigurationCache("https://github.com/gradle/gradle/issues/13480")
+    }
+
+    publishPlugins {
+        notCompatibleWithConfigurationCache("https://github.com/gradle/gradle/issues/21283")
+    }
+}
+
+/**
+ * Do it here because the call in `subprojects` does not have effect on the dependency
+ * of the `publishPluginJar` on `createVersionFile`.
  */
+afterEvaluate {
+    configureTaskDependencies()
 
-tasks.jar {
-    archiveClassifier.set("pure")
-    dependsOn(tasks.shadowJar)
-}
-
-tasks.shadowJar {
-    archiveClassifier.set("")
-}
-
-artifacts {
-    archives(tasks.shadowJar)
+    val writeDependencies by tasks.getting
+    val sourcesJar by tasks.getting {
+        dependsOn(writeDependencies)
+    }
 }

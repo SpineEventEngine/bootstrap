@@ -1,11 +1,11 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2025, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Redistribution and use in source and/or binary forms, with or without
  * modification, must retain the above copyright notice and the following
@@ -24,17 +24,18 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.gradle.internal.Deps
-import io.spine.gradle.internal.Repos
-import java.util.Properties
+import io.spine.dependency.lib.Grpc
+import io.spine.dependency.lib.Protobuf
+import io.spine.gradle.publish.PublishingRepos
 import java.io.FileWriter
+import java.util.*
 
 plugins {
     java
 }
 
-val bootstrapDir = file("$buildDir/bootstrap")
-val versionSnapshot = file("$bootstrapDir/artifact-snapshot.properties")
+val bootstrapDir: Provider<Directory> = layout.buildDirectory.dir("bootstrap")
+val versionSnapshot: RegularFile = bootstrapDir.get().file("artifact-snapshot.properties")
 val configDir = file("$rootDir/config")
 
 sourceSets.main {
@@ -43,25 +44,9 @@ sourceSets.main {
 
 val taskGroup = "Spine bootstrapping"
 
-val copyModelCompilerConfig by tasks.registering(Copy::class) {
-    group = taskGroup
-
-    from(file("$configDir/gradle/model-compiler.gradle"))
-    into(file(bootstrapDir))
-
-    doFirst {
-        bootstrapDir.mkdirs()
-    }
-}
-
-tasks.processResources {
-    dependsOn(copyModelCompilerConfig)
-}
-
 val spineBaseVersion: String by extra
 val spineTimeVersion: String by extra
 val spineVersion: String by extra
-val spineWebVersion: String by extra
 val spineGCloudVersion: String by extra
 
 /*
@@ -80,9 +65,9 @@ val writeDependencies by tasks.registering {
     outputs.file(versionSnapshot)
 
     doFirst {
-        bootstrapDir.mkdirs()
-        if (!versionSnapshot.exists()) {
-            versionSnapshot.createNewFile()
+        bootstrapDir.get().asFile.mkdirs()
+        if (!versionSnapshot.asFile.exists()) {
+            versionSnapshot.asFile.createNewFile()
         }
     }
 
@@ -92,16 +77,21 @@ val writeDependencies by tasks.registering {
         artifacts.setProperty("spine.version.base", spineBaseVersion)
         artifacts.setProperty("spine.version.time", spineTimeVersion)
         artifacts.setProperty("spine.version.core", spineVersion)
-        artifacts.setProperty("spine.version.web", spineWebVersion)
-        artifacts.setProperty("spine.version.gcloud", spineWebVersion)
-        artifacts.setProperty("protobuf.compiler", Deps.build.protoc)
-        artifacts.setProperty("protobuf.java", Deps.build.protobuf[0])
-        artifacts.setProperty("grpc.stub", Deps.grpc.stub)
-        artifacts.setProperty("grpc.protobuf", Deps.grpc.protobuf)
-        artifacts.setProperty("repository.spine.release", Repos.spine)
-        artifacts.setProperty("repository.spine.snapshot", Repos.spineSnapshots)
+        artifacts.setProperty("spine.version.gcloud", spineGCloudVersion)
+        artifacts.setProperty("protobuf.compiler", Protobuf.compiler)
+        artifacts.setProperty("protobuf.java", Protobuf.javaLib)
+        artifacts.setProperty("grpc.stub", Grpc.stub)
+        artifacts.setProperty("grpc.protobuf", Grpc.protobuf)
+        artifacts.setProperty(
+            "repository.spine.release",
+            PublishingRepos.cloudArtifactRegistry.releases
+        )
+        artifacts.setProperty(
+            "repository.spine.snapshot",
+            PublishingRepos.cloudArtifactRegistry.snapshots
+        )
 
-        FileWriter(versionSnapshot).use {
+        FileWriter(versionSnapshot.asFile).use {
             artifacts.store(it, "Dependencies and versions required by Spine.")
         }
     }

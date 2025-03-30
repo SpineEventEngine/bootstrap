@@ -24,114 +24,103 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.gradle.internal.DependencyResolution
-import io.spine.gradle.internal.Deps
-import io.spine.gradle.internal.PublishingRepos
+import io.spine.dependency.build.CheckerFramework
+import io.spine.dependency.build.Dokka
+import io.spine.dependency.build.ErrorProne
+import io.spine.dependency.build.FindBugs
+import io.spine.dependency.lib.Grpc
+import io.spine.dependency.lib.Guava
+import io.spine.dependency.local.Base
+import io.spine.dependency.local.CoreJava
+import io.spine.dependency.local.Reflect
+import io.spine.dependency.local.TestLib
+import io.spine.gradle.publish.PublishingRepos
+import io.spine.gradle.publish.SpinePublishing
+import io.spine.gradle.publish.spinePublishing
+import io.spine.gradle.report.coverage.JacocoConfig
+import io.spine.gradle.report.license.LicenseReporter
+import io.spine.gradle.report.pom.PomGenerator
+import io.spine.gradle.standardToSpineSdk
+import org.jetbrains.dokka.gradle.DokkaMultiModuleTask
+
+buildscript {
+    standardSpineSdkRepositories()
+    dependencies {
+        classpath(io.spine.dependency.lib.Protobuf.GradlePlugin.lib)
+    }
+    configurations.all {
+        resolutionStrategy {
+        }
+    }
+}
 
 plugins {
     java
-    idea
     jacoco
-    @Suppress("RemoveRedundantQualifierName") // Cannot use imports here.
-    id("net.ltgt.errorprone").version(io.spine.gradle.internal.Deps.versions.errorPronePlugin)
+    `project-report`
 }
 
-extra["credentialsPropertyFile"] = PublishingRepos.cloudRepo.credentials
-extra["projectsToPublish"] = listOf("plugin")
+/**
+ * Publish all the modules, but `gradle-plugin`, which is published separately by its own.
+ */
+spinePublishing {
+    modules = productionModules
+        .map { project -> project.name }
+        .toSet()
+        .minus("plugin") // because of custom publishing.
 
-apply(from = "$rootDir/version.gradle.kts")
-
-val spineVersion: String by extra
-val spineBaseVersion: String by extra
-val pluginVersion: String by extra
+    destinations = setOf(
+        PublishingRepos.gitHub("bootstrap"),
+        PublishingRepos.cloudArtifactRegistry
+    )
+}
 
 allprojects {
+    apply(plugin = Dokka.GradlePlugin.id)
     apply(from = "$rootDir/version.gradle.kts")
-    apply(from = "$rootDir/config/gradle/dependencies.gradle")
-
     group = "io.spine.tools"
-    version = pluginVersion
-}
+    version = extra["bootstrapVersion"]!!
 
-subprojects {
-    apply {
-        plugin("java")
-        plugin("idea")
-        plugin("net.ltgt.errorprone")
-        plugin("pmd")
+    repositories.standardToSpineSdk()
 
-        from(Deps.scripts.slowTests(project))
-        from(Deps.scripts.testOutput(project))
-        from(Deps.scripts.javadocOptions(project))
-        from(Deps.scripts.pmd(project))
-        from(Deps.scripts.projectLicenseReport(project))
-    }
-
-    java {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    DependencyResolution.defaultRepositories(repositories)
-
-    dependencies {
-        errorprone(Deps.build.errorProneCore)
-        errorproneJavac(Deps.build.errorProneJavac)
-
-        implementation(Deps.build.guava)
-        implementation("io.spine:spine-base:$spineBaseVersion")
-
-        compileOnly(Deps.build.checkerAnnotations)
-        compileOnly(Deps.build.jsr305Annotations)
-        Deps.build.errorProneAnnotations.forEach { compileOnly(it) }
-
-        testImplementation(Deps.test.guavaTestlib)
-        testImplementation(Deps.test.junitPioneer)
-        Deps.test.junit5Api.forEach { testImplementation(it) }
-        Deps.test.truth.forEach { testImplementation(it) }
-        testRuntimeOnly(Deps.test.junit5Runner)
-    }
-
-    DependencyResolution.forceConfiguration(configurations)
-
-    tasks.withType(Test::class) {
-        useJUnitPlatform {
-            includeEngines("junit-jupiter")
-        }
-    }
-
-    tasks.register("sourceJar", Jar::class) {
-        from(sourceSets.main.get().allJava)
-        archiveClassifier.set("sources")
-    }
-
-    tasks.register("testOutputJar", Jar::class) {
-        from(sourceSets.test.get().output)
-        archiveClassifier.set("test")
-    }
-
-    tasks.register("javadocJar", Jar::class) {
-        from("$projectDir/build/docs/javadoc")
-        archiveClassifier.set("javadoc")
-        dependsOn(tasks.javadoc)
-    }
-
-    idea {
-        module {
-            isDownloadJavadoc = true
-            isDownloadSources = true
+    configurations.all {
+        resolutionStrategy {
+            force(
+//                Grpc.ProtocPlugin.artifact,
+//                Reflect.lib,
+//                Base.lib,
+//                TestLib.lib,
+//                CoreJava.server
+            )
         }
     }
 }
 
-apply {
-    from(Deps.scripts.publish(project))
-    from(Deps.scripts.jacoco(project))
-    from(Deps.scripts.repoLicenseReport(project))
-    from(Deps.scripts.generatePom(project))
+PomGenerator.applyTo(project)
+LicenseReporter.mergeAllReports(project)
+JacocoConfig.applyTo(project)
+
+/**
+ * Collect `publishToMavenLocal` tasks for all subprojects that are specified for
+ * publishing in the root project.
+ */
+val projectsToPublish: Set<String> = the<SpinePublishing>().modules
+val localPublish by tasks.registering {
+    /*
+       Integration tests need the plugin subproject published to Maven Local too
+       because they apply the plugin.
+
+       The plugin subproject is not added to the list of `projectsToPublish` because
+       it is published from inside its `build.gradle.kts`.
+     */
+    val includingPlugin = projectsToPublish + "plugin"
+    val pubTasks = includingPlugin.map { p ->
+        val subProject = project(p)
+        subProject.tasks["publishToMavenLocal"]
+    }
+    dependsOn(pubTasks)
 }
 
-rootProject.afterEvaluate {
-    val pluginProject = project(":plugin")
-    pluginProject.tasks["publish"].dependsOn(pluginProject.tasks["publishPlugins"])
+val dokkaHtmlMultiModule by tasks.getting(DokkaMultiModuleTask::class) {
+    configureStyle()
 }

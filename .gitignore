@@ -31,6 +31,12 @@
 #
 # Therefore, instructions below are superset of instructions required for all the projects.
 
+# `jenv` file with the local version of Java.
+.java-version
+
+# Kotlin temp directories.
+**/.kotlin/**
+
 # IntelliJ IDEA modules and interim config files.
 *.iml
 .idea/*.xml
@@ -50,6 +56,7 @@
 
 # Gradle build files
 **/build/**
+!**/src/**/build/
 
 # Build files produced by the IDE
 **/out/**

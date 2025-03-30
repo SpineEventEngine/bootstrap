@@ -32,24 +32,22 @@ import groovy.lang.Closure;
 import io.spine.tools.gradle.Artifact;
 import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.GeneratedSourceRoot;
-import io.spine.tools.gradle.compiler.Extension;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.config.SpineDependency;
 import io.spine.tools.gradle.project.SourceSuperset;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.plugins.ide.idea.model.IdeaModel;
-import org.gradle.plugins.ide.idea.model.IdeaModule;
 
 import java.io.File;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.ConfigurationName.implementation;
-import static io.spine.tools.gradle.ConfigurationName.testImplementation;
-import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
+import static io.spine.tools.gradle.JavaConfigurationName.implementation;
+import static io.spine.tools.gradle.JavaConfigurationName.testImplementation;
 import static io.spine.tools.gradle.config.SpineDependency.testUtilTime;
 import static io.spine.tools.gradle.config.SpineDependency.testlib;
+import static io.spine.tools.gradle.protobuf.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.Name.java;
 import static io.spine.tools.gradle.protoc.ProtocPlugin.called;
 import static org.gradle.util.ConfigureUtil.configure;
@@ -85,23 +83,23 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     private void configureIdea(IdeaModel idea) {
-        IdeaModule module = idea.getModule();
-
-        Set<File> mainSrc = module.getSourceDirs();
-        Set<File> mainGenerated = module.getGeneratedSourceDirs();
-        add(mainSrc, Extension.getMainProtoSrcDir(project));
-        add(mainGenerated, Extension.getMainGenProtoDir(project));
-        add(mainGenerated, Extension.getMainGenGrpcDir(project));
-        add(mainGenerated, Extension.getTargetGenColumnsRootDir(project));
-        add(mainGenerated, Extension.getTargetGenRejectionsRootDir(project));
-
-        Set<File> testSrc = module.getTestSourceDirs();
-        add(testSrc, Extension.getTestProtoSrcDir(project));
-        add(testSrc, Extension.getTestGenProtoDir(project));
-        add(testSrc, Extension.getTestGenGrpcDir(project));
-
-        module.setDownloadJavadoc(true);
-        module.setDownloadSources(true);
+//        IdeaModule module = idea.getModule();
+//
+//        Set<File> mainSrc = module.getSourceDirs();
+//        Set<File> mainGenerated = module.getGeneratedSourceDirs();
+//        add(mainSrc, Extension.getMainProtoSrcDir(project));
+//        add(mainGenerated, Extension.getMainGenProtoDir(project));
+//        add(mainGenerated, Extension.getMainGenGrpcDir(project));
+//        add(mainGenerated, Extension.getTargetGenColumnsRootDir(project));
+//        add(mainGenerated, Extension.getTargetGenRejectionsRootDir(project));
+//
+//        Set<File> testSrc = module.getTestSourceDirs();
+//        add(testSrc, Extension.getTestProtoSrcDir(project));
+//        add(testSrc, Extension.getTestGenProtoDir(project));
+//        add(testSrc, Extension.getTestGenGrpcDir(project));
+//
+//        module.setDownloadJavadoc(true);
+//        module.setDownloadSources(true);
     }
 
     private static void add(Set<File> files, String path) {
@@ -110,7 +108,7 @@ public final class JavaExtension extends CodeGenExtension {
     }
 
     private void excludeProtobufLite() {
-        dependant().exclude(protobufLite());
+        dependant().exclude(protobufLite);
     }
 
     public JavaCodegenExtension getCodegen() {

@@ -42,8 +42,8 @@ import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.tasks.TaskContainer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static io.spine.tools.gradle.JavaTaskName.compileJava;
-import static io.spine.tools.gradle.JavaTaskName.compileTestJava;
+import static io.spine.tools.gradle.task.JavaTaskName.compileJava;
+import static io.spine.tools.gradle.task.JavaTaskName.compileTestJava;
 import static io.spine.tools.groovy.ConsumerClosure.closure;
 import static org.gradle.util.ConfigureUtil.configure;
 
@@ -60,7 +60,6 @@ public final class Extension {
 
     private final JavaExtension java;
     private final JavaScriptExtension javaScript;
-    private final DartExtension dart;
     private final ModelExtension modelExtension;
     private final ArtifactSnapshot artifacts;
     private final Project project;
@@ -70,7 +69,6 @@ public final class Extension {
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
         this.javaScript = builder.buildJavaScriptExtension();
-        this.dart = builder.buildDartExtension();
         this.modelExtension = builder.buildModelExtension();
         this.project = builder.project;
         this.artifacts = builder.artifacts;
@@ -143,22 +141,6 @@ public final class Extension {
         }
         disableTransitiveProtos();
         return javaScript;
-    }
-
-    /**
-     * Marks this project as a Dart project and configures the Dart code generation.
-     *
-     * <p>Enables the Dart code generation from Protobuf. If the {@code spine-proto-dart-plugin} is
-     * not applied to this project, applies it immediately.
-     */
-    @CanIgnoreReturnValue
-    public DartExtension enableDart() {
-        dart.enableGeneration();
-        if (!this.javaEnabled) {
-            toggleJavaTasks(false);
-        }
-        disableTransitiveProtos();
-        return dart;
     }
 
     /**
@@ -255,7 +237,7 @@ public final class Extension {
      */
     private void disableTransitiveProtos() {
         project.configurations(closure((ConfigurationContainer container) -> {
-            Configuration protobuf = container.findByName(ConfigurationName.protobuf.name());
+            Configuration protobuf = container.findByName("protobuf");
             if (protobuf != null) {
                 protobuf.setTransitive(false);
             }
@@ -356,18 +338,6 @@ public final class Extension {
                     .setArtifactSnapshot(artifacts)
                     .build();
             return javaScriptExtension;
-        }
-
-        private DartExtension buildDartExtension() {
-            DartExtension dartExtension = DartExtension
-                    .newBuilder()
-                    .setProject(project)
-                    .setDependant(dependencyTarget)
-                    .setPluginTarget(pluginTarget)
-                    .setProtobufGenerator(generator)
-                    .setArtifactSnapshot(artifacts)
-                    .build();
-            return dartExtension;
         }
 
         private ModelExtension buildModelExtension() {
