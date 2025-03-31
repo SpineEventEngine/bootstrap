@@ -62,7 +62,7 @@ final class SpineBasedProject implements Dependant {
      */
     static SpineBasedProject from(Project project) {
         checkNotNull(project);
-        DependantProject dependantProject = DependantProject.from(project);
+        var dependantProject = DependantProject.from(project);
         return new SpineBasedProject(dependantProject, project);
     }
 

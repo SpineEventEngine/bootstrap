@@ -50,14 +50,12 @@ import static org.gradle.util.ConfigureUtil.configure;
  */
 public final class Extension {
 
-    @SuppressWarnings("DuplicateStringLiteralInspection") // Used in tests and with other meanings.
     static final String NAME = "spine";
 
     private final JavaExtension java;
     private final ModelExtension modelExtension;
     private final ArtifactSnapshot artifacts;
     private final Project project;
-    private boolean javaEnabled;
     private boolean forceDependencies;
 
     private Extension(Builder builder) {
@@ -200,7 +198,6 @@ public final class Extension {
     }
 
     private void toggleJavaTasks(boolean enabled) {
-        this.javaEnabled = enabled;
         toggleCompileJavaTasks(enabled);
     }
 

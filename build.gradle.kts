@@ -1,11 +1,11 @@
 /*
- * Copyright 2021, TeamDev. All rights reserved.
+ * Copyright 2025, TeamDev. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Redistribution and use in source and/or binary forms, with or without
  * modification, must retain the above copyright notice and the following
@@ -24,16 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import io.spine.dependency.build.CheckerFramework
 import io.spine.dependency.build.Dokka
-import io.spine.dependency.build.ErrorProne
-import io.spine.dependency.build.FindBugs
-import io.spine.dependency.lib.Grpc
-import io.spine.dependency.lib.Guava
-import io.spine.dependency.local.Base
-import io.spine.dependency.local.CoreJava
-import io.spine.dependency.local.Reflect
-import io.spine.dependency.local.TestLib
 import io.spine.gradle.publish.PublishingRepos
 import io.spine.gradle.publish.SpinePublishing
 import io.spine.gradle.publish.spinePublishing
@@ -47,10 +38,6 @@ buildscript {
     standardSpineSdkRepositories()
     dependencies {
         classpath(io.spine.dependency.lib.Protobuf.GradlePlugin.lib)
-    }
-    configurations.all {
-        resolutionStrategy {
-        }
     }
 }
 
@@ -82,18 +69,6 @@ allprojects {
     version = extra["bootstrapVersion"]!!
 
     repositories.standardToSpineSdk()
-
-    configurations.all {
-        resolutionStrategy {
-            force(
-//                Grpc.ProtocPlugin.artifact,
-//                Reflect.lib,
-//                Base.lib,
-//                TestLib.lib,
-//                CoreJava.server
-            )
-        }
-    }
 }
 
 PomGenerator.applyTo(project)

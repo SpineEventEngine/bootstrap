@@ -122,14 +122,6 @@ class ExtensionTest {
         }
 
         @Test
-        @DisplayName("add `base` dependency to a JS project")
-        void addBaseDependencyToJs() {
-            extension.enableJavaScript();
-            assertThat(dependencyTarget.dependencies())
-                    .contains(baseDependency());
-        }
-
-        @Test
         @DisplayName("add `base` dependency to a model-only project")
         void addBaseDependencyToModel() {
             extension.assembleModel();
@@ -141,14 +133,6 @@ class ExtensionTest {
         @DisplayName("add `time` dependency to a Java project")
         void addTimeDependencyToJava() {
             extension.enableJava();
-            assertThat(dependencyTarget.dependencies())
-                    .contains(timeDependency());
-        }
-
-        @Test
-        @DisplayName("add `time` dependency to a JS project")
-        void addTimeDependencyToJs() {
-            extension.enableJavaScript();
             assertThat(dependencyTarget.dependencies())
                     .contains(timeDependency());
         }
@@ -194,26 +178,10 @@ class ExtensionTest {
         }
 
         @Test
-        @DisplayName("add `web` dependencies to a Java project")
-        void addWebDependency() {
-            extension.enableJava(JavaExtension::webServer);
-            assertThat(dependencyTarget.dependencies())
-                    .contains(webDependency());
-        }
-
-        @Test
-        @DisplayName("add `firebase-web` dependencies to a Java project")
-        void addFirebaseWebDependency() {
-            extension.enableJava(JavaExtension::firebaseWebServer);
-            assertThat(dependencyTarget.dependencies())
-                    .contains(firebaseWebDependency());
-        }
-
-        @Test
         @DisplayName("add `gcloud` dependency to a Java project")
         void addGCloudDependency() {
             extension.enableJava(JavaExtension::withDatastore);
-            IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
+            var assertDependencies = assertThat(dependencyTarget.dependencies());
             assertDependencies
                     .contains(datastoreDependency());
         }
@@ -234,42 +202,6 @@ class ExtensionTest {
             assertApplied(JavaPlugin.class);
 
             extension.enableJava();
-        }
-
-        @Test
-        @DisplayName("not add a `testlib` dependency to a JS project")
-        void noTestLibForJs() {
-            extension.enableJavaScript();
-
-            assertThat(dependencyTarget.dependencies())
-                    .doesNotContain(testlibDependency());
-        }
-
-        @Test
-        @DisplayName("not add a `testutil-time` dependency to a JS project")
-        void noTestUtilTimeForJs() {
-            extension.enableJavaScript();
-
-            assertThat(dependencyTarget.dependencies())
-                    .doesNotContain(testUtilTimeDependency());
-        }
-
-        @Test
-        @DisplayName("apply `com.google.protobuf` plugin to a JS project")
-        void applyProtoForJs() {
-            extension.enableJavaScript();
-
-            assertApplied(ProtobufPlugin.class);
-        }
-
-        @Test
-        @DisplayName("apply both Model Compiler and Proto JS plugin to a complex project")
-        void combine() {
-            extension.enableJavaScript();
-            extension.enableJava();
-
-            assertApplied(JavaPlugin.class);
-            assertApplied(McPlugin.class);
         }
 
         @Test
@@ -318,7 +250,7 @@ class ExtensionTest {
             extension.enableJava()
                      .client();
 
-            IterableSubject assertDependencies = assertThat(dependencyTarget.dependencies());
+            var assertDependencies = assertThat(dependencyTarget.dependencies());
             assertDependencies.contains(testUtilClientDependency());
             assertDependencies.doesNotContain(testUtilServerDependency());
         }
