@@ -30,13 +30,11 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.truth.Correspondence;
 import com.google.common.truth.IterableSubject;
 import com.google.protobuf.gradle.ProtobufPlugin;
-import io.spine.dart.gradle.ProtoDartPlugin;
-import io.spine.js.gradle.ProtoJsPlugin;
 import io.spine.testing.TempDir;
 import io.spine.tools.gradle.GradlePlugin;
-import io.spine.tools.gradle.TaskName;
+import io.spine.tools.gradle.task.TaskName;
 import io.spine.tools.gradle.bootstrap.given.FakeArtifacts;
-import io.spine.tools.gradle.compiler.ModelCompilerPlugin;
+import io.spine.tools.mc.gradle.McPlugin;
 import io.spine.tools.gradle.project.PlugableProject;
 import io.spine.tools.gradle.project.PluginTarget;
 import io.spine.tools.gradle.testing.MemoizingDependant;
@@ -47,7 +45,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.tasks.TaskContainer;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -59,7 +56,7 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.truth.Truth.assertThat;
-import static io.spine.tools.gradle.ProtobufDependencies.protobufLite;
+import static io.spine.tools.gradle.protobuf.ProtobufDependencies.protobufLite;
 import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.GRPC_PROTO_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.GRPC_STUB_DEPENDENCY;
 import static io.spine.tools.gradle.bootstrap.given.FakeArtifacts.spineVersion;
@@ -74,7 +71,7 @@ class ExtensionTest {
     /**
      * A {@link Correspondence} of a Gradle {@link Task} to its {@linkplain TaskName name}.
      *
-     * <p>Allow to assert facts about a collection of tasks referencing them by names instead of
+     * <p>Allow asserting facts about a collection of tasks referencing them by names instead of
      * looking up individual elements.
      */
     private static final
@@ -169,8 +166,7 @@ class ExtensionTest {
         void applyModelCompiler() {
             extension.enableJava();
 
-            assertApplied(ModelCompilerPlugin.class);
-            assertNotApplied(ProtoJsPlugin.class);
+            assertApplied(McPlugin.class);
         }
 
         @Test
@@ -241,15 +237,6 @@ class ExtensionTest {
         }
 
         @Test
-        @DisplayName("apply Proto JS plugin to a JS project")
-        void applyProtoJs() {
-            extension.enableJavaScript();
-
-            assertApplied(ProtoJsPlugin.class);
-            assertNotApplied(ModelCompilerPlugin.class);
-        }
-
-        @Test
         @DisplayName("not add a `testlib` dependency to a JS project")
         void noTestLibForJs() {
             extension.enableJavaScript();
@@ -282,8 +269,7 @@ class ExtensionTest {
             extension.enableJava();
 
             assertApplied(JavaPlugin.class);
-            assertApplied(ProtoJsPlugin.class);
-            assertApplied(ModelCompilerPlugin.class);
+            assertApplied(McPlugin.class);
         }
 
         @Test
@@ -342,7 +328,7 @@ class ExtensionTest {
         void noExclusions() {
             assertThat(dependencyTarget.exclusions()).isEmpty();
             extension.enableJava();
-            assertThat(dependencyTarget.exclusions()).containsExactly(protobufLite());
+            assertThat(dependencyTarget.exclusions()).containsExactly(protobufLite);
         }
 
         @Test
@@ -386,70 +372,54 @@ class ExtensionTest {
         @Test
         @DisplayName("disable Java code generation in Java projects")
         void disableCodegen() {
-            JavaExtension javaExtension = ExtensionTest.this.extension.enableJava();
-            JavaCodegenExtension codegen = javaExtension.getCodegen();
+            var javaExtension = ExtensionTest.this.extension.enableJava();
+            var codegen = javaExtension.getCodegen();
             assertTrue(codegen.getProtobuf());
             codegen.setProtobuf(false);
             assertFalse(codegen.getProtobuf());
         }
 
-        @Test
-        @DisplayName("apply Proto Dart plugin to a Dart project")
-        void applyProtoDart() {
-            DartExtension dartExtension = extension.enableDart();
-            assertThat(dartExtension)
-                    .isNotNull();
-            assertApplied(ProtoDartPlugin.class);
-        }
-
-        @Test
-        @DisplayName("apply Protobuf plugin to a Dart project")
-        void applyProtobufToDart() {
-            extension.enableDart();
-            assertApplied(ProtobufPlugin.class);
-        }
-
-        private String baseDependency() {
+        private static String baseDependency() {
             return "io.spine:spine-base:" + spineVersion;
         }
 
-        private String timeDependency() {
+        private static String timeDependency() {
             return "io.spine:spine-time:" + spineVersion;
         }
 
-        private String serverDependency() {
+        private static String serverDependency() {
             return "io.spine:spine-server:" + spineVersion;
         }
 
-        private String testUtilServerDependency() {
+        private static String testUtilServerDependency() {
             return "io.spine:spine-testutil-server:" + spineVersion;
         }
 
-        private String clientDependency() {
+        private static String clientDependency() {
             return "io.spine:spine-client:" + spineVersion;
         }
 
-        private String testUtilClientDependency() {
+        private static String testUtilClientDependency() {
             return "io.spine:spine-testutil-client:" + spineVersion;
         }
 
-        private String testlibDependency() {
+        private static String testlibDependency() {
             return "io.spine:spine-testlib:" + spineVersion;
         }
 
-        private String testUtilTimeDependency() {
+        private static String testUtilTimeDependency() {
             return "io.spine:spine-testutil-time:" + spineVersion;
         }
 
-        private String webDependency() {
+        private static String webDependency() {
             return "io.spine:spine-web:" + spineVersion;
         }
 
-        private String firebaseWebDependency() {
+        private static String firebaseWebDependency() {
             return "io.spine.gcloud:spine-firebase-web:" + spineVersion;
         }
 
-        private String datastoreDependency() {
+        private static String datastoreDependency() {
             return "io.spine.gcloud:spine-datastore:" + spineVersion;
         }
 
@@ -476,8 +446,8 @@ class ExtensionTest {
         @Test
         @DisplayName("gRPC codegen")
         void grpc() {
-            JavaCodegenExtension codegen = extension.enableJava()
-                                                    .getCodegen();
+            var codegen = extension.enableJava()
+                                   .getCodegen();
             assertFalse(codegen.getGrpc());
             codegen.setGrpc(true);
             assertTrue(codegen.getGrpc());
@@ -491,8 +461,8 @@ class ExtensionTest {
         @Test
         @DisplayName("Protobuf to Java codegen")
         void protobufJava() {
-            JavaCodegenExtension codegen = extension.enableJava()
-                                                    .getCodegen();
+            var codegen = extension.enableJava()
+                                   .getCodegen();
             assertTrue(codegen.getProtobuf());
             codegen.setProtobuf(false);
             assertFalse(codegen.getProtobuf());
@@ -551,15 +521,15 @@ class ExtensionTest {
             @Test
             @DisplayName(WITH_AN_ACTION)
             void action() {
-                AtomicBoolean executedAction = new AtomicBoolean(false);
-                JavaExtension javaExtension = extension.enableJava();
+                var executedAction = new AtomicBoolean(false);
+                var javaExtension = extension.enableJava();
                 javaExtension.codegen(codegen -> {
-                    boolean defaultValue = codegen.getSpine();
+                    var defaultValue = codegen.getSpine();
                     assertThat(defaultValue).isTrue();
 
                     codegen.setSpine(false);
 
-                    boolean newValue = codegen.getSpine();
+                    var newValue = codegen.getSpine();
                     assertThat(newValue).isFalse();
 
                     executedAction.set(true);
@@ -592,10 +562,10 @@ class ExtensionTest {
     @Test
     @DisplayName("force configuration to resolve particular versions of required dependencies")
     void forceDependencies() {
-        JavaExtension javaExtension = extension.enableJava();
+        var javaExtension = extension.enableJava();
         this.extension.setForceDependencies(true);
 
-        String dependencySpec = javaExtension.protobufJavaSpec();
+        var dependencySpec = javaExtension.protobufJavaSpec();
         assertThat(dependencyTarget.forcedDependencies())
                 .containsExactly(dependencySpec);
     }
@@ -603,8 +573,8 @@ class ExtensionTest {
     @Test
     @DisplayName("disable previously enabled configuration enforcement")
     void disableDependencyEnforcing() {
-        JavaExtension javaExtension = extension.enableJava();
-        String dependencySpec = javaExtension.protobufJavaSpec();
+        var javaExtension = extension.enableJava();
+        var dependencySpec = javaExtension.protobufJavaSpec();
         dependencyTarget.force(dependencySpec);
 
         extension.setForceDependencies(false);
@@ -619,15 +589,5 @@ class ExtensionTest {
         assertThat(extension.getForceDependencies()).isFalse();
         extension.setForceDependencies(true);
         assertThat(extension.getForceDependencies()).isTrue();
-    }
-
-    @Test
-    @DisplayName("add `generateDart` tasks if needed")
-    void addDartTasks() {
-        extension.enableDart();
-        TaskContainer tasks = project.getTasks();
-        assertThat(tasks)
-                .comparingElementsUsing(names)
-                .containsAtLeastElementsIn(DartTaskName.values());
     }
 }

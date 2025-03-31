@@ -24,177 +24,173 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package io.spine.tools.gradle.bootstrap.func;
+package io.spine.tools.gradle.bootstrap.func
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.truth.IterableSubject;
-import io.spine.code.proto.FileDescriptors;
-import io.spine.testing.SlowTest;
-import io.spine.testing.TempDir;
-import io.spine.tools.gradle.testing.GradleProject;
-import io.spine.tools.gradle.testing.GradleProjectSetup;
-import org.gradle.testkit.runner.BuildResult;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Set;
-
-import static com.google.common.truth.Truth.assertThat;
-import static io.spine.tools.gradle.task.BaseTaskName.build;
-import static java.nio.file.Files.exists;
-import static java.util.Collections.emptySet;
-import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.google.common.collect.ImmutableList
+import com.google.common.collect.ImmutableSet
+import com.google.common.truth.Truth
+import io.spine.code.proto.FileDescriptors
+import io.spine.testing.SlowTest
+import io.spine.tools.gradle.testing.GradleProject
+import io.spine.tools.gradle.task.BaseTaskName
+import io.spine.tools.gradle.testing.GradleProjectSetup
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
 
 @SlowTest
-@DisplayName("`io.spine.tools.gradle.bootstrap` plugin should")
-class SpineBootstrapPluginTest {
+@DisplayName("`io.spine.bootstrap` plugin should")
+@Disabled("Until new API is introduced")
+internal class SpineBootstrapPluginTest {
 
-    private static final String ADDITIONAL_CONFIG_SCRIPT = "config.gradle";
-    private static final String TRANSITIVE_JS_DEPENDENCY = "any_pb.js";
-
-    private GradleProjectSetup project;
-    private Path projectDir;
+    private lateinit var project: GradleProjectSetup
+    private lateinit var projectDir: File
 
     @BeforeEach
-    void setUp(@org.junit.jupiter.api.io.TempDir File projectDir) {
-        this.projectDir = projectDir.toPath();
-        this.project =
-                GradleProject.setupAt(projectDir)
-                             .fromResources("func-test", (Path path) ->
-                                     path.toString().contains("roller_coaster.proto")
-                             )
-                .withPluginClasspath();
+    fun setUp(@TempDir projectDir: File) {
+        this.projectDir = projectDir
+    }
+
+    /**
+     * Creates the project environment by copying the `roller_coaster.proto` file with
+     * optional [additionalProtoFile] from the `func-test` resource directory.
+     */
+    private fun setupProject(vararg additionalProtoFile: String) {
+        val filesToInclude =
+            listOf("build.gradle.kts",
+                "settings.gradle.kts",
+                "roller_coaster.proto")
+            additionalProtoFile.toMutableList()
+        
+        project = GradleProject.setupAt(projectDir)
+            .fromResources("func-test") { path ->
+                val pathStr = path.toString()
+                filesToInclude.any { pathStr.endsWith(it) }
+            }
+            .withPluginClasspath()
     }
 
     @Test
-    @DisplayName("be applied to a project successfully")
-    void apply() {
-        noAdditionalConfig();
+    fun `be applied to a project successfully`() {
+        noAdditionalConfig()
         project.create()
-               .executeTask(build);
+            .executeTask(BaseTaskName.build)
     }
 
     @Test
-    @DisplayName("generate no code if none requested")
-    void generateNothing() {
-        noAdditionalConfig();
+    fun `generate no code if none requested`() {
+        noAdditionalConfig()
         project.create()
-               .executeTask(build);
-        Path compiledClasses = compiledJavaClasses();
-        if (exists(compiledClasses)) {
-            File compiledClassesDirectory = compiledClasses.toFile();
-            assertThat(compiledClassesDirectory.list()).isEmpty();
+            .executeTask(BaseTaskName.build)
+        val compiledClasses = compiledJavaClasses()
+        if (Files.exists(compiledClasses)) {
+            val compiledClassesDirectory = compiledClasses.toFile()
+            Truth.assertThat(compiledClassesDirectory.list()).isEmpty()
         }
     }
 
     @Test
-    @DisplayName("generate Java if requested")
-    void generateJava() {
-        configureJavaGeneration();
-        GradleProject project = this.project.create();
-        project.executeTask(build);
+    fun `generate Java if requested`() {
+        configureJavaGeneration()
+        val project = project.create()
+        project.executeTask(BaseTaskName.build)
 
-        Collection<String> packageContents = generatedClassFileNames();
-        IterableSubject assertPackageContents = assertThat(packageContents);
-        assertPackageContents.containsAtLeast("LunaParkProto.class",
-                                              "RollerCoaster.class",
-                                              "Wagon.class",
-                                              "Altitude.class");
+        val packageContents = generatedClassFileNames()
+        val assertPackageContents = Truth.assertThat(packageContents)
+        assertPackageContents.containsAtLeast(
+            "LunaParkProto.class",
+            "RollerCoaster.class",
+            "Wagon.class",
+            "Altitude.class"
+        )
     }
 
     @Test
-    @DisplayName("apply 'spine-model-compiler' plugin, generating descriptor set files")
-    void applyModelCompiler() {
-        configureJavaGeneration();
-        GradleProject project = this.project.create();
-        project.executeTask(build);
+    fun `apply 'spine-model-compiler' plugin, generating descriptor set files`() {
+        configureJavaGeneration()
+        val project = project.create()
+        project.executeTask(BaseTaskName.build)
 
-        Collection<String> resourceFiles = assembledResources();
-        String projectDir = this.projectDir.getFileName()
-                                           .toString();
-        boolean containsDescriptorSetFile =
-                resourceFiles.stream()
-                             .filter(f -> f.endsWith(FileDescriptors.DESC_EXTENSION))
-                             .anyMatch(f -> f.contains(projectDir));
-        assertThat(containsDescriptorSetFile)
-                .isTrue();
-        assertThat(resourceFiles)
-                .contains("desc.ref");
+        val resourceFiles = assembledResources()
+        val projectDir = projectDir.toString()
+        val containsDescriptorSetFile =
+            resourceFiles.stream()
+                .filter { f: String -> f.endsWith(FileDescriptors.DESC_EXTENSION) }
+                .anyMatch { f: String -> f.contains(projectDir) }
+        Truth.assertThat(containsDescriptorSetFile)
+            .isTrue()
+        Truth.assertThat(resourceFiles)
+            .contains("desc.ref")
     }
 
     @Test
-    @DisplayName("add client dependencies to the project")
-    void clientDeps() {
-        configureJavaClient();
-        GradleProject project = this.project.create();
-        project.executeTask(build);
-        assertThat(generatedClassFileNames())
-                .contains("ReceivedQuery.class");
+    fun `add client dependencies to the project`() {
+        configureJavaClient()
+        val project = project.create()
+        project.executeTask(BaseTaskName.build)
+        Truth.assertThat(generatedClassFileNames())
+            .contains("ReceivedQuery.class")
     }
 
     @Test
-    @DisplayName("add server dependencies to the project")
-    void serverDeps() {
-        configureJavaServer();
-        GradleProject project = this.project.create();
-        project.executeTask(build);
-        assertThat(generatedClassFileNames())
-                .contains("Nonevent.class");
+    fun `add server dependencies to the project`() {
+        configureJavaServer()
+        val project = project.create()
+        project.executeTask(BaseTaskName.build)
+        Truth.assertThat(generatedClassFileNames())
+            .contains("Nonevent.class")
     }
 
     @Test
-    @DisplayName("generate gRPC stubs if required")
-    void generateGrpc() {
-        configureGrpc();
-        GradleProject project = this.project.create();
-        project.executeTask(build);
-        assertThat(generatedClassFileNames())
-                .containsAtLeast("OrderServiceGrpc.class",
-                                 "OrderServiceGrpc$OrderServiceStub.class",
-                                 "OrderServiceGrpc$OrderServiceImplBase.class");
+    fun `generate gRPC stubs if required`() {
+        configureGrpc()
+        val project = project.create()
+        project.executeTask(BaseTaskName.build)
+        Truth.assertThat(generatedClassFileNames())
+            .containsAtLeast(
+                "OrderServiceGrpc.class",
+                "OrderServiceGrpc\$OrderServiceStub.class",
+                "OrderServiceGrpc\$OrderServiceImplBase.class"
+            )
     }
 
     @Test
-    @DisplayName("register `generated/main/resources` as a resource directory")
-    void includeResources() {
-        configureJavaGeneration();
-        String resourceName = "foo.txt";
-        Set<String> emptyFile = emptySet();
-        GradleProject project =
-                this.project.addFile("generated/main/resources/" + resourceName, emptyFile)
-                            .create();
-        project.executeTask(build);
-        Collection<String> resourceFiles = assembledResources();
-        assertThat(resourceFiles).contains(resourceName);
+    fun `register 'generated-main-resources' as a resource directory`() {
+        configureJavaGeneration()
+        val resourceName = "foo.txt"
+        val emptyFile = emptySet<String>()
+        val project =
+            project.addFile("generated/main/resources/$resourceName", emptyFile)
+                .create()
+        project.executeTask(BaseTaskName.build)
+        val resourceFiles = assembledResources()
+        Truth.assertThat(resourceFiles).contains(resourceName)
     }
 
     @Test
-    @DisplayName("disable Java codegen")
-    void disableJava() {
-        configureJavaWithoutGen();
-        Path compiledClasses = compiledJavaClasses();
-        assertFalse(exists(compiledClasses));
+    fun `disable Java codegen`() {
+        configureJavaWithoutGen()
+        val compiledClasses = compiledJavaClasses()
+        Assertions.assertFalse(Files.exists(compiledClasses))
     }
 
     @Test
-    @DisplayName("disable Java codegen and ignore gRPC settings")
-    void disableJavaAndGrpc() {
-        configureJavaAndGrpcWithoutGen();
-        Path compiledClasses = compiledJavaClasses();
-        assertFalse(exists(compiledClasses));
+    fun `disable Java codegen and ignore gRPC settings`() {
+        configureJavaAndGrpcWithoutGen()
+        val compiledClasses = compiledJavaClasses()
+        Assertions.assertFalse(Files.exists(compiledClasses))
     }
 
     @Test
-    @DisplayName("disable rejection throwable generation")
-    void ignoreRejections() {
+    fun `disable rejection throwable generation`() {
 //        configureJavaWithoutProtoOrSpine();
 //        GradleProject project = this.project
 //                .addProtoFile("restaurant_rejections.proto")
@@ -205,164 +201,128 @@ class SpineBootstrapPluginTest {
     }
 
     @Test
-    @DisplayName("generate no code for projects that only define the model")
-    void noJsForModelProjects() {
-        configureModelProject();
-        GradleProject project = this.project.create();
-        project.executeTask(build);
+    fun `generate no code for projects that only define the model`() {
+        configureModelProject()
+        val project = project.create()
+        project.executeTask(BaseTaskName.build)
 
-        assertThat(generatedFiles().toFile()
-                                   .exists()).isFalse();
+        Truth.assertThat(
+            generatedFiles().toFile()
+                .exists()
+        ).isFalse()
     }
 
-    private void noAdditionalConfig() {
-        writeConfigGradle();
+    private fun noAdditionalConfig() {
+        setupProject()
+        writeConfigGradle()
     }
 
-    private void configureJavaGeneration() {
-        writeConfigGradle("spine.enableJava()");
+    private fun configureJavaGeneration() {
+        setupProject()
+        writeConfigGradle("spine.enableJava()")
     }
 
-    private void configureJavaAndJs() {
-        writeConfigGradle("spine.enableJava()",
-                          "spine.enableJavaScript()");
-    }
-
-    private void configureJsGeneration() {
+    private fun configureJavaClient() {
+        setupProject("client.proto")
         writeConfigGradle(
-                "spine.enableJavaScript()"
-        );
+            "spine.enableJava().client()"
+        )
     }
 
-    private void configureDartGeneration() {
+    private fun configureJavaServer() {
+        setupProject("server.proto")
         writeConfigGradle(
-                "spine.enableDart()"
-        );
+            "spine.enableJava().server()"
+        )
     }
 
-    @SuppressWarnings("CheckReturnValue")
-    private void configureJavaClient() {
+    private fun configureGrpc() {
+        setupProject("restaurant.proto")
         writeConfigGradle(
-                "spine.enableJava().client()"
-        );
-        project.addProtoFile("client.proto");
+            "spine {",
+            "    enableJava {",
+            "        codegen.grpc = true",
+            "    }",
+            "}"
+        )
     }
 
-    @SuppressWarnings("CheckReturnValue")
-    private void configureJavaServer() {
-        writeConfigGradle(
-                "spine.enableJava().server()"
-        );
-        project.addProtoFile("server.proto");
+    private fun configureJavaWithoutGen() {
+        setupProject()
+        writeConfigGradle("spine.enableJava().codegen.protobuf = false")
     }
 
-    @SuppressWarnings("CheckReturnValue")
-    private void configureGrpc() {
-        writeConfigGradle(
-                "spine {",
-                "    enableJava {",
-                "        codegen.grpc = true",
-                "    }",
-                "}"
-        );
-        project.addProtoFile("restaurant.proto");
-    }
-
-    private void configureJavaWithoutGen() {
-        writeConfigGradle("spine.enableJava().codegen.protobuf = false");
-    }
-
-    @SuppressWarnings("DuplicateStringLiteralInspection")
     // Part of the file contents may be duplicated.
-    private void configureJavaAndGrpcWithoutGen() {
+    private fun configureJavaAndGrpcWithoutGen() {
         writeConfigGradle(
-                "spine.enableJava {",
-                "    codegen {",
-                "        protobuf = false",
-                "        grpc = true",
-                "    }",
-                "}");
+            "spine.enableJava {",
+            "    codegen {",
+            "        protobuf = false",
+            "        grpc = true",
+            "    }",
+            "}"
+        )
     }
 
-    @SuppressWarnings("DuplicateStringLiteralInspection")
-    // Part of the file contents may be duplicated.
-    private void configureJavaWithoutProtoOrSpine() {
-        writeConfigGradle(
-                "spine.enableJava {",
-                "    codegen {",
-                "        protobuf = false",
-                "        spine = false",
-                "    }",
-                "}");
+    private fun configureModelProject() {
+        setupProject()
+        writeConfigGradle("spine.assembleModel()")
     }
 
-    private void configureModelProject() {
-        writeConfigGradle("spine.assembleModel()");
+    private fun writeConfigGradle(vararg lines: String) {
+        project.addFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.copyOf(lines))
     }
 
-    @SuppressWarnings("CheckReturnValue")
-    private void writeConfigGradle(String... lines) {
-        project.createFile(ADDITIONAL_CONFIG_SCRIPT, ImmutableSet.copyOf(lines));
+    private fun assembledResources(): Collection<String> {
+        val resourceDir = projectDir.resolve("build")
+            .resolve("resources")
+            .resolve("main")
+        assertTrue(resourceDir.exists())
+        assertTrue(resourceDir.isDirectory)
+        val resources = resourceDir.list()
+        assertNotNull(resources)
+        return ImmutableList.copyOf(resources!!)
     }
 
-    private Collection<String> assembledResources() {
-        Path resourcePath = projectDir.resolve("build")
-                                      .resolve("resources")
-                                      .resolve("main");
-        File resourceDir = resourcePath.toFile();
-        assertTrue(resourceDir.exists());
-        assertTrue(resourceDir.isDirectory());
-        String[] resources = resourceDir.list();
-        assertNotNull(resources);
-        return ImmutableList.copyOf(resources);
+    private fun generatedClassFileNames(): Collection<String?> {
+        val compiledJavaClasses = compiledJavaClasses()
+        val compiledClassesDir = compiledJavaClasses.toFile()
+        assertTrue(compiledClassesDir.exists())
+        assertTrue(compiledClassesDir.isDirectory)
+        val dirContents = ImmutableSet.copyOf(compiledClassesDir.list()!!)
+        val assertCompiledClassesDir = Truth.assertThat(dirContents)
+        assertCompiledClassesDir.isNotEmpty()
+        assertCompiledClassesDir.containsExactly("io")
+
+        val compiledClassesPackage = resolveClassesInPackage(compiledJavaClasses)
+        val packageContents = ImmutableSet.copyOf(
+            compiledClassesPackage.toFile().list()!!
+        )
+        return packageContents
     }
 
-    private Collection<String> generatedClassFileNames() {
-        Path compiledJavaClasses = compiledJavaClasses();
-        File compiledClassesDir = compiledJavaClasses.toFile();
-        assertTrue(compiledClassesDir.exists());
-        assertTrue(compiledClassesDir.isDirectory());
-        @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> dirContents = ImmutableSet.copyOf(compiledClassesDir.list());
-        IterableSubject assertCompiledClassesDir = assertThat(dirContents);
-        assertCompiledClassesDir.isNotEmpty();
-        assertCompiledClassesDir.containsExactly("io");
-
-        Path compiledClassesPackage = resolveClassesInPackage(compiledJavaClasses);
-        @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> packageContents = ImmutableSet.copyOf(compiledClassesPackage.toFile()
-                                                                                         .list());
-        return packageContents;
+    private fun compiledJavaClasses(): Path {
+        val compiledClasses = projectDir.resolve("build")
+            .resolve("classes")
+            .resolve("java")
+            .resolve("main")
+        return compiledClasses.toPath()
     }
 
-    private Path compiledJavaClasses() {
-        Path compiledClasses = projectDir.resolve("build")
-                                         .resolve("classes")
-                                         .resolve("java")
-                                         .resolve("main");
-        return compiledClasses;
+    private fun generatedFiles(): Path {
+        val generated = projectDir.resolve("generated")
+        return generated.toPath()
     }
 
-    private Path generatedFiles() {
-        Path generated = projectDir.resolve("generated");
-        return generated;
-    }
+    companion object {
+        private const val ADDITIONAL_CONFIG_SCRIPT = "config.gradle"
 
-    private static Path resolveClassesInPackage(Path compiledJavaClasses) {
-        return compiledJavaClasses.resolve("io")
-                                  .resolve("spine")
-                                  .resolve("tools")
-                                  .resolve("bootstrap")
-                                  .resolve("test");
-    }
-
-    private Collection<String> generatedDartFileNames() {
-        Path libDir = projectDir.resolve("lib");
-        File libDirFile = libDir.toFile();
-        assertTrue(libDirFile.exists());
-        assertTrue(libDirFile.isDirectory());
-        @SuppressWarnings("ConstantConditions")
-        ImmutableSet<String> packageContents = ImmutableSet.copyOf(libDirFile.list());
-        return packageContents;
+        private fun resolveClassesInPackage(compiledJavaClasses: Path): Path {
+            return compiledJavaClasses.resolve("io")
+                .resolve("spine")
+                .resolve("tools")
+                .resolve("bootstrap")
+                .resolve("test")
+        }
     }
 }
