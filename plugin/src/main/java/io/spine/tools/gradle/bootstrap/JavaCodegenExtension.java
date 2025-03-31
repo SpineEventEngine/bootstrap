@@ -46,7 +46,6 @@ public final class JavaCodegenExtension implements WithLogging {
     private static final ProtocPlugin GRPC_PLUGIN = called(Name.grpc);
     private static final ProtocPlugin SPINE_PLUGIN = called(Name.spineProtoc);
 
-    private final Project project;
     private final ProtobufGenerator protobufGenerator;
     private final Dependant dependant;
     private final ArtifactSnapshot artifacts;
@@ -55,11 +54,9 @@ public final class JavaCodegenExtension implements WithLogging {
     private boolean grpc = false;
     private boolean spine = true;
 
-    private JavaCodegenExtension(Project project,
-                                 ProtobufGenerator protobufGenerator,
+    private JavaCodegenExtension(ProtobufGenerator protobufGenerator,
                                  Dependant dependant,
                                  ArtifactSnapshot artifacts) {
-        this.project = project;
         this.protobufGenerator = protobufGenerator;
         this.dependant = dependant;
         this.artifacts = artifacts;
@@ -74,7 +71,7 @@ public final class JavaCodegenExtension implements WithLogging {
         checkNotNull(project);
         checkNotNull(dependant);
         var generator = new ProtobufGenerator(project);
-        return new JavaCodegenExtension(project, generator, dependant, artifacts);
+        return new JavaCodegenExtension(generator, dependant, artifacts);
     }
 
     public boolean getProtobuf() {

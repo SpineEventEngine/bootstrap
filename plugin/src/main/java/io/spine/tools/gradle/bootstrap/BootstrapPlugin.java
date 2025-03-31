@@ -79,10 +79,9 @@ public final class BootstrapPlugin implements Plugin<Project> {
     private static void applyExtension(Project project, ArtifactSnapshot artifacts) {
         PluginTarget plugableProject = new PlugableProject(project);
         SourceSuperset layout = ProjectSourceSuperset.of(project);
-        SpineBasedProject dependant = SpineBasedProject.from(project);
+        var dependant = SpineBasedProject.from(project);
         dependant.prepareRepositories(artifacts);
-        Extension extension = Extension
-                .newBuilder()
+        var extension = Extension.newBuilder()
                 .setProject(project)
                 .setDependencyTarget(dependant)
                 .setPluginTarget(plugableProject)

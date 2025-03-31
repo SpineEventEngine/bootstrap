@@ -28,7 +28,6 @@ package io.spine.tools.gradle.bootstrap;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import groovy.lang.Closure;
-import io.spine.tools.gradle.ConfigurationName;
 import io.spine.tools.gradle.config.ArtifactSnapshot;
 import io.spine.tools.gradle.project.Dependant;
 import io.spine.tools.gradle.project.PluginTarget;
@@ -36,10 +35,7 @@ import io.spine.tools.gradle.project.SourceSuperset;
 import io.spine.tools.gradle.protoc.ProtobufGenerator;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.tasks.TaskContainer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static io.spine.tools.gradle.task.JavaTaskName.compileJava;
@@ -50,8 +46,7 @@ import static org.gradle.util.ConfigureUtil.configure;
 /**
  * The {@code spine} Gradle DSL extension.
  *
- * <p>Configures the project as a {@linkplain #enableJava() Java} or/and
- * a {@linkplain #enableJavaScript() JavaScript} project based on Spine.
+ * <p>Configures the project as a {@linkplain #enableJava() Java} project based on Spine.
  */
 public final class Extension {
 
@@ -59,7 +54,6 @@ public final class Extension {
     static final String NAME = "spine";
 
     private final JavaExtension java;
-    private final JavaScriptExtension javaScript;
     private final ModelExtension modelExtension;
     private final ArtifactSnapshot artifacts;
     private final Project project;
@@ -68,7 +62,6 @@ public final class Extension {
 
     private Extension(Builder builder) {
         this.java = builder.buildJavaExtension();
-        this.javaScript = builder.buildJavaScriptExtension();
         this.modelExtension = builder.buildModelExtension();
         this.project = builder.project;
         this.artifacts = builder.artifacts;
@@ -128,22 +121,6 @@ public final class Extension {
     }
 
     /**
-     * Marks this project as a JavaScript project and configures the JavaScript code generation.
-     *
-     * <p>Enables the JS code generation from Protobuf. If the {@code spine-proto-js-plugin} is
-     * not applied to this project, applies it immediately.
-     */
-    @CanIgnoreReturnValue
-    public JavaScriptExtension enableJavaScript() {
-        javaScript.enableGeneration();
-        if (!this.javaEnabled) {
-            toggleJavaTasks(false);
-        }
-        disableTransitiveProtos();
-        return javaScript;
-    }
-
-    /**
      * Marks this project as a project that contains the Protobuf model definition.
      *
      * <p>Enables the {@code protobuf} and {@code java} plugins. Also adds the generated source
@@ -197,7 +174,6 @@ public final class Extension {
      */
     private void forceDependencies() {
         java.forceDependencies();
-        javaScript.forceDependencies();
         modelExtension.forceDependencies();
     }
 
@@ -208,7 +184,6 @@ public final class Extension {
      */
     private void disableDependencyEnforcement() {
         java.disableDependencyEnforcement();
-        javaScript.disableDependencyEnforcement();
         modelExtension.disableDependencyEnforcement();
     }
 
@@ -230,14 +205,14 @@ public final class Extension {
     }
 
     /**
-     * If the {@code protobuf} configuration is present, disables its transitibity.
+     * If the {@code protobuf} configuration is present, disables its transitivity.
      *
      * <p>Disabling transitivity leads to exclusion of {@code spine} and
      * {@code com.google.protobuf} dependencies.
      */
     private void disableTransitiveProtos() {
         project.configurations(closure((ConfigurationContainer container) -> {
-            Configuration protobuf = container.findByName("protobuf");
+            var protobuf = container.findByName("protobuf");
             if (protobuf != null) {
                 protobuf.setTransitive(false);
             }
@@ -251,9 +226,9 @@ public final class Extension {
      * <p>If such tasks could not be found in the project, performs no action.
      */
     private void toggleCompileJavaTasks(boolean enabled) {
-        TaskContainer tasks = project.getTasks();
-        Task compileJavaTask = tasks.findByPath(compileJava.name());
-        Task compileTestJavaTask = tasks.findByPath(compileTestJava.name());
+        var tasks = project.getTasks();
+        var compileJavaTask = tasks.findByPath(compileJava.name());
+        var compileTestJavaTask = tasks.findByPath(compileTestJava.name());
         if (compileJavaTask != null) {
             compileJavaTask.setEnabled(enabled);
         }
@@ -316,8 +291,7 @@ public final class Extension {
         }
 
         private JavaExtension buildJavaExtension() {
-            JavaExtension javaExtension = JavaExtension
-                    .newBuilder()
+            var javaExtension = JavaExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
@@ -328,21 +302,8 @@ public final class Extension {
             return javaExtension;
         }
 
-        private JavaScriptExtension buildJavaScriptExtension() {
-            JavaScriptExtension javaScriptExtension = JavaScriptExtension
-                    .newBuilder()
-                    .setProject(project)
-                    .setDependant(dependencyTarget)
-                    .setPluginTarget(pluginTarget)
-                    .setProtobufGenerator(generator)
-                    .setArtifactSnapshot(artifacts)
-                    .build();
-            return javaScriptExtension;
-        }
-
         private ModelExtension buildModelExtension() {
-            ModelExtension modelExtension = ModelExtension
-                    .newBuilder()
+            var modelExtension = ModelExtension.newBuilder()
                     .setProject(project)
                     .setDependant(dependencyTarget)
                     .setPluginTarget(pluginTarget)
